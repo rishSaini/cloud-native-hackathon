@@ -401,3 +401,35 @@ body:not(.on-sky) .greeting { margin-top: 2.5rem; }
 body:not(.on-sky) .greeting-line { font-family: var(--font-display) !important; font-style: normal !important; font-weight: 800 !important; letter-spacing: -0.035em !important; }
 body:not(.on-sky) .greeting-line .accent-word { font-family: var(--font-italic); font-style: italic; font-weight: 500; letter-spacing: -0.01em; }
 @media (max-width: 680px) { body:not(.on-sky) .brand { margin-right: auto; } }
+
+/* ================= Card creation as a chat ================= */
+.chat { display: grid; gap: 0.75rem; align-content: start; }
+.chat-log { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+.chat-pair { display: grid; gap: 0.5rem; }
+.bubble {
+  display: inline-flex; align-items: flex-start; gap: 0.625rem;
+  max-width: min(36rem, 88%);
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 20px;
+  font-size: 1rem; line-height: 1.5;
+}
+.bubble.bot { justify-self: start; background: var(--surface); border: 1px solid var(--divider); color: var(--ink); border-bottom-left-radius: 6px; }
+.chat-form > label.bubble.bot { font-weight: 600; font-size: 1.0625rem; cursor: text; }
+.bot-mark { flex: none; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--ink); color: #FFFFFF; font: 800 0.75rem var(--font-ui); letter-spacing: -0.02em; }
+.bubble-row { display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem; }
+.bubble.me { background: var(--ink); color: #FFFFFF; border-bottom-right-radius: 6px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.bubble.me.skipped { background: var(--paper-deep); color: var(--ink-soft); font-style: italic; }
+.bubble-edit { min-height: 36px; min-width: 44px; padding: 0 0.75rem; border-radius: 999px; border: 1px solid var(--divider); background: #FFFFFF; color: var(--ink-soft); font: 500 0.8125rem var(--font-ui); }
+.bubble-edit:hover { color: var(--ink); border-color: var(--ink); }
+.chat-form { display: grid; gap: 0.5rem; animation: bubble-in 260ms var(--ease) both; }
+.chat-hint { margin: 0 0 0 2.5rem; color: var(--ink-soft); font-size: 0.9375rem; }
+.chat-compose { display: grid; gap: 0.5rem; justify-items: end; margin-top: 0.25rem; }
+.chat-compose .input { width: min(36rem, 100%); border-radius: 18px; border-bottom-right-radius: 6px; }
+.chat-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+.chat-consent { margin: 0.25rem 0; }
+.chat .field-error { justify-self: end; }
+@keyframes bubble-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (min-width: 64rem) {
+  .chat-layout { grid-template-columns: minmax(0, 1fr) 22rem; gap: 3rem; }
+}
