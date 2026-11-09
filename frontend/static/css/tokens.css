@@ -37,7 +37,24 @@
   --warn-sky: #C98A1B;
   --alert-sky: #E88A9B;
 
+  /* soft fills for tags, pills and highlights (text on them uses the -deep shades) */
+  --coral-soft: #FCE7DF;
+  --coral-deep: #A0402A;
+  --teal-soft: #DDF1ED;
+  --teal-deep: #17675E;
+  --sun-soft: #FBEFCB;
+  --plum: #6B3F69;
+  --plum-soft: #F1E4F0;
+  --paper-deep: #F3EBDD;
+  --btn-primary: #BB4F35;   /* white text 4.9:1 */
+
+  /* depth: warm-tinted shadows */
+  --shadow-sm: 0 1px 2px rgba(74, 46, 30, 0.06), 0 2px 6px rgba(74, 46, 30, 0.05);
+  --shadow-md: 0 2px 4px rgba(74, 46, 30, 0.05), 0 10px 28px rgba(74, 46, 30, 0.09);
+  --shadow-lg: 0 6px 12px rgba(74, 46, 30, 0.06), 0 24px 56px rgba(74, 46, 30, 0.14);
+
   /* type */
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --font-ui: "Nunito", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-code: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 

@@ -3,7 +3,7 @@
 
 import { announce, focusScreen, getPrefs, motionOK } from "../a11y.js";
 import { api } from "../api.js";
-import { accentColor } from "../color.js";
+import { accentColor, avatarColor } from "../color.js";
 import { formatDayTime, formatTime, h } from "../format.js";
 import { loadErrorView } from "../load-error.js";
 import { confirmLeave, openBlock, openReport } from "../safety.js";
@@ -104,7 +104,7 @@ export default {
         menuBtn.setAttribute("aria-expanded", String(open));
       });
       const avatar = h("span", { class: "avatar", "aria-hidden": "true" }, initials(m.name));
-      avatar.style.background = color;
+      avatar.style.background = avatarColor(m.displayId);
       const el = h("li", { class: "member" },
         h("div", { class: "member-head" },
           avatar,
@@ -131,7 +131,7 @@ export default {
       revealed.add(group.id);
       const dots = members.map((m, i) => {
         const dot = h("span", { class: "avatar avatar-lg" }, initials(m.name));
-        dot.style.background = accentColor(m.displayId);
+        dot.style.background = avatarColor(m.displayId);
         if (animate) {
           const angle = (i / Math.max(1, members.length)) * Math.PI * 2;
           dot.style.setProperty("--from-x", `${Math.cos(angle) * 140}px`);
