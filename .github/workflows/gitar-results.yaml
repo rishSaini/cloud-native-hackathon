@@ -1,0 +1,50 @@
+# Copies every Gitar review (dashboard comments, reviews, inline comments, fix
+# commits) into gitar/results/ on main, so the team can present what Gitar did.
+# Runs when a PR closes, every 30 minutes, and from the Actions tab ("Run workflow").
+# The files are Markdown, so the ci and build-and-deploy workflows skip this commit.
+name: gitar-results
+
+on:
+  pull_request:
+    types: [closed]
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: gitar-results
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Export Gitar reviews and commit them to main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Export on top of the latest main, and retry if another push lands first.
+          for attempt in 1 2 3 4 5; do
+            git fetch -q origin main
+            git reset -q --hard FETCH_HEAD
+            python scripts/gitar_export.py "$GITHUB_REPOSITORY"
+            git add gitar/results
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -qm "gitar: export review results [skip ci]"
+            if git push -q origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 3))
+          done
+          echo "Couldn't push the Gitar results after 5 tries." >&2
+          exit 1
