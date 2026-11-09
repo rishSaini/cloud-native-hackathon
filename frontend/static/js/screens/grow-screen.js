@@ -4,7 +4,7 @@
 
 import { announce } from "../a11y.js";
 import { api } from "../api.js";
-import { h } from "../format.js";
+import { h, twoTone } from "../format.js";
 import { QUESTION_COACH } from "../grow.js";
 
 function sparkline(values) {
@@ -25,7 +25,7 @@ function sparkline(values) {
 export default {
   title: "Your growth",
   async render(main) {
-    main.append(h("h1", { class: "screen-title" }, "Your growth"));
+    main.append(h("h1", { class: "screen-title" }, twoTone("Your ", "growth.")));
     const region = h("div", { class: "stack grow-page" });
     main.append(region);
 

@@ -4,7 +4,7 @@
 import { announce, focusScreen, getPrefs, motionOK } from "../a11y.js";
 import { api } from "../api.js";
 import { accentColor, avatarColor } from "../color.js";
-import { formatDayTime, formatTime, h } from "../format.js";
+import { formatDayTime, formatTime, h, twoTone } from "../format.js";
 import { loadErrorView } from "../load-error.js";
 import { confirmLeave, openBlock, openReport } from "../safety.js";
 import { comfortOf, comfortPill } from "../comfort.js";
@@ -53,7 +53,7 @@ export default {
     const { card, error } = await loadMe();
     if (error) { main.append(loadErrorView()); return; }
 
-    main.append(h("h1", { class: "screen-title" }, "Your break group"));
+    main.append(h("h1", { class: "screen-title" }, twoTone("Your break ", "group.")));
     const region = h("div", { class: "group stack" });
     main.append(region);
 

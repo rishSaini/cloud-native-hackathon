@@ -3,7 +3,7 @@
 // phone stores (localStorage "affinity.prefs"); they never include card text.
 
 import { announce, getPrefs, onPrefsChange, setPrefs, textSizes } from "../a11y.js";
-import { h } from "../format.js";
+import { h, twoTone } from "../format.js";
 import { deleteMyCard, loadMe } from "../store.js";
 import { confirmDelete } from "./card.js";
 
@@ -33,7 +33,7 @@ export default {
     // Display settings work even if the card can't load; only the delete section depends on it.
     let { card, error } = await loadMe();
     const region = h("div", { class: "stack settings" });
-    main.append(h("h1", { class: "screen-title" }, "Settings"), region);
+    main.append(h("h1", { class: "screen-title" }, twoTone("Your ", "settings.")), region);
 
     function paint() {
       const prefs = getPrefs();
