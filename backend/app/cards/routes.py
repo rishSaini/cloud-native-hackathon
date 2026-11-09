@@ -85,8 +85,17 @@ def get_card(attendee_id: str = Depends(current_attendee_id), store=Depends(get_
     return {**card, "displayId": display_id(attendee_id)} if card else None
 
 
+def get_deleter():
+    from app.cards.delete import delete_everywhere
+
+    return delete_everywhere
+
+
 @router.delete("/api/card")
-def delete_card(attendee_id: str = Depends(current_attendee_id), store=Depends(get_store)):
+def delete_card(response: Response, attendee_id: str = Depends(current_attendee_id), store=Depends(get_store),
+                delete_everywhere=Depends(get_deleter)):
+    """R12: deletes the card and the attendee everywhere, and ends the session."""
     store.delete(attendee_id)
-    sync_matching(attendee_id, None)
+    delete_everywhere(attendee_id)
+    response.delete_cookie(COOKIE)
     return None

@@ -8,8 +8,11 @@ from fastapi.staticfiles import StaticFiles
 
 from app import config
 from app.es import get_es
+from app.telemetry.logs import install_log_filters
 
-app = FastAPI(title="TalkScout")
+install_log_filters()
+
+app = FastAPI(title="Affinity")
 
 FRONTEND = Path(__file__).resolve().parents[2] / "frontend" / "index.html"
 STATIC_DIR = FRONTEND.parent / "static"
@@ -46,7 +49,7 @@ def rum_config():
         return Response("// Dash0 RUM is off\n", media_type="text/javascript")
     settings = json.dumps(
         {
-            "serviceName": "talkscout-web",
+            "serviceName": "affinity-web",
             "endpoint": {"url": config.DASH0_RUM_ENDPOINT, "authToken": config.DASH0_RUM_TOKEN},
             "additionalSignalAttributes": {"service.version": config.APP_VERSION},
         }
@@ -84,6 +87,10 @@ from app.board.routes import router as board_router  # noqa: E402
 
 app.include_router(board_router)
 
+from app.ask.routes import router as ask_router  # noqa: E402
+
+app.include_router(ask_router)
+
 from app.placements.routes import router as placements_router  # noqa: E402
 
 app.include_router(placements_router)
@@ -91,3 +98,21 @@ app.include_router(placements_router)
 from app.cards.routes import router as cards_router  # noqa: E402
 
 app.include_router(cards_router)
+
+from app.insights.routes import router as insights_router  # noqa: E402
+
+app.include_router(insights_router)
+
+from app.cards.share import router as share_router  # noqa: E402
+from app.social.routes import router as social_router  # noqa: E402
+
+app.include_router(share_router)
+app.include_router(social_router)
+
+from app.breaks.routes import router as breaks_router  # noqa: E402
+
+app.include_router(breaks_router)
+
+from app.stream.routes import router as stream_router  # noqa: E402
+
+app.include_router(stream_router)

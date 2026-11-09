@@ -14,7 +14,7 @@ from app.telemetry.attrs import set_attrs
 router = APIRouter()
 tracer = trace.get_tracer("affinity")
 reports_total = metrics.get_meter("affinity").create_counter(
-    "affinity_room_reports_total", description="Room reports accepted, by signal"
+    "talkscout.room_reports", description="Room reports accepted, by signal"
 )
 
 Signal = Literal[SIGNALS]  # type: ignore[valid-type]
@@ -40,7 +40,7 @@ def report_room(
     es=Depends(get_es),
 ):
     reporter = attendee_hash(attendee_id)
-    with tracer.start_as_current_span("room.report.received") as span:
+    with tracer.start_as_current_span("talkscout.room.report.received") as span:
         set_attrs(span, room_id=room_id, report_signal=body.signal, attendee_hash=reporter)
         if recently_reported(es, room_id, body.signal, reporter):
             raise HTTPException(

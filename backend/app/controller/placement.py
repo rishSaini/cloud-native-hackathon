@@ -22,12 +22,19 @@ from app.k8s.seats import count_free
 from app.telemetry.attrs import set_attrs
 
 log = logging.getLogger("affinity.controller.placement")
-tracer = trace.get_tracer("affinity")
-meter = metrics.get_meter("affinity")
+tracer = trace.get_tracer("talkscout")
+meter = metrics.get_meter("talkscout")
 placement_duration = meter.create_histogram(
-    "affinity_placement_duration_seconds", unit="s", description="Placement request to bound Pod"
+    "talkscout.search.placement.duration", unit="s", description="Placement request to bound Pod"
 )
-unplaced_gauge = meter.create_gauge("affinity_unplaced_attendees", description="Attendees with no placement right now")
+reroute_duration = meter.create_histogram(
+    "talkscout.affinity_reroute_duration_seconds", unit="s", description="Room change to the attendee's new placement"
+)
+# pod name -> when its reroute started (room change or eviction). Lost on restart: only the metric is.
+reroute_started: dict = {}
+unplaced_gauge = meter.create_gauge(
+    "talkscout.search.unplaced_attendees", description="Attendees with no placement right now"
+)
 
 FULL = "The matching talks at this time are full. Here are the closest ones with space."
 NO_MATCH = "No room at this time has everything you asked for. Here are the closest ones with space."
@@ -67,7 +74,7 @@ def room_of(node: str, slot: str) -> str:
 
 @register("placement")
 def reconcile_placements(ctl) -> None:
-    with tracer.start_as_current_span("placement.reconcile"), pool().connection() as conn:
+    with tracer.start_as_current_span("talkscout.search.placement.reconcile"), pool().connection() as conn:
         requests = conn.execute(
             "SELECT r.attendee_id, r.slot, r.created_at,"
             " COALESCE(array_agg(c.capability) FILTER (WHERE c.capability IS NOT NULL), '{}')"
@@ -88,6 +95,8 @@ def reconcile_placements(ctl) -> None:
             name, key = pod_name(attendee, slot), (attendee, slot)
             pod = pods.get(name)
             if pod is None:
+                if known.get(key, (None,))[0] == "Scheduled":
+                    reroute_started.setdefault(name, datetime.now(UTC))  # evicted: R8 reroute
                 with tracer.start_as_current_span("k8s.pod.create") as span:
                     set_attrs(span, slot_id=slot, attendee_hash=attendee_hash(attendee))
                     body = build_pod(attendee, slot, needs, ranked_nodes(attendee, slot), ctl.namespace)
@@ -106,7 +115,9 @@ def reconcile_placements(ctl) -> None:
 
             node = pod.spec.node_name
             if node:
-                if known.get(key, (None,))[0] != "Scheduled":
+                previous = known.get(key, (None, None))
+                if previous[0] != "Scheduled" or previous[1] != node:
+                    moved = previous[0] == "Scheduled" or name in reroute_started
                     with tracer.start_as_current_span("k8s.pod.bound") as span:
                         set_attrs(span, slot_id=slot, placement_outcome="bound", attendee_hash=attendee_hash(attendee))
                         conn.execute(
@@ -117,10 +128,15 @@ def reconcile_placements(ctl) -> None:
                             (attendee, slot, name, node),
                         )
                         conn.execute(
-                            "INSERT INTO notifications (attendee_id, kind, payload) VALUES (%s, 'placed', %s)",
-                            (attendee, json.dumps({"slot": slot, "node": node, "room": room_of(node, slot)})),
+                            "INSERT INTO notifications (attendee_id, kind, payload) VALUES (%s, %s, %s)",
+                            (attendee, "moved" if moved else "placed",
+                             json.dumps({"slot": slot, "node": node, "room": room_of(node, slot)})),
                         )
-                        placement_duration.record((datetime.now(UTC) - created_at).total_seconds())
+                        started = reroute_started.pop(name, None)
+                        if started:
+                            reroute_duration.record((datetime.now(UTC) - started).total_seconds())
+                        else:
+                            placement_duration.record((datetime.now(UTC) - created_at).total_seconds())
                 continue
 
             unplaced += 1

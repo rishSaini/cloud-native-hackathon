@@ -119,6 +119,7 @@ def test_resolving_captions_marks_the_room_working_and_cleared(es):
 
 def test_cleared_reports_stop_counting():
     now = datetime(2026, 11, 10, 14, 30, tzinfo=UTC)
+
     def minute(ago):
         return {"key": (now - timedelta(minutes=ago)).timestamp() * 1000, "doc_count": 3}
 

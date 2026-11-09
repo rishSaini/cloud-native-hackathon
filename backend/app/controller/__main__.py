@@ -3,12 +3,20 @@
 import logging
 import signal
 
-from app.controller import placement  # noqa: F401  (registers the placement reconciler)
+from app.controller import (
+    cleanup,  # noqa: F401, I001  (deletion cleanup, R12)
+    groups,  # noqa: F401, I001  (break groups)
+    placement,  # noqa: F401  (registers the placement reconciler)
+    reroute,  # noqa: F401, I001  (registers after placement)
+    rooms,  # noqa: F401, I001  (registers first: taints before placing)
+)
 from app.controller.loop import Controller
 from app.k8s.client import core_api, namespace
 
 
 def main() -> None:
+    from app.controller import insights  # noqa: F401  (K17: registers last, after placement)
+
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     logging.getLogger("kubernetes").setLevel(logging.WARNING)
     controller = Controller(core_api(), namespace())

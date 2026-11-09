@@ -86,7 +86,7 @@ export default {
     });
 
     main.append(
-      h("a", { class: "back-link", href: "#/now" }, "← Back to now"),
+      h("a", { class: "back-link", href: "#/home" }, "← Back home"),
       h("h1", { class: "screen-title" }, "Find a talk"),
       form,
       status,

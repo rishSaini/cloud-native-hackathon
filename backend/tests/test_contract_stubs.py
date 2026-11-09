@@ -1,4 +1,3 @@
-import pytest
 from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
 
@@ -43,7 +42,7 @@ def test_attendee_hash_uses_signing_key(monkeypatch):
 
 
 def test_unimplemented_stubs_raise():
-    with pytest.raises(NotImplementedError):
-        load_break_people("brk-tue-1000")
+    # load_break_people is real since R10 (needs Postgres); free_seats since R6.
+    assert callable(load_break_people)
     # free_seats is real since R6 (see test_placement.py); it only needs a client.
     assert callable(free_seats)

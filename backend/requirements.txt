@@ -5,6 +5,9 @@ opentelemetry-distro==0.66b2
 opentelemetry-exporter-otlp==1.45.2
 opentelemetry-instrumentation-fastapi==0.66b2
 opentelemetry-instrumentation-logging==0.66b2
+# K17: Postgres and Kubernetes API calls as CLIENT spans, so Dash0's service map shows them.
+opentelemetry-instrumentation-psycopg==0.66b2
+opentelemetry-instrumentation-urllib3==0.66b2
 kubernetes==37.0.2
 psycopg[binary]==3.3.8
 psycopg-pool==3.3.3

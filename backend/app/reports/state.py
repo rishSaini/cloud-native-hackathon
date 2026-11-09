@@ -146,7 +146,7 @@ def recompute(room: str, now: datetime | None = None, es=None) -> dict:
         **DEFAULT_STATE["signals"], **(prev.get("signals") or {})
     }
     if changed or not prev:
-        with tracer.start_as_current_span("room.state.updated") as span:
+        with tracer.start_as_current_span("talkscout.room.state.updated") as span:
             set_attrs(span, room_id=room)
             es.update(
                 index=m.ROOM_STATE,

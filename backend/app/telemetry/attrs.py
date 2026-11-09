@@ -5,12 +5,21 @@ Call it with dotted names or with underscores in place of dots:
     set_attrs(span, room_id="room-251", search_hits=3)
     set_attrs(span, **{"room.id": "room-251"})
 
-K0 version: works now, so nobody's code has to wait. Unknown keys raise when
-AFFINITY_STRICT_TELEMETRY=1 (tests set it) and are dropped otherwise.
-K4 adds a counter for dropped keys, the logging filter, and the lint test.
+Unknown keys raise when AFFINITY_STRICT_TELEMETRY=1 (tests set it). In
+production they are dropped and counted in affinity_telemetry_dropped_attributes_total,
+so a typo never leaks data and never breaks a request.
+A test (tests/test_telemetry_rules.py) fails if code outside app/telemetry/
+calls span.set_attribute directly.
 """
 
 import os
+
+from opentelemetry import metrics
+
+_dropped = metrics.get_meter("affinity").create_counter(
+    "affinity_telemetry_dropped_attributes_total",
+    description="Span attributes dropped because they are not in the allow-list",
+)
 
 ALLOWED_ATTRIBUTES = frozenset(
     {
@@ -41,5 +50,6 @@ def set_attrs(span, **kw) -> None:
         if name is None:
             if strict:
                 raise UnknownAttributeError(f"span attribute {key!r} is not in the allow-list")
+            _dropped.add(1)  # never record the key itself: it could be the leak
             continue
         span.set_attribute(name, value)
