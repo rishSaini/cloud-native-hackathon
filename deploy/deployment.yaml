@@ -31,7 +31,7 @@ spec:
                 optional: true
           env:
             - name: TEAM_NAME
-              value: "__TEAM__"
+              value: "coffeecon"
             - name: ES_URL
               value: http://elasticsearch:9200
             - name: OTEL_SERVICE_NAME
