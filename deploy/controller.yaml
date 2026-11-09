@@ -1,0 +1,79 @@
+# The placement controller (R5): same image as the app, one replica.
+# Recreate, so two controllers never reconcile at the same time.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller
+  labels:
+    app: controller
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: controller
+  template:
+    metadata:
+      labels:
+        app: controller
+    spec:
+      serviceAccountName: affinity-controller
+      containers:
+        - name: controller
+          image: app
+          workingDir: /app/backend
+          command:
+            - sh
+            - -c
+            - >-
+              if [ -n "$OTEL_EXPORTER_OTLP_ENDPOINT" ];
+              then exec opentelemetry-instrument python -m app.controller;
+              else exec python -m app.controller; fi
+          ports:
+            - name: health
+              containerPort: 8081
+          envFrom:
+            - secretRef:
+                name: app-credentials
+                optional: true
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ES_URL
+              value: http://elasticsearch:9200
+            - name: OTEL_SERVICE_NAME
+              value: affinity-controller
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: http/protobuf
+            - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
+              value: "true"
+            - name: OTEL_LOGS_EXPORTER
+              value: otlp
+          resources:
+            requests:
+              cpu: 100m
+              memory: 192Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop: ["ALL"]

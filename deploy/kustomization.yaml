@@ -9,7 +9,12 @@ resources:
   - service.yaml
   - httproute.yaml
   - elasticsearch.yaml
+  - room-state-cronjob.yaml
+  - rbac.yaml
+  - controller.yaml
+  - postgres.yaml
+  - priorityclasses.yaml
 images:
   - name: app
     newName: ghcr.io/rishsaini/cloud-native-hackathon
-    newTag: 104f1b7
+    newTag: 02a45dc

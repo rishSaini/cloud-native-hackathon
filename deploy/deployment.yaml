@@ -48,6 +48,14 @@ spec:
             # Always sample: callers must not be able to switch tracing off.
             - name: OTEL_TRACES_SAMPLER
               value: always_on
+            # R3: Postgres, from the operator's Secret. optional: the app starts
+            # before the database exists, and /healthz never needs it.
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-app
+                  key: uri
+                  optional: true
           resources:
             requests:
               cpu: 100m

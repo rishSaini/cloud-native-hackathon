@@ -1,0 +1,29 @@
+# R1 spike: one fake Node with 4 seats and one pause Pod that should bind to it.
+# Applied by scripts/kwok-spike.sh, then deleted. Not part of any kustomization.
+apiVersion: v1
+kind: Node
+metadata:
+  name: spike-room
+  annotations:
+    kwok.x-k8s.io/node: fake
+    node.alpha.kubernetes.io/ttl: "0"
+  labels:
+    type: kwok
+    kubernetes.io/hostname: spike-room
+    affinity.dev/kind: talk
+spec:
+  taints:
+    - key: kwok.x-k8s.io/node
+      value: fake
+      effect: NoSchedule
+status:
+  allocatable:
+    cpu: "32"
+    memory: 256Gi
+    pods: "110"
+    affinity.dev/seats: "4"
+  capacity:
+    cpu: "32"
+    memory: 256Gi
+    pods: "110"
+    affinity.dev/seats: "4"
