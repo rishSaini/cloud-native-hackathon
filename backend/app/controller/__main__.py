@@ -5,6 +5,7 @@ import signal
 
 from app.controller import rooms  # noqa: F401, I001  (registers first: taints before placing)
 from app.controller import placement  # noqa: F401  (registers the placement reconciler)
+from app.controller import reroute  # noqa: F401, I001  (registers after placement)
 from app.controller.loop import Controller
 from app.k8s.client import core_api, namespace
 
