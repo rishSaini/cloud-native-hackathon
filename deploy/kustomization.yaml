@@ -11,5 +11,5 @@ resources:
   - elasticsearch.yaml
 images:
   - name: app
-    newName: ghcr.io/OWNER/REPO
-    newTag: latest
+    newName: ghcr.io/rishsaini/cloud-native-hackathon
+    newTag: 39d2b82
