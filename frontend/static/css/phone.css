@@ -1,0 +1,253 @@
+/* Warm paper: the phone screens. Mobile first (375px), then wider. */
+
+body {
+  /* A faint paper grain. Pure CSS so nothing extra loads. */
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(rgba(42, 42, 53, 0.025) 1px, transparent 1px),
+    radial-gradient(rgba(42, 42, 53, 0.02) 1px, transparent 1px);
+  background-size: 7px 7px, 11px 11px;
+  background-position: 0 0, 3px 5px;
+}
+
+.app-shell {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 0 var(--gutter) calc(var(--tabbar-height) + 1.5rem + env(safe-area-inset-bottom));
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 1rem 0 0.5rem;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+.brand-mark { width: 1.75rem; height: 1.75rem; color: var(--coral-text); fill: currentColor; }
+
+.demo-badge, .conn-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.demo-badge { margin-left: auto; background: #FBEBD0; color: var(--warn-text); border: 1px solid #EBD3A8; }
+.demo-badge[hidden], .conn-pill[hidden] { display: none; }
+.conn-pill { background: var(--paper-raised); color: var(--ink-soft); border: 1px solid var(--line); }
+
+main { flex: 1; padding-top: 0.5rem; }
+main:focus { outline: none; }
+
+.app-footer {
+  padding: 2rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Bottom tab bar */
+.tabbar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 0.25rem 0.5rem env(safe-area-inset-bottom);
+  background: var(--paper-raised);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -4px 16px rgba(42, 42, 53, 0.05);
+}
+@media (min-width: 37rem) {
+  .tabbar { bottom: 1rem; border: 1px solid var(--line); border-radius: var(--radius-card); padding-bottom: 0.25rem; }
+}
+.tabbar a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  min-height: 3.5rem;
+  min-width: 44px;
+  border-radius: var(--radius-control);
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.tabbar svg {
+  width: 1.5rem; height: 1.5rem;
+  fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+}
+.tabbar a[aria-current="page"] { color: var(--coral-text); font-weight: 600; }
+.tabbar a[aria-current="page"] svg { stroke-width: 2.1; }
+
+/* Board and staff have no phone chrome. */
+body.no-chrome .tabbar,
+body.no-chrome .app-header { display: none; }
+body.no-chrome .app-shell { max-width: none; padding: 0; }
+body.no-chrome .app-footer { display: none; }
+
+/* Cards */
+.card {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  padding: 1.25rem;
+  box-shadow: 0 1px 2px rgba(42, 42, 53, 0.04), 0 6px 20px rgba(42, 42, 53, 0.05);
+}
+.card + .card { margin-top: 1rem; }
+.stack > * + * { margin-top: 1rem; }
+
+.screen-title { margin-top: 0.5rem; }
+.lede { font-size: 1.125rem; color: var(--ink-soft); }
+.muted { color: var(--ink-soft); }
+
+/* Buttons: one primary action per screen. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  min-width: 44px;
+  padding: 0.75rem 1.25rem;
+  border: 2px solid transparent;
+  border-radius: var(--radius-control);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 150ms var(--ease), transform 150ms var(--ease);
+}
+.btn-primary { background: var(--coral-text); color: #FFFFFF; }
+.btn-primary:hover { background: #9E3C26; }
+.btn-secondary { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn-secondary:hover { background: var(--paper); border-color: var(--ink-soft); }
+.btn-block { width: 100%; }
+.btn:active { transform: translateY(1px); }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: 0.6; cursor: not-allowed; }
+
+/* Form fields */
+.field { display: block; }
+.field label, .field .label { display: block; font-weight: 600; margin-bottom: 0.375rem; }
+.field .hint { display: block; color: var(--ink-soft); font-size: 0.9375rem; margin-bottom: 0.375rem; }
+.input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.75rem 1rem;
+  background: var(--paper-raised);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-control);
+}
+.input:focus-visible { border-color: var(--teal-text); outline-offset: 1px; }
+.input-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.input-row .input { flex: 1 1 12rem; min-width: 0; }
+.input-row .btn { flex: 1 0 auto; }
+
+/* Very narrow (a phone at 200% zoom): the tab bar keeps all five tabs, icons above small labels. */
+@media (max-width: 22rem) {
+  .tabbar { padding-left: 0; padding-right: 0; }
+  .tabbar a { min-width: 0; font-size: 0.6875rem; }
+  .tabbar svg { width: 1.25rem; height: 1.25rem; }
+}
+
+/* Badges: icon + word, never color alone. */
+.badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+.badge svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.badge.ok    { color: var(--ok-text);    border-color: #BFDCCB; background: #EEF6F1; }
+.badge.warn  { color: var(--warn-text);  border-color: #EBD3A8; background: #FBF1DF; }
+.badge.alert { color: var(--alert-text); border-color: #E5BCC4; background: #FAEDEF; }
+
+/* Notices */
+.notice {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+}
+.notice.error { border-color: #E5BCC4; background: #FAEDEF; }
+
+/* Placeholder screens for later build steps */
+.coming-soon { text-align: center; padding: 2.5rem 1.25rem; }
+.coming-soon .decor-star {
+  width: 3.5rem; height: 3.5rem; margin: 0 auto 1rem;
+  color: var(--coral);
+}
+
+/* Search results */
+.results { list-style: none; margin: 1rem 0 0; padding: 0; }
+.results > li + li { margin-top: 0.75rem; }
+.result-title { margin: 0 0 0.25rem; font-size: 1.0625rem; }
+.result-meta { color: var(--ink-soft); font-size: 0.9375rem; margin: 0; }
+.result-abstract {
+  margin: 0.5rem 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--teal-text);
+  font-weight: 600;
+  text-decoration: none;
+}
+.back-link:hover { text-decoration: underline; }
+
+/* Welcome */
+.welcome { padding: 1.5rem 0 0; }
+.welcome h1 { font-size: 2rem; margin-bottom: 0.75rem; }
+.welcome .lede { margin-bottom: 1.75rem; }
+.welcome-note { margin-top: 1rem; text-align: center; font-size: 0.9375rem; }
+.welcome-sky { position: relative; height: 7rem; margin-bottom: 1rem; }
+.welcome-star {
+  position: absolute;
+  width: 0.875rem; height: 0.875rem;
+  border-radius: 50%;
+  background: var(--coral);
+  box-shadow: 0 0 0 6px rgba(232, 115, 90, 0.15);
+  animation: breathe 3.6s var(--ease) infinite alternate;
+}
+.welcome-star.s1 { left: 12%; top: 55%; }
+.welcome-star.s2 { left: 46%; top: 12%; background: var(--teal); box-shadow: 0 0 0 6px rgba(43, 165, 154, 0.15); animation-delay: -1.2s; }
+.welcome-star.s3 { left: 78%; top: 62%; background: var(--warn); box-shadow: 0 0 0 6px rgba(201, 138, 27, 0.15); animation-delay: -2.1s; }
+@keyframes breathe {
+  from { opacity: 0.55; transform: scale(0.9); }
+  to   { opacity: 1;    transform: scale(1.1); }
+}
+
+/* Wider screens */
+@media (min-width: 48rem) {
+  h1 { font-size: 2rem; }
+}
