@@ -4,6 +4,7 @@
 import { announce, focusScreen } from "../a11y.js";
 import { cardFields, livePreview, needsFields } from "../card-form.js";
 import { flipCard } from "../card-view.js";
+import { comfortDial } from "../comfort.js";
 import { h } from "../format.js";
 import { loadErrorView } from "../load-error.js";
 import { deleteMyCard, loadMe, saveMyCard } from "../store.js";
@@ -39,6 +40,7 @@ export default {
       return h("section", { "aria-labelledby": "screen-h" },
         h("h1", { id: "screen-h", class: "screen-title" }, "Your card"),
         me?.displayId ? h("p", { class: "muted" }, "On the big screen you're ", h("code", { class: "display-id" }, me.displayId), ".") : null,
+        comfortDial({ idPrefix: "card-comfort" }),
         flip.el,
         h("div", { class: "card-actions" },
           h("a", { class: "btn btn-primary btn-block", href: "#/card/show" }, "Show across the table"),

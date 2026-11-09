@@ -7,8 +7,9 @@ import { accentColor, avatarColor } from "../color.js";
 import { formatDayTime, formatTime, h } from "../format.js";
 import { loadErrorView } from "../load-error.js";
 import { confirmLeave, openBlock, openReport } from "../safety.js";
+import { comfortOf, comfortPill } from "../comfort.js";
 import { nextBreak } from "../slots.js";
-import { loadMe } from "../store.js";
+import { currentCard, loadMe } from "../store.js";
 import { subscribe } from "../stream.js";
 
 const NO_SHOW_MS = 3 * 60000;
@@ -114,6 +115,7 @@ export default {
           ),
           menuBtn,
         ),
+        comfortPill(m.comfort),
         m.howToTalk ? h("p", { class: "member-talk" }, m.howToTalk) : null,
         h("dl", { class: "card-fields" },
           m.workingOn ? h("div", { class: "card-row" }, h("dt", {}, "Working on"), h("dd", {}, m.workingOn)) : null,
@@ -168,6 +170,7 @@ export default {
           h("h2", { id: "g-h" }, started ? "Your group is meeting now" : "Your table in ", started ? null : countdown),
           h("p", { class: "group-place" }, `${formatTime(group.startsAt)}, ${group.place}`),
           group.myStatus ? h("p", { class: "my-status" }, `You: ${STATUS_WORDS[group.myStatus] || group.myStatus}`) : null,
+          comfortOf(currentCard()) === "recharge" ? h("p", { class: "comfort-pill recharge" }, "You're recharging. Your group sees: listening only, no conversation expected.") : null,
           noShow ? h("p", { class: "notice", role: "status" }, "We're adding someone so nobody waits alone.") : null,
         ),
         h("h2", { class: "section-title" }, `With ${group.members.map((m) => m.name).join(" and ")}`),

@@ -324,7 +324,7 @@ let myGroup = null;
 let groupTimer = null;
 const MEMBER_CARDS = [
   { pronouns: "she/her", howToTalk: "Give me time to finish my words.", workingOn: "making apps start faster", askMeAbout: "checkpoint and restore" },
-  { pronouns: "they/them", howToTalk: "Say your name when you walk up.", workingOn: "testing startup speed in CI", askMeAbout: "flaky benchmarks" },
+  { pronouns: "they/them", howToTalk: "Say your name when you walk up.", workingOn: "testing startup speed in CI", askMeAbout: "flaky benchmarks", comfort: "recharge" },
   { pronouns: "he/him", howToTalk: "I do better one-on-one. Come say hi when it's quieter.", workingOn: "smaller container images", askMeAbout: "distroless images" },
 ];
 
@@ -397,7 +397,9 @@ export const api = {
     myPlacement = { status: "Pending", talk: null, room: null, reason: null, slot, kubectl: `${me.displayId}   Pending   <none>` };
     setTimeout(() => {
       const preferred = preferRoom && state.rooms.find((r) => r.id === preferRoom && r.status === "OPEN");
-      const room = preferred || openRooms()[0];
+      // Low-sensory: prefer a room people reported as quiet.
+      const quiet = myCard?.comfort === "low" && openRooms().find((r) => r.climate?.noise === "quiet");
+      const room = preferred || quiet || openRooms()[0];
       const talk = room && talks.find((t) => t.slot === slot && t.room === room.id);
       if (!room || !talk) {
         myPlacement = {
