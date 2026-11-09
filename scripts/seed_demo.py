@@ -82,17 +82,21 @@ def seed(args) -> None:
         print(f"Dry run: would create {count} attendees {by_cluster}, {with_needs} with needs,"
               f" placement for {args.slot}, RSVP to {args.break_id}.")
         return
-    state = []
-    for person in people:
-        c = Client(args.url, args.rate)
-        me = c.call("POST", "/api/attendees")
-        card = {k: v for k, v in person.items() if k != "cluster"}
-        c.call("PUT", "/api/card", card)
-        c.call("POST", "/api/placements", {"slot": args.slot})
-        c.call("POST", f"/api/breaks/{args.break_id}/rsvp", {"going": True})
-        state.append({"attendeeId": me["attendeeId"], "session": c.session()})
-        print(f"seeded {me['displayId']} ({person['cluster']}, needs={person['needs']})")
-    Path(args.state).write_text(json.dumps(state, indent=1))
+    path = Path(args.state)
+    state = json.loads(path.read_text()) if path.exists() else []
+    try:
+        for person in people:
+            c = Client(args.url, args.rate)
+            me = c.call("POST", "/api/attendees")
+            state.append({"attendeeId": me["attendeeId"], "session": c.session()})
+            path.write_text(json.dumps(state, indent=1))
+            card = {k: v for k, v in person.items() if k != "cluster"}
+            c.call("PUT", "/api/card", card)
+            c.call("POST", "/api/placements", {"slot": args.slot})
+            c.call("POST", f"/api/breaks/{args.break_id}/rsvp", {"going": True})
+            print(f"seeded {me['displayId']} ({person['cluster']}, needs={person['needs']})")
+    finally:
+        path.write_text(json.dumps(state, indent=1))
     print(f"Seeded {len(state)} attendees. Sessions saved to {args.state} for --reset.")
 
 

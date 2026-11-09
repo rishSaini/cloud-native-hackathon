@@ -8,6 +8,7 @@ COPY backend backend
 COPY frontend frontend
 # Kept in the image so a one-off Kubernetes Job can load data into Elasticsearch.
 COPY scripts/ingest.py scripts/ingest.py
+COPY scripts/seed_demo.py scripts/seed_demo.py
 COPY data data
 
 ARG APP_VERSION=dev
