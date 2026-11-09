@@ -1,0 +1,33 @@
+# One-off Job: fills the conference with synthetic attendees for the demo (R13).
+# Not in kustomization.yaml, so Argo CD never owns it (examples/agent-workflows/README.md).
+# It talks to Service app through the public API only. Its state file is lost with the
+# Pod, so to reset, run `scripts/seed_demo.py --reset` from the machine that seeded, or
+# seed from a laptop through `kubectl port-forward svc/app 8080:80` to keep the state.
+# Never reuse a Job name: copy to seed-demo-002 to run again.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-demo-001
+  namespace: team-__TEAM__
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: seed
+          image: ghcr.io/OWNER/REPO:latest
+          imagePullPolicy: Always
+          workingDir: /app
+          command: [python, scripts/seed_demo.py, --url, "http://app", --count, "120", --rate, "10",
+                    --state, /tmp/seed-demo-state.json]
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            seccompProfile: {type: RuntimeDefault}
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 200m, memory: 128Mi}

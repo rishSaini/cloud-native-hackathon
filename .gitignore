@@ -13,3 +13,4 @@ __pycache__/
 node_modules/
 npm-debug.log*
 .DS_Store
+seed-demo-state.json
