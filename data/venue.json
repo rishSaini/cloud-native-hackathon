@@ -1,0 +1,20 @@
+{
+  "note": "Venue for the simulation, from the contract's fixed IDs. Capabilities are opaque codes; their meanings live only in backend/app/cards/capabilities.py.",
+  "slots": ["tue-0900", "tue-1030", "tue-1330", "tue-1430", "tue-1600"],
+  "breaks": ["brk-tue-1000", "brk-tue-1530"],
+  "rooms": [
+    { "id": "room-101", "seats": 40, "caps": ["cap-c1", "cap-c2", "cap-c3"] },
+    { "id": "room-155", "seats": 80, "caps": ["cap-c1", "cap-c2"] },
+    { "id": "room-251", "seats": 120, "caps": ["cap-c1", "cap-c2", "cap-c7"] },
+    { "id": "room-hall-b", "seats": 300, "caps": ["cap-c1", "cap-c2", "cap-c5", "cap-c6"] }
+  ],
+  "tables": [
+    { "id": "tbl-01", "seats": 4, "caps": ["cap-c2", "cap-c4"] },
+    { "id": "tbl-02", "seats": 4, "caps": ["cap-c2"] },
+    { "id": "tbl-03", "seats": 4, "caps": ["cap-c2", "cap-c4"] },
+    { "id": "tbl-04", "seats": 4, "caps": ["cap-c2"] },
+    { "id": "tbl-05", "seats": 4, "caps": [] },
+    { "id": "tbl-06", "seats": 4, "caps": ["cap-c4"] },
+    { "id": "tbl-quiet-window", "seats": 4, "caps": ["cap-c2", "cap-c3", "cap-c4"] }
+  ]
+}

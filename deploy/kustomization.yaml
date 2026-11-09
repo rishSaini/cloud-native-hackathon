@@ -9,6 +9,7 @@ resources:
   - service.yaml
   - httproute.yaml
   - elasticsearch.yaml
+  - priorityclasses.yaml
 images:
   - name: app
     newName: ghcr.io/rishsaini/cloud-native-hackathon
