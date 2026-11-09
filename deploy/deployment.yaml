@@ -42,6 +42,12 @@ spec:
               value: "true"
             - name: OTEL_LOGS_EXPORTER
               value: otlp
+            # K14: the Python SDK may leave metrics off unless this is set (Dash0 agent skills).
+            - name: OTEL_METRICS_EXPORTER
+              value: otlp
+            # Always sample: callers must not be able to switch tracing off.
+            - name: OTEL_TRACES_SAMPLER
+              value: always_on
           resources:
             requests:
               cpu: 100m
