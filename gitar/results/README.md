@@ -7,7 +7,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 
 | Pull requests | Reviewed by Gitar | Dashboard comments | Reviews | Inline comments | Fix commits by Gitar |
 |---|---|---|---|---|---|
-| 11 | 10 | 12 | 0 | 8 | 0 |
+| 12 | 11 | 14 | 0 | 10 | 0 |
 
 ## Pull requests
 
@@ -23,7 +23,8 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 | [#8](https://github.com/rishSaini/cloud-native-hackathon/pull/8) | K2: Synthetic schedule (20 talks on the contract's Nodes) and ingest | open | 0 | 0 | [pr-0008.md](pr-0008.md) |
 | [#9](https://github.com/rishSaini/cloud-native-hackathon/pull/9) | Now screen: placement, status pill and reroute banner (step 3) | open | 1 | 0 | [pr-0009.md](pr-0009.md) |
 | [#10](https://github.com/rishSaini/cloud-native-hackathon/pull/10) | Set up team coffeecon | open | 0 | 0 | [pr-0010.md](pr-0010.md) |
-| [#11](https://github.com/rishSaini/cloud-native-hackathon/pull/11) | K6: Hybrid talk search (semantic + BM25 with RRF) | open | 0 | 0 | no Gitar activity |
+| [#11](https://github.com/rishSaini/cloud-native-hackathon/pull/11) | K6: Hybrid talk search (semantic + BM25 with RRF) | open | 2 | 0 | [pr-0011.md](pr-0011.md) |
+| [#12](https://github.com/rishSaini/cloud-native-hackathon/pull/12) | Big-screen board, part 1 (step 4) | open | 0 | 0 | no Gitar activity |
 
 ## What Gitar flagged
 
@@ -35,3 +36,5 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 - [#6 `frontend/static/js/mock-api.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/6#discussion_r4517782655): 💡 Bug: Mock search with no match reports "4 talks found"
 - [#7 `frontend/static/js/store.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/7#discussion_r4517778603): ⚠️ Bug: saveMyCard re-creates attendee when GET /api/card has no displayId
 - [#9 `frontend/static/js/screens/now.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/9#discussion_r4517847718): ⚠️ Bug: Now's cleanup is lost if the user leaves while refresh() is pending
+- [#11 `backend/app/search/talks.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/11#discussion_r4517960623): ⚠️ Bug: Embedding timeout skips the keyword fallback and returns a 500
+- [#11 `backend/app/search/talks.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/11#discussion_r4517960797): 💡 Quality: "Matched by meaning" badge and highlights never reach the page
