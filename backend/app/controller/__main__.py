@@ -3,8 +3,11 @@
 import logging
 import signal
 
-# Importing a reconciler module registers it.
-from app.controller import cleanup, placement  # noqa: F401
+from app.controller import rooms  # noqa: F401, I001  (registers first: taints before placing)
+from app.controller import placement  # noqa: F401  (registers the placement reconciler)
+from app.controller import reroute  # noqa: F401, I001  (registers after placement)
+from app.controller import groups  # noqa: F401, I001  (break groups)
+from app.controller import cleanup  # noqa: F401, I001  (deletion cleanup, R12)
 from app.controller.loop import Controller
 from app.k8s.client import core_api, namespace
 

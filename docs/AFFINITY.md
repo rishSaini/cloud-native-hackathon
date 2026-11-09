@@ -677,11 +677,12 @@ This is a hackathon project and hasn't had a security review. It should not hold
 
 | Layer | Technology |
 |---|---|
-| Frontend | React, TypeScript, accessible HTML, mobile web |
-| API and controller | Node.js, TypeScript, `@kubernetes/client-node` |
+| Frontend | Accessible HTML, CSS and JavaScript modules (no build step), mobile web |
+| API and controller | Python 3.11, FastAPI, `kubernetes` Python client (`affinity-api`, `affinity-controller`) |
 | Live updates | Server-Sent Events |
-| Search and matching data | Elasticsearch Serverless, `semantic_text`, hybrid search |
-| Private data | Postgres via CloudNativePG |
+| Search and matching data | Elasticsearch 9.5 in the team namespace (StatefulSet, trial license), `semantic_text`, RRF hybrid search, kNN, aggregations, data stream |
+| Embeddings and answers | Elasticsearch inference API: OpenAI `text-embedding-3-small` (`affinity-embed`) and `gpt-4.1-mini` (`affinity-chat`) |
+| Private data | Postgres via CloudNativePG, cards encrypted with AES-256-GCM (`cryptography`) |
 | Scheduling | `kube-scheduler` |
 | Simulation | KWOK |
 | Platform visibility | Radar and Radar MCP |
@@ -689,7 +690,7 @@ This is a hackathon project and hasn't had a security review. It should not hold
 | Telemetry | OpenTelemetry, Dash0, Agent0, Dash0 MCP |
 | Code review | Gitar |
 | QR codes | `qrcode` |
-| Encryption | Node.js `crypto`, AES-256-GCM |
+| Encryption | Python `cryptography`, AES-256-GCM |
 
 ---
 
@@ -697,12 +698,16 @@ This is a hackathon project and hasn't had a security review. It should not hold
 
 ### Elasticsearch: track 4
 
-Elasticsearch is the core data layer.
+Elasticsearch is the core data layer: four indices and a data stream, and every
+non-private read and decision goes through it.
 
-- Hybrid search across talk abstracts and titles
-- Nearest-neighbor candidates for group matching
-- Time-based room reports and aggregations for room state
-- Hosted embeddings through `semantic_text`, so we run no model ourselves
+- **Hybrid search** (`/api/talks/search`): an RRF retriever fuses a `semantic` query on `abstract_semantic` with BM25 on titles and abstracts. "make my apps boot quicker" finds "Cold starts are a choice" with no shared words; hits found only by meaning get a "Matched by meaning" badge.
+- **ES drives Kubernetes scheduling**: `rank_talks_for` turns hybrid results into preferred node affinity weights (100 → 1) for each attendee Pod, and skips rooms whose `room-state` is closed.
+- **kNN for people**: `similarity_matrix` runs one nearest-neighbour query per person on `interests_semantic` in a single `msearch`; the group solver uses it.
+- **Live room state from aggregations**: room reports go to the `room-reports` data stream (2-day ILM); a terms × per-minute `date_histogram` aggregation with exponential decay and hysteresis turns them into `room-state`. Three "full" reports flip a room at once; it clears by itself about 11 minutes later.
+- **RAG** (`/api/ask`): the top 5 hybrid results ground a `gpt-4.1-mini` completion called through the ES inference API; answers cite talk IDs.
+- **Hosted models only**: embeddings and completions run through ES inference endpoints, so we run no model pod.
+- **Privacy by mapping**: `people`, `room-state`, `incidents` and `room-reports` use strict mappings, so ES rejects any field such as a name.
 
 ### Radar: track 3
 
@@ -717,19 +722,21 @@ Elasticsearch is the core data layer.
 
 ### Dash0: track 2
 
-- OpenTelemetry instrumentation across the API, controller and solver
-- Traces, logs and metrics, with real-user monitoring on the frontend
-- Agent0 or the Dash0 MCP used to find and fix a real problem
-- A live SLO dashboard for placement speed and for the people left unplaced
+- Two services, `affinity-api` and `affinity-controller`, instrumented with OpenTelemetry (traces, metrics, logs); spans from the contract (`search.hybrid`, `room.state.updated`, `placement.reconcile`, `solver.run`, `ask.rag`, …), and the Elasticsearch client's own spans.
+- A span-attribute allow-list (`app.telemetry.attrs.set_attrs`) and an access-log filter keep card data and typed text out of telemetry; a test fails on any direct `set_attribute`.
+- Real-user monitoring through `/rum.js` (`affinity-web`).
+- SLO checks and the "Affinity live" dashboard in `observability/dash0/`; `OTEL_METRICS_EXPORTER=otlp` set after Dash0's agent skills showed Python may leave metrics off.
+- Agent0 or the Dash0 MCP used to find and fix a real problem (below).
 
 > Real issue found and fixed: `<WRITE THIS AFTER IT HAPPENS>`
 
 ### Gitar: track 1
 
 - Every feature lands through a reviewed pull request.
-- Custom review instructions live in `.gitar/review/`.
-- Repository rules cover repeated workflows.
-- Auto-apply is used to fix real CI failures.
+- Custom review instructions in `.gitar/review/`: privacy, time zones, accessibility and project conventions.
+- Repository rules in `.gitar/rules/`: cluster budget, tests for routes, ES mappings and Kubernetes object privacy.
+- CI runs ruff and coverage, so Gitar has real failures to diagnose; auto-apply is used on them.
+- Every Gitar review is exported to `gitar/results/` (`scripts/gitar_export.py`, workflow `gitar-results`); demo notes in `gitar/results/HIGHLIGHTS.md`.
 
 Example `.gitar/review/privacy.md`:
 
@@ -1117,16 +1124,16 @@ Update this table honestly before submission.
 |---|---|
 | Card creation and encryption | Not started |
 | QR sharing | Not started |
-| Talk search | Not started |
+| Talk search | Built: hybrid RRF search, tested on local ES (K6); Ask Affinity RAG with citations (K13) |
 | Scheduler placement with seat limits | Not started |
 | Rerouting | Not started |
-| Group formation | Not started |
-| Room reports | Not started |
-| Staff incidents | Not started |
-| Live board | Not started |
-| OpenTelemetry and Dash0 SLOs | Not started |
+| Group formation | Solver built and tested (K3: 200 people in about 1 s, nobody alone); break flow R10 pending |
+| Room reports | Built: data stream, ES rate limit, decaying room state (K9, K10), tested on local ES |
+| Staff incidents | Built: open, acknowledge, resolve (K11), tested on local ES |
+| Live board | Built: one msearch, no identifiers, 6–7 ms locally (K12) |
+| OpenTelemetry and Dash0 SLOs | Instrumented (K4); SLO checks and dashboard written (K14), not yet imported into Dash0 |
 | Radar AI investigation | Not started |
-| Gitar review rules | Not started |
+| Gitar review rules | Built (K5); reviews exported to `gitar/results/` |
 | Screen reader testing | Not started |
 
 ---

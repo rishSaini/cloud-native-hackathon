@@ -35,3 +35,8 @@ export function h(tag, attrs = {}, ...children) {
   }
   return el;
 }
+
+/** A headline with one italic serif accent phrase, e.g. "People you've" + "met." */
+export function twoTone(plain, accent, after = "") {
+  return [plain, h("span", { class: "accent-word" }, accent), after].filter((x) => x !== "");
+}
