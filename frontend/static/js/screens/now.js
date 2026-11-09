@@ -10,6 +10,7 @@ import { loadMe } from "../store.js";
 import { isLive, POLL_MS, subscribe } from "../stream.js";
 import { badgeList } from "./talks.js";
 import { climateView } from "../climate.js";
+import { comfortDial } from "../comfort.js";
 
 const STEPS = [
   { key: "Pending", word: "Finding you a seat" },
@@ -46,6 +47,8 @@ export default {
       ));
       return;
     }
+
+    main.insertBefore(comfortDial({ compact: true, idPrefix: "now-comfort" }), region);
 
     // ---- data ----
     function statusOf(p) {
