@@ -124,8 +124,14 @@ export const api = {
     return data?.group ?? data;
   }),
   leaveGroup: withFallback("leaveGroup", (groupId) => request("POST", `/api/groups/${enc(groupId)}/leave`, {})),
-  proposeConnection: withFallback("proposeConnection", (displayId) =>
-    request("POST", "/api/connections", { displayId })),
+  // groupId lets the server record where you met. Saved only when both people propose it.
+  proposeConnection: withFallback("proposeConnection", (displayId, groupId = null) =>
+    request("POST", "/api/connections", groupId ? { displayId, groupId } : { displayId })),
+  // Not in the task plans yet (confirm with Rishabh): people you've met, both agreed.
+  connections: withFallback("connections", async () => {
+    const data = await request("GET", "/api/connections");
+    return Array.isArray(data) ? data : data?.connections || [];
+  }),
   block: withFallback("block", (blockedDisplayId) => request("POST", "/api/blocks", { blockedDisplayId })),
   safetyReport: withFallback("safetyReport", (report) => request("POST", "/api/safety-reports", report)),
 

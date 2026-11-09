@@ -171,6 +171,12 @@ function tick() {
 
 // ---- demo controls (board shortcuts drive these) ----
 export const demo = {
+  /** Everyone in the phone's group arrives now (for rehearsing "Exchange stars"). */
+  everyoneHere() {
+    if (!myGroup) return;
+    myGroup.members.forEach((m) => { m.status = "here"; });
+    emit("group", { group: groupCopy() });
+  },
   /** Forms the phone's group now; startedMinutesAgo > 3 shows the no-show message. */
   formMyGroup(opts = {}) { formMyGroup("brk-tue-1530", opts); },
   closeBusiest() {
@@ -321,6 +327,7 @@ function placementFor(talk, room, status) {
 
 // ---- the phone's own break group ----
 let myGroup = null;
+const myConnections = [];
 let groupTimer = null;
 const MEMBER_CARDS = [
   { pronouns: "she/her", howToTalk: "Give me time to finish my words.", workingOn: "making apps start faster", askMeAbout: "checkpoint and restore" },
@@ -338,6 +345,8 @@ function formMyGroup(breakId, { startedMinutesAgo = null } = {}) {
     breakId: breakId || "brk-tue-1530",
     tableId: "tbl-quiet-window",
     place: "the quiet table by the window",
+    landmark: "Next to the red couch",
+    directions: "Second floor lounge, past the coffee bar, by the tall windows.",
     startsAt,
     opener: "How do you test startup speed?",
     myStatus: null,
@@ -349,12 +358,18 @@ function formMyGroup(breakId, { startedMinutesAgo = null } = {}) {
     })),
   };
   emit("group", { group: groupCopy() });
-  // One person arrives a little later; the other doesn't, to show the no-show rule.
+  // One person arrives a little later; the second later still (or never, for a group that
+  // already started, to show the no-show rule).
   setTimeout(() => {
     if (!myGroup) return;
     myGroup.members[0].status = "here";
     emit("group", { group: groupCopy() });
   }, 12000);
+  if (startedMinutesAgo == null) setTimeout(() => {
+    if (!myGroup) return;
+    myGroup.members[1].status = "here";
+    emit("group", { group: groupCopy() });
+  }, 25000);
 }
 
 function groupCopy() {
@@ -445,9 +460,24 @@ export const api = {
     }
     return { ok: true };
   },
-  async proposeConnection(displayId) {
+  async proposeConnection(displayId, groupId = null) {
     await sleep(300);
+    // In the mock the other person agrees a moment later.
+    const member = myGroup?.members.find((m) => m.displayId === displayId);
+    setTimeout(() => {
+      if (!member || myConnections.some((c) => c.displayId === displayId)) return;
+      myConnections.push({
+        displayId, name: member.name, pronouns: member.pronouns, workingOn: member.workingOn,
+        place: myGroup?.place || "a break table", landmark: myGroup?.landmark || null,
+        metAt: myGroup?.startsAt || new Date().toISOString(), groupId,
+      });
+      emit("group", { group: groupCopy() });
+    }, 1500);
     return { displayId, status: "pending" };
+  },
+  async connections() {
+    await sleep(150);
+    return myConnections.map((c) => ({ ...c }));
   },
   async block() {
     await sleep(300);
