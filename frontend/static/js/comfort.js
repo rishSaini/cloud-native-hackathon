@@ -11,7 +11,7 @@ import { currentCard, saveMyCard } from "./store.js";
 export const COMFORT = [
   { id: "high", label: "High energy", short: "Up for anything", detail: "Bigger break groups and lively talks.", icon: '<path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/>' },
   { id: "steady", label: "Steady", short: "The usual", detail: "A good mix. This is the default.", icon: '<circle cx="12" cy="12" r="8"/><path d="M8 12h8"/>' },
-  { id: "low", label: "Low sensory", short: "Quiet please", detail: "Quieter rooms, two-person tables, and calm colors on your phone. Private: your group isn't told.", icon: '<path d="M5 19c0-7 5-12 14-14-1 9-6 14-13 14"/><path d="M5 19c3-3 6-5 9-6"/>' },
+  { id: "low", label: "Low key", short: "Quiet please", detail: "Quieter rooms, smaller tables, and calmer colors on your phone. Private: your group isn't told.", icon: '<path d="M5 19c0-7 5-12 14-14-1 9-6 14-13 14"/><path d="M5 19c3-3 6-5 9-6"/>' },
   { id: "recharge", label: "Recharging", short: "Listening only", detail: "You keep your seat. Your group sees: listening only, no conversation expected.", icon: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10.5v3M6.5 10v4"/>' },
 ];
 
