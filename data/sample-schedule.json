@@ -1,0 +1,294 @@
+{
+  "note": "Synthetic schedule for development and demos. Not real KubeCon data.",
+  "timezone": "America/Denver",
+  "slots": [
+    {
+      "id": "tue-0900",
+      "starts_at": "2026-11-10T09:00:00-07:00"
+    },
+    {
+      "id": "tue-1030",
+      "starts_at": "2026-11-10T10:30:00-07:00"
+    },
+    {
+      "id": "tue-1330",
+      "starts_at": "2026-11-10T13:30:00-07:00"
+    },
+    {
+      "id": "tue-1430",
+      "starts_at": "2026-11-10T14:30:00-07:00"
+    },
+    {
+      "id": "tue-1600",
+      "starts_at": "2026-11-10T16:00:00-07:00"
+    }
+  ],
+  "rooms": [
+    "room-101",
+    "room-155",
+    "room-251",
+    "room-hall-b"
+  ],
+  "talks": [
+    {
+      "id": "t01",
+      "slot": "tue-0900",
+      "room": "room-101",
+      "node": "tue-0900-room-101",
+      "starts_at": "2026-11-10T09:00:00-07:00",
+      "track": "Accessibility",
+      "title": "Captions, quiet rooms and the hallway track",
+      "abstract": "What deaf, autistic and first-time attendees need from a conference, and how organizers can provide it without singling anyone out.",
+      "speakers": [
+        "Sample Speaker 01 (Example Co)"
+      ]
+    },
+    {
+      "id": "t02",
+      "slot": "tue-0900",
+      "room": "room-155",
+      "node": "tue-0900-room-155",
+      "starts_at": "2026-11-10T09:00:00-07:00",
+      "track": "Observability",
+      "title": "OpenTelemetry from zero to useful",
+      "abstract": "Add traces, metrics and logs to an existing service in one afternoon, and find your first real bottleneck.",
+      "speakers": [
+        "Sample Speaker 02 (Example Co)"
+      ]
+    },
+    {
+      "id": "t03",
+      "slot": "tue-0900",
+      "room": "room-251",
+      "node": "tue-0900-room-251",
+      "starts_at": "2026-11-10T09:00:00-07:00",
+      "track": "Security",
+      "title": "Signed images and SBOMs without slowing developers down",
+      "abstract": "Sign container images, publish SBOMs and enforce both at admission time, with a rollout plan that teams accept.",
+      "speakers": [
+        "Sample Speaker 03 (Example Co)"
+      ]
+    },
+    {
+      "id": "t04",
+      "slot": "tue-0900",
+      "room": "room-hall-b",
+      "node": "tue-0900-room-hall-b",
+      "starts_at": "2026-11-10T09:00:00-07:00",
+      "track": "Performance",
+      "title": "Cold starts are a choice",
+      "abstract": "Lazy image pulling, slimmer images and tuned startup probes cut pod start time from minutes to seconds.",
+      "speakers": [
+        "Sample Speaker 04 (Example Co)"
+      ]
+    },
+    {
+      "id": "t05",
+      "slot": "tue-1030",
+      "room": "room-101",
+      "node": "tue-1030-room-101",
+      "starts_at": "2026-11-10T10:30:00-07:00",
+      "track": "Networking",
+      "title": "eBPF for people who are not kernel developers",
+      "abstract": "What eBPF can see inside your cluster, explained with diagrams instead of C code.",
+      "speakers": [
+        "Sample Speaker 05 (Example Co)"
+      ]
+    },
+    {
+      "id": "t06",
+      "slot": "tue-1030",
+      "room": "room-155",
+      "node": "tue-1030-room-155",
+      "starts_at": "2026-11-10T10:30:00-07:00",
+      "track": "Platform engineering",
+      "title": "Platform engineering for teams of five",
+      "abstract": "A small team's path to golden paths, self-service environments and fewer support tickets.",
+      "speakers": [
+        "Sample Speaker 06 (Example Co)"
+      ]
+    },
+    {
+      "id": "t07",
+      "slot": "tue-1030",
+      "room": "room-251",
+      "node": "tue-1030-room-251",
+      "starts_at": "2026-11-10T10:30:00-07:00",
+      "track": "Cost",
+      "title": "Cutting your cloud bill with right-sized requests",
+      "abstract": "Measure real CPU and memory use, set requests that fit, and stop paying for idle capacity.",
+      "speakers": [
+        "Sample Speaker 07 (Example Co)"
+      ]
+    },
+    {
+      "id": "t08",
+      "slot": "tue-1030",
+      "room": "room-hall-b",
+      "node": "tue-1030-room-hall-b",
+      "starts_at": "2026-11-10T10:30:00-07:00",
+      "track": "AI",
+      "title": "Serving LLMs on Kubernetes without wasting GPUs",
+      "abstract": "Batching, GPU sharing and scale-to-zero patterns that keep expensive accelerators busy.",
+      "speakers": [
+        "Sample Speaker 08 (Example Co)"
+      ]
+    },
+    {
+      "id": "t09",
+      "slot": "tue-1330",
+      "room": "room-101",
+      "node": "tue-1330-room-101",
+      "starts_at": "2026-11-10T13:30:00-07:00",
+      "track": "Community",
+      "title": "Your first pull request to Kubernetes",
+      "abstract": "Find a good first issue, get a reviewer's attention and land your first contribution this week.",
+      "speakers": [
+        "Sample Speaker 09 (Example Co)"
+      ]
+    },
+    {
+      "id": "t10",
+      "slot": "tue-1330",
+      "room": "room-155",
+      "node": "tue-1330-room-155",
+      "starts_at": "2026-11-10T13:30:00-07:00",
+      "track": "Operations",
+      "title": "GitOps at scale: lessons from a thousand clusters",
+      "abstract": "What broke when one team moved every cluster to Argo CD, and the guardrails that fixed it.",
+      "speakers": [
+        "Sample Speaker 10 (Example Co)"
+      ]
+    },
+    {
+      "id": "t11",
+      "slot": "tue-1330",
+      "room": "room-251",
+      "node": "tue-1330-room-251",
+      "starts_at": "2026-11-10T13:30:00-07:00",
+      "track": "Core Kubernetes",
+      "title": "How kube-scheduler picks a node",
+      "abstract": "Filters, scores, affinity, taints and extended resources, explained with live examples.",
+      "speakers": [
+        "Sample Speaker 11 (Example Co)"
+      ]
+    },
+    {
+      "id": "t12",
+      "slot": "tue-1330",
+      "room": "room-hall-b",
+      "node": "tue-1330-room-hall-b",
+      "starts_at": "2026-11-10T13:30:00-07:00",
+      "track": "Security",
+      "title": "Zero-trust networking with a service mesh",
+      "abstract": "Mutual TLS, identity-based policy, and what to do when certificates expire at 3 AM.",
+      "speakers": [
+        "Sample Speaker 12 (Example Co)"
+      ]
+    },
+    {
+      "id": "t13",
+      "slot": "tue-1430",
+      "room": "room-101",
+      "node": "tue-1430-room-101",
+      "starts_at": "2026-11-10T14:30:00-07:00",
+      "track": "Scaling",
+      "title": "Autoscaling explained for first-timers",
+      "abstract": "A beginner's tour of the Horizontal Pod Autoscaler, the Vertical Pod Autoscaler and KEDA, with one small demo service.",
+      "speakers": [
+        "Sample Speaker 13 (Example Co)"
+      ]
+    },
+    {
+      "id": "t14",
+      "slot": "tue-1430",
+      "room": "room-155",
+      "node": "tue-1430-room-155",
+      "starts_at": "2026-11-10T14:30:00-07:00",
+      "track": "Data",
+      "title": "Postgres on Kubernetes in production",
+      "abstract": "Backups, failover and upgrades with an operator, and the mistakes to avoid.",
+      "speakers": [
+        "Sample Speaker 14 (Example Co)"
+      ]
+    },
+    {
+      "id": "t15",
+      "slot": "tue-1430",
+      "room": "room-251",
+      "node": "tue-1430-room-251",
+      "starts_at": "2026-11-10T14:30:00-07:00",
+      "track": "Observability",
+      "title": "Tracing one slow request across forty services",
+      "abstract": "Follow a slow checkout through a real trace, and learn which spans actually matter.",
+      "speakers": [
+        "Sample Speaker 15 (Example Co)"
+      ]
+    },
+    {
+      "id": "t16",
+      "slot": "tue-1430",
+      "room": "room-hall-b",
+      "node": "tue-1430-room-hall-b",
+      "starts_at": "2026-11-10T14:30:00-07:00",
+      "track": "Developer experience",
+      "title": "Faster CI with throwaway clusters",
+      "abstract": "Create a short-lived cluster for every pull request, and keep test runs under ten minutes.",
+      "speakers": [
+        "Sample Speaker 16 (Example Co)"
+      ]
+    },
+    {
+      "id": "t17",
+      "slot": "tue-1600",
+      "room": "room-101",
+      "node": "tue-1600-room-101",
+      "starts_at": "2026-11-10T16:00:00-07:00",
+      "track": "Accessibility",
+      "title": "Accessible dashboards for screen reader users",
+      "abstract": "Keep operational dashboards usable without sight, color or a mouse.",
+      "speakers": [
+        "Sample Speaker 17 (Example Co)"
+      ]
+    },
+    {
+      "id": "t18",
+      "slot": "tue-1600",
+      "room": "room-155",
+      "node": "tue-1600-room-155",
+      "starts_at": "2026-11-10T16:00:00-07:00",
+      "track": "Networking",
+      "title": "Gateway API: multi-cluster traffic, boring on purpose",
+      "abstract": "Route traffic across clusters with the Gateway API, and keep failover predictable.",
+      "speakers": [
+        "Sample Speaker 18 (Example Co)"
+      ]
+    },
+    {
+      "id": "t19",
+      "slot": "tue-1600",
+      "room": "room-251",
+      "node": "tue-1600-room-251",
+      "starts_at": "2026-11-10T16:00:00-07:00",
+      "track": "Reliability",
+      "title": "Chaos engineering on a budget",
+      "abstract": "Run safe failure experiments in staging, and turn what breaks into runbooks.",
+      "speakers": [
+        "Sample Speaker 19 (Example Co)"
+      ]
+    },
+    {
+      "id": "t20",
+      "slot": "tue-1600",
+      "room": "room-hall-b",
+      "node": "tue-1600-room-hall-b",
+      "starts_at": "2026-11-10T16:00:00-07:00",
+      "track": "Data",
+      "title": "Vector search next to your services with Elasticsearch",
+      "abstract": "Run hybrid keyword and semantic search inside your cluster, and size it for production.",
+      "speakers": [
+        "Sample Speaker 20 (Example Co)"
+      ]
+    }
+  ]
+}
