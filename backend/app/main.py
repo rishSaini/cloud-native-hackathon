@@ -112,3 +112,12 @@ def rum_config():
 def index():
     # The page prints the version, so you can check which commit is live.
     return FRONTEND.read_text().replace("{{VERSION}}", config.APP_VERSION)
+
+
+from app.placements.routes import router as placements_router  # noqa: E402
+
+app.include_router(placements_router)
+
+from app.cards.routes import router as cards_router  # noqa: E402
+
+app.include_router(cards_router)
