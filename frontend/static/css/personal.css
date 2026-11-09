@@ -433,3 +433,27 @@ body:not(.on-sky) .greeting-line .accent-word { font-family: var(--font-italic);
 @media (min-width: 64rem) {
   .chat-layout { grid-template-columns: minmax(0, 1fr) 22rem; gap: 3rem; }
 }
+
+/* Laptop nav: the centered pill. Matches the specificity of the editorial layer's
+   `body:not(.on-sky):not(.no-chrome) .tabbar` rail rule so the pill wins. */
+@media (min-width: 64rem) {
+  body:not(.on-sky):not(.no-chrome) .tabbar {
+    position: absolute;
+    top: calc(24px + 18px); bottom: auto;
+    left: 50%; right: auto;
+    transform: translateX(-50%);
+    width: auto; height: auto;
+    display: flex; flex-direction: row; align-items: center; justify-content: center;
+    gap: 2px;
+    padding: 4px;
+    border: 1px solid var(--divider);
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: inset 0 1px 0 #FFFFFF;
+  }
+  body:not(.on-sky):not(.no-chrome) .tabbar a { min-height: 36px; padding: 0 1.125rem; border-bottom: 0; }
+}
+@media (min-width: 64rem) and (max-width: 80rem) {
+  body:not(.on-sky):not(.no-chrome) .tabbar a { padding: 0 0.75rem; }
+  body:not(.on-sky) .app-header .demo-badge { display: none; }
+}
