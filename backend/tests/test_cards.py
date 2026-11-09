@@ -50,6 +50,13 @@ def env(monkeypatch):
     monkeypatch.setattr("app.search.people.upsert_person", lambda aid, text: calls.append(("upsert", aid, text)))
     monkeypatch.setattr("app.search.people.delete_person", lambda aid: calls.append(("delete", aid)))
     app.dependency_overrides[get_store] = lambda: store
+    from functools import partial
+
+    from app.cards.delete import delete_everywhere
+    from app.cards.routes import get_deleter
+
+    app.dependency_overrides[get_deleter] = lambda: partial(
+        delete_everywhere, postgres=lambda aid: calls.append(("postgres", aid)))
     yield TestClient(app), store, calls
     app.dependency_overrides.clear()
 
@@ -131,9 +138,9 @@ def test_withdrawing_consent_or_deleting_removes_the_person(env):
     assert calls[-1] == ("delete", attendee)
     client.put("/api/card", json=CARD)
     assert client.delete("/api/card").status_code == 200
-    assert calls[-1] == ("delete", attendee)
+    assert calls[-2:] == [("delete", attendee), ("postgres", attendee)]  # R12: ES, then Postgres
     assert attendee not in store.rows
-    assert client.get("/api/card").json() is None
+    assert client.get("/api/card").status_code == 401  # R12: the session ends
 
 
 def test_unknown_need_is_rejected(env):
