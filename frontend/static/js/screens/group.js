@@ -8,6 +8,7 @@ import { formatDayTime, formatTime, h } from "../format.js";
 import { loadErrorView } from "../load-error.js";
 import { confirmLeave, openBlock, openReport } from "../safety.js";
 import { comfortOf, comfortPill } from "../comfort.js";
+import { openerView, openReflection, turnRound } from "../grow.js";
 import { nextBreak } from "../slots.js";
 import { currentCard, loadMe } from "../store.js";
 import { subscribe } from "../stream.js";
@@ -69,6 +70,14 @@ export default {
     let busy = false;
     let connected = new Set();
     let exchanging = false;
+    let growthLevel = 1;
+    let reflected = false;
+    let round = null; // the turn-taking round, kept across repaints for this group
+    const roundFor = (g) => {
+      if (!round || round.groupId !== g.id) { round?.cleanup(); round = { ...turnRound(g), groupId: g.id }; }
+      return round.el;
+    };
+    api.growth().then((g) => { growthLevel = g?.level || 1; if (group) paint(); }).catch(() => {});
     let notice = null;
     const brk = nextBreak();
 
@@ -211,14 +220,25 @@ export default {
           comfortOf(currentCard()) === "recharge" ? h("p", { class: "comfort-pill recharge" }, "You're recharging. Your group sees: listening only, no conversation expected.") : null,
           noShow ? h("p", { class: "notice merge-glow", role: "status" }, "Merging your group so nobody waits alone…") : null,
         ),
+        roundFor(group),
         everyoneHere ? exchangeView() : null,
+        h("section", { class: "card reflect-card", "aria-labelledby": "rf-cta" },
+          h("h2", { id: "rf-cta" }, reflected ? "Thanks for reflecting" : "After the break: 30 seconds for you"),
+          h("p", { class: "muted" }, reflected ? "Your next challenge is waiting in Grow." : "A quick, private check-in helps you grow, and tells us if everyone got a turn."),
+          reflected
+            ? h("a", { class: "btn btn-secondary btn-block", href: "#/grow" }, "See your growth")
+            : h("button", { type: "button", class: "btn btn-secondary btn-block", "data-key": "reflect", onclick: () => openReflection({
+              groupId: group.id, hosted: round?.hostIsMe?.() || false,
+              onDone: (res) => { reflected = true; growthLevel = res?.growth?.level || growthLevel; paint(); },
+            }) }, "How did that go?"),
+        ),
       );
 
       return h("section", { class: "stack" },
         arrived ? atTable : navigation,
         h("h2", { class: "section-title" }, arrived ? `With ${group.members.map((m) => m.name).join(" and ")}` : "Read their cards on the way"),
         h("ul", { class: "members" }, group.members.map(memberCard)),
-        group.opener ? h("p", { class: "opener" }, h("span", { class: "opener-label" }, "Try asking: "), group.opener) : null,
+        openerView(group, growthLevel),
         h("div", { class: "group-safety" },
           h("button", { type: "button", class: "btn btn-secondary", "data-key": "report", onclick: () => openReport({ groupId: group.id }) }, "Report a concern"),
           h("button", { type: "button", class: "btn btn-quiet-ink", "data-key": "leave", onclick: () => confirmLeave(leave) }, "Leave group"),
@@ -312,7 +332,7 @@ export default {
 
     function setGroup(next, { fromEvent = false } = {}) {
       const isNew = next && (!group || group.id !== next.id);
-      if (isNew || (!next && group)) notice = null; // notices belong to the group they were about
+      if (isNew || (!next && group)) { notice = null; reflected = false; } // per-group state
       group = next || null;
       if (isNew && fromEvent) {
         announce(`Your break group is ready: ${formatTime(group.startsAt)}, ${group.place}, with ${group.members.map((m) => m.name).join(" and ")}.`);
@@ -346,6 +366,6 @@ export default {
     await refresh();
     refreshConnections();
     const connPoll = setInterval(() => { if (exchanging) refreshConnections(); }, 3000);
-    return () => { clearInterval(tick); clearInterval(connPoll); unsub(); };
+    return () => { clearInterval(tick); clearInterval(connPoll); unsub(); round?.cleanup(); };
   },
 };

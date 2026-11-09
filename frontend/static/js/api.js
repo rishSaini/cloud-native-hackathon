@@ -132,6 +132,11 @@ export const api = {
     const data = await request("GET", "/api/connections");
     return Array.isArray(data) ? data : data?.connections || [];
   }),
+  // Grow (not in the task plans yet; confirm with Rishabh). Reflections are private to the person;
+  // only an anonymous "felt heard" share reaches the board.
+  reflect: withFallback("reflect", (reflection) => request("POST", "/api/reflections", reflection)),
+  growth: withFallback("growth", () => request("GET", "/api/growth")),
+  startedOnOwn: withFallback("startedOnOwn", () => request("POST", "/api/growth/independent", {})),
   block: withFallback("block", (blockedDisplayId) => request("POST", "/api/blocks", { blockedDisplayId })),
   safetyReport: withFallback("safetyReport", (report) => request("POST", "/api/safety-reports", report)),
 

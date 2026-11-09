@@ -127,6 +127,7 @@ function snapshot() {
     attendees: state.attendees.map((a) => ({ ...a })),
     groups: state.groups.map((g) => ({ ...g, members: [...g.members] })),
     alone: state.alone,
+    feltHeard: heardTotal ? Math.round((heardYes / heardTotal) * 100) : state.feltHeard ?? null,
     events: state.events.slice(-12),
   };
 }
@@ -218,6 +219,7 @@ export const demo = {
   finale() {
     formGroups(true);
     state.alone = 0;
+    state.feltHeard = 94; // rehearsal value: everyone reflected after the finale break
     emit("board", snapshot());
   },
   reset() {
@@ -383,6 +385,36 @@ function groupCopy() {
   return myGroup ? { ...myGroup, members: myGroup.members.map((m) => ({ ...m })) } : null;
 }
 
+// ---- Grow: private reflections, an adaptive comfort ladder, independence ----
+// Like reinforcement: a good, brave break steps you up a rung; a hard one steps you back,
+// kindly. The top rungs are doing it without the app.
+const LADDER = [
+  { level: 1, title: "Join a matched table", detail: "We pick the people and suggest the first question." },
+  { level: 2, title: "Ask the first question", detail: "We give a hint; you phrase it your way." },
+  { level: 3, title: "Host a round", detail: "Make sure everyone at the table gets a turn." },
+  { level: 4, title: "Start one on your own", detail: "Walk up to someone without a match. You've got this." },
+];
+const myGrowth = { level: 1, reflections: [], startedOnOwn: 0, wins: [] };
+let heardYes = 0, heardTotal = 0;
+
+function nextChallenge() {
+  const next = LADDER.find((r) => r.level === Math.min(4, myGrowth.level + (myGrowth.level === 4 ? 0 : 0))) || LADDER[0];
+  if (myGrowth.level >= 4) return { title: "Start a conversation on your own", detail: "No match needed. Then tell us here so you can see how far you've come." };
+  return { title: LADDER[myGrowth.level]?.title || next.title, detail: LADDER[myGrowth.level]?.detail || next.detail };
+}
+
+function growthCopy() {
+  return {
+    level: myGrowth.level,
+    ladder: LADDER,
+    nextChallenge: nextChallenge(),
+    comfortTrend: myGrowth.reflections.map((r) => r.comfort),
+    wins: [...myGrowth.wins].reverse(),
+    startedOnOwn: myGrowth.startedOnOwn,
+    breaks: myGrowth.reflections.length,
+  };
+}
+
 // ---- API methods (same names and shapes as api.js) ----
 export const api = {
   async createAttendee() {
@@ -481,6 +513,32 @@ export const api = {
       emit("group", { group: groupCopy() });
     }, 1500);
     return { displayId, status: "pending" };
+  },
+  async reflect(r) {
+    await sleep(300);
+    myGrowth.reflections.push({ ...r, at: Date.now() });
+    if (r.everyoneTurn) { heardTotal += 1; if (r.everyoneTurn === "yes") heardYes += 1; }
+    const brave = r.askedQuestion || r.sharedWork || r.hosted;
+    const wins = [];
+    if (r.askedQuestion) wins.push("You asked a question");
+    if (r.sharedWork) wins.push("You shared what you're working on");
+    if (r.hosted) wins.push("You hosted a round so everyone got a turn");
+    let move = "stay";
+    if (r.comfort >= 4 && brave && myGrowth.level < 4) { myGrowth.level += 1; move = "up"; }
+    else if (r.comfort <= 2 && myGrowth.level > 1) { myGrowth.level -= 1; move = "gentler"; }
+    wins.forEach((w) => myGrowth.wins.push({ text: w, at: Date.now() }));
+    emit("board", snapshot());
+    return { move, wins, growth: growthCopy() };
+  },
+  async growth() {
+    await sleep(150);
+    return growthCopy();
+  },
+  async startedOnOwn() {
+    await sleep(200);
+    myGrowth.startedOnOwn += 1;
+    myGrowth.wins.push({ text: "You started a conversation on your own", at: Date.now() });
+    return growthCopy();
   },
   async connections() {
     await sleep(150);

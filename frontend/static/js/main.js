@@ -17,12 +17,13 @@ const ROUTES = {
   "/group": () => import("./screens/group.js"),
   "/report": () => import("./screens/report.js"),
   "/met": () => import("./screens/met.js"),
+  "/grow": () => import("./screens/grow-screen.js"),
   "/settings": () => import("./screens/settings.js"),
   "/board": () => import("./board/board.js"),
   "/staff": () => import("./screens/staff.js"),
 };
 
-const TAB_FOR = { "/now": "now", "/talks": "now", "/card": "card", "/card/show": "card", "/group": "group", "/report": "report", "/met": "met" };
+const TAB_FOR = { "/now": "now", "/talks": "now", "/card": "card", "/card/show": "card", "/group": "group", "/report": "report", "/met": "met", "/grow": "met" };
 
 const main = document.getElementById("main");
 const tabbar = document.getElementById("tabbar");

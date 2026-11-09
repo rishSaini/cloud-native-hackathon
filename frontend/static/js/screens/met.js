@@ -71,7 +71,10 @@ export default {
   async render(main) {
     const { error } = await loadMe();
     if (error) { main.append(loadErrorView()); return; }
-    main.append(h("h1", { class: "screen-title" }, "People you've met"));
+    main.append(h("h1", { class: "screen-title" }, "People you've met"),
+      h("a", { class: "card grow-link", href: "#/grow" },
+        h("span", { class: "grow-link-title" }, "Your growth ✦"),
+        h("span", { class: "muted" }, "Your comfort ladder, small wins and a question coach")));
 
     let people = [];
     try { people = await api.connections(); } catch {
