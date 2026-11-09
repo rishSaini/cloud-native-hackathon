@@ -6,22 +6,21 @@ from elasticsearch import NotFoundError, TransportError
 from fastapi import Depends, FastAPI, Query
 from fastapi.responses import HTMLResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
-from opentelemetry import metrics, trace
+from opentelemetry import trace
 
 from app import config
 from app.es import get_es
+from app.telemetry.attrs import set_attrs
+from app.telemetry.logs import install_log_filters
 
-log = logging.getLogger("talkscout")
+install_log_filters()
+
+log = logging.getLogger("affinity")
 
 # These are no-ops until the app runs under `opentelemetry-instrument`.
-tracer = trace.get_tracer("talkscout")
-meter = metrics.get_meter("talkscout")
-search_requests = meter.create_counter(
-    "talkscout.search.requests",
-    description="Search requests, split by whether they returned any results",
-)
+tracer = trace.get_tracer("affinity")
 
-app = FastAPI(title="TalkScout")
+app = FastAPI(title="Affinity")
 
 FRONTEND = Path(__file__).resolve().parents[2] / "frontend" / "index.html"
 STATIC_DIR = FRONTEND.parent / "static"
@@ -58,7 +57,7 @@ def search(
     es=Depends(get_es),
 ):
     with tracer.start_as_current_span("search.keyword") as span:
-        span.set_attribute("search.query_length", len(q))
+        set_attrs(span, search_query_length=len(q))
         try:
             resp = es.search(
                 index=config.ES_INDEX,
@@ -77,9 +76,8 @@ def search(
             {"id": h["_id"], "score": h["_score"], **h["_source"]}
             for h in resp["hits"]["hits"]
         ]
-        span.set_attribute("search.hits", len(hits))
+        set_attrs(span, search_hits=len(hits))
 
-    search_requests.add(1, {"has_results": bool(hits)})
     if not hits:
         log.info("zero-result search: %s", q)
     return {"hits": hits, "total": resp["hits"]["total"]["value"]}
@@ -92,7 +90,7 @@ def rum_config():
         return Response("// Dash0 RUM is off\n", media_type="text/javascript")
     settings = json.dumps(
         {
-            "serviceName": "talkscout-web",
+            "serviceName": "affinity-web",
             "endpoint": {"url": config.DASH0_RUM_ENDPOINT, "authToken": config.DASH0_RUM_TOKEN},
             "additionalSignalAttributes": {"service.version": config.APP_VERSION},
         }
