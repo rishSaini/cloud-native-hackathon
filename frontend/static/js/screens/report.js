@@ -89,6 +89,8 @@ export default {
       button.disabled = true;
       try {
         const res = await api.reportRoom(roomId, signal.id);
+        // A satisfying double tick, where allowed and not in calm mode.
+        if (navigator.vibrate && !document.documentElement.classList.contains("calm")) { try { navigator.vibrate([15, 40, 15]); } catch { /* not allowed */ } }
         lastSent.set(key, Date.now());
         const others = res?.agreeing ?? 0;
         const msg = res?.staffAlerted

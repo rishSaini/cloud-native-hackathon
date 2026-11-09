@@ -7,6 +7,23 @@ import { formatDayTime, h } from "../format.js";
 import { loadErrorView } from "../load-error.js";
 import { currentMe, loadMe } from "../store.js";
 
+function memoryLine(p) {
+  return [`Met ${p.name}${p.landmark || p.place ? ` at ${p.landmark || p.place}` : ""}`, p.metAt ? formatDayTime(p.metAt) : null, p.workingOn ? `Talked about ${p.workingOn}` : null].filter(Boolean).join(" · ");
+}
+
+function openPerson(p) {
+  const d = h("dialog", { class: "dialog person-dialog", "aria-labelledby": "person-h" },
+    h("p", { class: "section-eyebrow" }, "In your constellation"),
+    h("h2", { id: "person-h" }, p.name, p.pronouns ? h("span", { class: "member-pronouns" }, ` (${p.pronouns})`) : null),
+    h("p", { class: "memory" }, memoryLine(p)),
+    p.workingOn ? h("p", {}, `Working on ${p.workingOn}`) : null,
+    h("div", { class: "dialog-actions" }, h("button", { type: "button", class: "btn btn-primary", autofocus: true, onclick: () => d.close() }, "Close")),
+  );
+  d.addEventListener("close", () => d.remove());
+  document.body.append(d);
+  d.showModal();
+}
+
 function constellation(people, myId) {
   const n = people.length;
   const cx = 160, cy = 110, r = 78;
@@ -31,6 +48,21 @@ function constellation(people, myId) {
     <g stroke="rgba(244,241,255,0.4)" stroke-width="1.2">${lines}</g>
     ${stars}
     <circle cx="${cx}" cy="${cy}" r="11" fill="${me}"/><circle cx="${cx}" cy="${cy}" r="20" fill="${me}" opacity="0.18"/>`;
+  // Tappable stars: links built as DOM nodes (names never go through innerHTML).
+  svg.removeAttribute("aria-hidden");
+  svg.setAttribute("role", "group");
+  svg.setAttribute("aria-label", "Your constellation. Choose a star to see who it is.");
+  pts.forEach((pt, i) => {
+    const a = document.createElementNS("http://www.w3.org/2000/svg", "a");
+    a.setAttribute("href", "#");
+    a.setAttribute("class", "met-star-link");
+    a.setAttribute("aria-label", `${people[i].name}. ${memoryLine(people[i])}`);
+    const hit = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    hit.setAttribute("cx", pt.x.toFixed(1)); hit.setAttribute("cy", pt.y.toFixed(1)); hit.setAttribute("r", "18");
+    a.append(hit);
+    a.addEventListener("click", (e) => { e.preventDefault(); openPerson(people[i]); });
+    svg.append(a);
+  });
   return svg;
 }
 
@@ -39,7 +71,10 @@ export default {
   async render(main) {
     const { error } = await loadMe();
     if (error) { main.append(loadErrorView()); return; }
-    main.append(h("h1", { class: "screen-title" }, "People you've met"));
+    main.append(h("h1", { class: "screen-title" }, "People you've met"),
+      h("a", { class: "card grow-link", href: "#/grow" },
+        h("span", { class: "grow-link-title" }, "Your growth ✦"),
+        h("span", { class: "muted" }, "Your comfort ladder, small wins and a question coach")));
 
     let people = [];
     try { people = await api.connections(); } catch {
@@ -60,7 +95,7 @@ export default {
       h("section", { class: "card met-constellation", "aria-labelledby": "const-h" },
         h("h2", { id: "const-h" }, "Your constellation"),
         constellation(people, currentMe()?.displayId),
-        h("p", { class: "muted" }, `You and ${people.length} ${people.length === 1 ? "person" : "people"} you met. Screenshot it to keep.`),
+        h("p", { class: "muted" }, `You and ${people.length} ${people.length === 1 ? "person" : "people"} you met. Tap a star to remember them. Screenshot it to keep.`),
       ),
       h("ul", { class: "met-list" }, people.map((p) => {
         const avatar = h("span", { class: "avatar", "aria-hidden": "true" }, (p.name || "?").slice(0, 1).toUpperCase());
@@ -70,7 +105,7 @@ export default {
             avatar,
             h("div", { class: "member-who" },
               h("p", { class: "member-name" }, p.name, p.pronouns ? h("span", { class: "member-pronouns" }, ` (${p.pronouns})`) : null),
-              h("p", { class: "met-where" }, [p.landmark || p.place, p.metAt ? formatDayTime(p.metAt) : null].filter(Boolean).join(" · ")),
+              h("p", { class: "met-where" }, memoryLine(p)),
             ),
           ),
           p.workingOn ? h("p", { class: "met-working" }, `Working on ${p.workingOn}`) : null,
