@@ -182,17 +182,24 @@ Use these hash routes:
 |---|---|
 | `#/` | Welcome and onboarding |
 | `#/now` | Your current talk and status |
+| `#/talks` | Find a talk and ask questions about talks |
 | `#/card` | Your card |
 | `#/card/show` | Show across the table |
 | `#/group` | Your break group |
 | `#/report` | Report this room |
 | `#/met` | People you've met |
 | `#/settings` | Settings |
-| `#/c/:token` | Someone's shared card, opened from a QR code |
 | `#/board` | Big-screen board |
 | `#/staff` | Staff incidents |
 
-The phone has a bottom tab bar with Now, Card, Group, Report and Met. The board and staff screens have no tab bar.
+The phone has a bottom tab bar with Now, Card, Group, Report and Met. The board and staff screens have no tab bar. `#/talks` opens from a "Find a talk" button on Now.
+
+**Shared cards are the one exception to hash routing.** QR links point to the backend path `/c/{token}`, which Rishabh's plan owns. Confirm with Rishabh whether `GET /c/{token}` returns the page or JSON:
+
+- If it returns the page, the frontend reads the token from `location.pathname` and renders the shared-card screen.
+- If it returns JSON, the backend still needs to serve `index.html` at `/c/{token}`, and the frontend fetches the card data separately.
+
+Either way, the token never goes into a hash route, query string or log.
 
 ### 8.1 Welcome and onboarding (`#/`)
 
@@ -220,6 +227,21 @@ Keep the whole flow under 30 seconds for someone using a template.
 - **Reroute banner:** when the room fills or closes, a warm amber banner slides in from the top: *"Room 151 filled up. We moved you to Room 251."* Include "Show other options" and "Undo" if the old room becomes available.
 - Every room report shows its age, for example "Reported 2 min ago."
 - If the person can't be placed, explain in plain words and list the closest options with space.
+- **"Find me a talk" button** for the next slot. It calls `POST /api/placements` with `{ "slot": "<slot id>" }`, then shows Pending until `GET /api/placements/current` or a `placement` stream event returns the result. Also call it automatically after onboarding if the person has no placement yet.
+- A secondary "Find a talk" link opens `#/talks`.
+
+### 8.2a Find and ask (`#/talks`)
+
+- **Search box** at the top: "Search talks, like 'security for beginners'." It calls `GET /api/talks/search?q=` and shows results as cards with title, time, room and live badges.
+- **Ask box** below it: "Ask about the talks." Examples as tappable chips:
+  - "Which talks are good for a first-timer?"
+  - "Anything on making apps start faster tomorrow?"
+- Asking calls `POST /api/ask` with `{ "question": "...", "slot": "<optional slot id>" }`. The answer comes back with the IDs of the talks it's based on.
+- Show the answer in a calm, readable block, followed by the cited talks as tappable cards. Label it clearly: "Answer based on the talk descriptions."
+- Show a gentle loading state ("Looking through the talks…"), because this calls an AI model and can take a few seconds.
+- If it fails, say so plainly and offer the search box instead.
+- Send the question only in the request body. Never put it in the URL, the hash or a log.
+- Keep the question box accessible: a real `<label>`, Enter to submit, and the answer announced through the live region once it arrives.
 
 ### 8.3 Card (`#/card`)
 
@@ -242,7 +264,25 @@ Keep the whole flow under 30 seconds for someone using a template.
 - Each member's card is shown in compact form, with "how to talk to me" first.
 - A suggested opener: *"Try asking: How do you test startup speed?"*
 - Buttons: "I'm here," "Running late," "Leave group" and "Report a concern."
+- Each member has a small menu with "Block this person."
 - After 3 minutes, if someone hasn't arrived, show: *"We're adding someone so nobody waits alone."*
+
+**Safety actions:**
+
+- **Block this person** calls `POST /api/blocks`. Confirm first: "You won't be grouped with this person again. They won't be told." After blocking, offer to leave the current group.
+- **Report a concern** opens a short form: what happened (optional text) and a checkbox for "I'd like an organizer to contact me." It calls `POST /api/safety-reports`, then says: "Thanks. Organizers have your report." If the person feels unsafe, show the event's Code of Conduct contact as well.
+- Both are available on the Group screen, on each member card, and on a shared card opened from a QR code.
+- Never show the report text again after it's sent, and never log it.
+
+The backend plan defines these endpoints but not their exact request bodies. Use these shapes and confirm them with Rishabh:
+
+```json
+POST /api/blocks
+{ "blockedDisplayId": "attendee-2m9q" }
+
+POST /api/safety-reports
+{ "aboutDisplayId": "attendee-2m9q", "groupId": "g-91ab", "text": "optional", "wantsContact": true }
+```
 
 ### 8.6 Report (`#/report`)
 
@@ -330,25 +370,40 @@ Build the frontend against a small API client module so it can run with real or 
 
 ### Expected endpoints
 
-Agree these with whoever builds the backend. Paths match `docs/AFFINITY.md`.
+These match the backend task plans in `docs/tasks/karthik.md` and `docs/tasks/rishabh.md`. Read both before wiring anything up, and treat them as the source of truth if they change. Response shapes marked "confirm" aren't specified there yet, so check with the owner.
 
-| Method | Path | Returns |
-|---|---|---|
-| `POST` | `/api/attendees` | `{ attendeeId, displayId }` and sets a session cookie |
-| `GET` | `/api/card` | Your card |
-| `PUT` | `/api/card` | Saved card |
-| `DELETE` | `/api/card` | `204` |
-| `POST` | `/api/card/share` | `{ url, expiresAt }` |
-| `GET` | `/api/talks/search?q=` | `{ hits: [...] }` |
-| `GET` | `/api/placements/current` | Placement |
-| `POST` | `/api/breaks/:id/rsvp` | `{ status }` |
-| `POST` | `/api/groups/:id/check-in` | `{ status }` |
-| `POST` | `/api/rooms/:id/reports` | `{ agreeing, staffAlerted }` |
-| `POST` | `/api/connections` | `{ status: "pending" | "saved" }` |
-| `GET` | `/api/board` | Board snapshot |
-| `GET` | `/api/staff/incidents` | Incidents |
-| `PATCH` | `/api/staff/incidents/:id` | Updated incident |
-| `GET` | `/api/stream` | Server-Sent Events |
+| Method | Path | Owner | Returns |
+|---|---|---|---|
+| `POST` | `/api/attendees` | Rishabh | `{ attendeeId, displayId }` and sets a session cookie (confirm) |
+| `GET` | `/api/card` | Rishabh | Your card |
+| `PUT` | `/api/card` | Rishabh | Saved card |
+| `DELETE` | `/api/card` | Rishabh | `204` (confirm) |
+| `POST` | `/api/card/share` | Rishabh | Signed QR link, valid for 10 minutes |
+| `GET` | `/c/{token}` | Rishabh | Shared card, see section 8 |
+| `POST` | `/api/placements` | Rishabh | Accepts `{ slot }` and starts a placement request |
+| `GET` | `/api/placements/current` | Rishabh | Room and talk, or a plain-language reason |
+| `POST` | `/api/breaks/{id}/rsvp` | Rishabh | `{ status }` (confirm) |
+| `POST` | `/api/groups/{id}/check-in` | Rishabh | `{ status }` (confirm) |
+| `POST` | `/api/connections` | Rishabh | Saved only when both people propose it |
+| `POST` | `/api/blocks` | Rishabh | Blocks someone from future groups |
+| `POST` | `/api/safety-reports` | Rishabh | Stores a report for organizers |
+| `GET` | `/api/stream` | Rishabh | Server-Sent Events |
+| `GET` | `/api/talks/search?q=` | Karthik | Hybrid search results |
+| `GET` | `/api/search?q=` | Karthik | Original search, kept for the current page |
+| `POST` | `/api/ask` | Karthik | Accepts `{ question, slot? }` and returns an answer plus cited talk IDs |
+| `POST` | `/api/rooms/{id}/reports` | Karthik | `{ agreeing, staffAlerted }` (confirm) |
+| `GET` | `/api/board` | Karthik | Board snapshot |
+| `GET` | `/api/staff/incidents` | Karthik | Incidents |
+| `PATCH` | `/api/staff/incidents/{id}` | Karthik | Updated incident |
+
+Example `POST /api/ask` response (confirm the field names with Karthik):
+
+```json
+{
+  "answer": "Two talks cover faster app startup tomorrow: ...",
+  "talkIds": ["t-42", "t-57"]
+}
+```
 
 Until `/api/talks/search` exists, fall back to the existing `/api/search?q=`.
 
@@ -394,6 +449,8 @@ Until `/api/talks/search` exists, fall back to the existing `/api/search?q=`.
 - Timers that occasionally fill a room, open and fix a captions incident, and move people.
 - Demo keyboard shortcuts from section 8.9 drive the mock directly.
 - Never use real people's names. Use clearly fake first names on phone screens in mock mode.
+- The mock `ask` returns a canned answer that cites two mock talks, after a 1.5-second delay so the loading state is visible.
+- The mock `placements`, `blocks` and `safety-reports` succeed after a short delay, and `placements` emits a `placement` event shortly afterward.
 
 All times display in America/Denver, regardless of the device's time zone, using `Intl.DateTimeFormat` with `timeZone: "America/Denver"`.
 
@@ -418,6 +475,7 @@ frontend/
         ├── screens/
         │   ├── welcome.js
         │   ├── now.js
+        │   ├── talks.js       # search and ask
         │   ├── card.js
         │   ├── show.js
         │   ├── group.js
@@ -440,13 +498,13 @@ Ship each step as its own pull request so Gitar reviews every feature. Keep PRs 
 
 1. **Foundation:** tokens, base styles, router, tab bar, API client, mock API, "Demo data" badge, rename to Affinity.
 2. **Onboarding and card:** templates, form with live preview, flip card, done moment.
-3. **Now:** placement card, status pill, reroute banner, live region announcements.
+3. **Now:** placement card, status pill, "Find me a talk," reroute banner, live region announcements.
 4. **Board, part 1:** canvas, rooms, breathing stars, gliding moves, status cards, ticker, hero number, accessible summary.
-5. **Group:** countdown, reveal animation, member cards, opener, check-in.
+5. **Group:** countdown, reveal animation, member cards, opener, check-in, block and report a concern.
 6. **Report and staff:** one-thumb reports, incidents, staff screen.
 7. **Board, part 2:** group constellations, demo mode, finale.
 8. **Modes:** kubectl mode, calm mode, text size, reduced motion everywhere.
-9. **Extras:** show across the table, QR sharing, people you've met and your constellation.
+9. **Extras:** find and ask (`#/talks`), show across the table, QR sharing, people you've met and your constellation.
 10. **Polish:** accessibility audit fixes, empty states, error states, loading states.
 
 If time runs short, cut from the bottom of this list, but never cut accessibility basics from steps 1 to 4.
@@ -465,6 +523,11 @@ The frontend is done when:
 
 - [ ] A new attendee can make a card from a template in under 30 seconds on a phone.
 - [ ] Now, Card, Group, Report and Met screens work with mock data at 375px wide.
+- [ ] "Find me a talk" requests a placement and shows the result when it arrives.
+- [ ] Search and ask work on `#/talks`, and answers show the talks they're based on.
+- [ ] Block and Report a concern work from the Group screen and from shared cards.
+- [ ] Shared cards open from `/c/{token}` links.
+- [ ] Questions and safety report text never appear in URLs or logs.
 - [ ] The board runs smoothly on a laptop driving a projector with 1,000 stars.
 - [ ] Demo shortcuts C, G, I, F, K and R all work in `#/board?demo=1`.
 - [ ] "0 people alone" updates live, and the finale plays cleanly.
