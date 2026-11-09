@@ -2,7 +2,7 @@
 
 import pytest
 from elastic_transport import ApiResponseMeta, HttpHeaders
-from elasticsearch import BadRequestError
+from elasticsearch import BadRequestError, TransportError
 from fastapi.testclient import TestClient
 
 from app.ask import routes
@@ -18,8 +18,13 @@ TALKS = [
 
 
 class FakeAskES:
-    def __init__(self, talks=TALKS, answer="Go to [t13]. Also [t99] and [t13] again.", fail=False):
+    def __init__(self, talks=TALKS, answer="Go to [t13]. Also [t99] and [t13] again.", fail=False,
+                 transport_fail=False, response=None):
         self.talks, self.answer, self.fail, self.prompt = talks, answer, fail, None
+        self.transport_fail = transport_fail
+        self.response = response
+        self.request_timeout = None
+        self.completion_timeout = None
         outer = self
 
         class Indices:
@@ -29,12 +34,21 @@ class FakeAskES:
         class Inference:
             def completion(self, inference_id, input, timeout=None):
                 outer.prompt = input
+                outer.completion_timeout = timeout
+                if outer.transport_fail:
+                    raise TransportError("down")
                 if outer.fail:
                     meta = ApiResponseMeta(status=400, http_version="1.1", headers=HttpHeaders(), duration=0.0, node=None)
                     raise BadRequestError("down", meta=meta, body={})
+                if outer.response is not None:
+                    return outer.response
                 return {"completion": [{"result": outer.answer}]}
 
         self.indices, self.inference = Indices(), Inference()
+
+    def options(self, **kwargs):
+        self.request_timeout = kwargs.get("request_timeout")
+        return self
 
     def search(self, **kwargs):
         hits = [{"_id": t["id"], "_score": 1.0, "_source": t} for t in self.talks]
@@ -72,7 +86,21 @@ def test_no_talks_found_gives_a_plain_answer_without_calling_the_model(client_fo
 
 
 def test_model_failure_is_503_not_500(client_for):
-    assert client_for(FakeAskES(fail=True)).post("/api/ask", json={"question": "anything good?"}).status_code == 503
+    es = FakeAskES(fail=True)
+    assert client_for(es).post("/api/ask", json={"question": "anything good?"}).status_code == 503
+    assert es.request_timeout == 35
+    assert es.completion_timeout == "30s"
+
+
+@pytest.mark.parametrize("response", [{}, {"completion": []}])
+def test_malformed_model_response_is_503(client_for, response):
+    es = FakeAskES(response=response)
+    assert client_for(es).post("/api/ask", json={"question": "anything good?"}).status_code == 503
+
+
+def test_transport_failure_is_503(client_for):
+    es = FakeAskES(transport_fail=True)
+    assert client_for(es).post("/api/ask", json={"question": "anything good?"}).status_code == 503
 
 
 def test_rejects_bad_input(client_for):

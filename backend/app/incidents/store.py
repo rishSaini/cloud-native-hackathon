@@ -13,7 +13,7 @@ NEXT = {"open": {"acknowledged", "resolved"}, "acknowledged": {"resolved"}, "res
 
 _open_count = 0
 metrics.get_meter("affinity").create_observable_gauge(
-    "affinity_incidents_open",
+    "talkscout.incidents.open",
     callbacks=[lambda options: [metrics.Observation(_open_count)]],
     description="Accessibility incidents not yet resolved",
 )
