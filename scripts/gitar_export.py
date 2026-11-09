@@ -115,6 +115,13 @@ def first_line(text: str, limit: int = 140) -> str:
     return line if len(line) <= limit else line[: limit - 1] + "…"
 
 
+def finding_title(body: str, limit: int = 140) -> str:
+    """Gitar wraps each finding in <details><summary>...</summary>: use that title."""
+    match = re.search(r"<summary>(.*?)</summary>", body or "", re.DOTALL)
+    text = match.group(1) if match else (body or "")
+    return first_line(re.sub(r"<[^>]+>", "", text), limit)
+
+
 def render_pr(data: dict) -> str:
     out = [
         f"# PR #{data['number']}: {data['title']}",
@@ -181,7 +188,7 @@ def render_index(all_prs: list[dict]) -> str:
     if findings:
         out += ["", "## What Gitar flagged", ""]
         for d, c in findings:
-            out.append(f"- [#{d['number']} `{c['path']}`]({c['html_url']}): {first_line(c['body'])}")
+            out.append(f"- [#{d['number']} `{c['path']}`]({c['html_url']}): {finding_title(c['body'])}")
     fixes = [(d, c) for d in sorted(all_prs, key=lambda d: d["number"]) for c in d["fixes"]]
     if fixes:
         out += ["", "## Fixes Gitar pushed", ""]

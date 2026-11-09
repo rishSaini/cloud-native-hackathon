@@ -62,3 +62,9 @@ def test_render_index_counts_and_lists_fixes():
     assert "no Gitar activity" in text
     assert "Docs \\| tweak" in text
     assert "`abc1234`" in text and "Fix failing ruff check" in text
+
+
+def test_finding_title_reads_gitar_summary():
+    body = "<details>\n<summary>💡 <b>Edge Case:</b> SSA deletes keys it pushed before</summary>\n\nDetails here"
+    assert gitar_export.finding_title(body) == "💡 Edge Case: SSA deletes keys it pushed before"
+    assert gitar_export.finding_title("Plain comment\nmore") == "Plain comment"
