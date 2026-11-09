@@ -68,7 +68,10 @@ function freshState() {
   const rooms = ROOMS.map((r) => ({ ...r, taken: 0, status: "OPEN", incident: null }));
   const attendees = [];
   const seen = new Set();
-  while (attendees.length < 200) {
+  // ?attendees=1000 sizes the crowd for the board's performance check (50–2000).
+  const wanted = Number(new URLSearchParams(location.search).get("attendees")) || 200;
+  const crowd = Math.min(2000, Math.max(50, wanted));
+  while (attendees.length < crowd) {
     const id = `attendee-${randomId()}`;
     if (seen.has(id)) continue;
     seen.add(id);
@@ -84,7 +87,8 @@ function freshState() {
     if (room.taken < room.seats) { a.roomId = room.id; room.taken += 1; }
   }
   rooms.forEach(updateStatus);
-  return { rooms, attendees, groups: [], alone: 0, events: [] };
+  // "Alone" = not yet in a break group. It starts high and the finale brings it to 0.
+  return { rooms, attendees, groups: [], alone: attendees.length, events: [] };
 }
 
 function updateStatus(room) {
@@ -100,8 +104,10 @@ function stamp() {
   return new Intl.DateTimeFormat("en-US", { timeZone: "America/Denver", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
 }
 
+let eventSeq = 0;
 function logEvent(reason, message) {
-  const ev = { at: stamp(), reason, message };
+  eventSeq += 1;
+  const ev = { id: `ev-${eventSeq}`, at: stamp(), reason, message };
   state.events.push(ev);
   if (state.events.length > 50) state.events.shift();
   emit("board", snapshot());
@@ -241,7 +247,7 @@ function formGroups(everyone = false) {
     state.groups.push({ id, tableId, members: members.map((m) => m.displayId) });
     if (i < 9) logEvent("Grouped", `${id} → ${tableId} (${members.length} people)`);
   }
-  state.alone = everyone ? 0 : Math.max(0, state.attendees.filter((a) => !a.groupId).length % 3);
+  state.alone = state.attendees.filter((a) => !a.groupId).length;
   emit("group", { count: state.groups.length });
   emit("board", snapshot());
 }
