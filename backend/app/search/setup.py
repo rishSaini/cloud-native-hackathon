@@ -36,6 +36,27 @@ def ensure_inference(es, openai_key: str | None) -> str:
     return "created"
 
 
+def ensure_chat(es, openai_key: str | None) -> str:
+    """K13: the `affinity-chat` completion endpoint that Ask Affinity calls."""
+    try:
+        es.inference.get(inference_id=m.CHAT_ID)
+        return "exists"
+    except NotFoundError:
+        pass
+    if not openai_key:
+        log.warning("OPENAI_API_KEY is not set: Ask Affinity is off.")
+        return "skipped"
+    es.inference.put(
+        task_type="completion",
+        inference_id=m.CHAT_ID,
+        inference_config={
+            "service": "openai",
+            "service_settings": {"api_key": openai_key, "model_id": m.CHAT_MODEL},
+        },
+    )
+    return "created"
+
+
 def ensure_index(es, name: str, mapping: dict) -> str:
     if es.indices.exists(index=name):
         return "exists"
@@ -80,6 +101,7 @@ def reset(es) -> None:
         lambda: es.indices.delete_index_template(name=m.ROOM_REPORTS_TEMPLATE),
         lambda: es.ilm.delete_lifecycle(name=m.ROOM_REPORTS_POLICY),
         lambda: es.inference.delete(inference_id=m.INFERENCE_ID),
+        lambda: es.inference.delete(inference_id=m.CHAT_ID),
     ):
         try:
             call()
@@ -90,6 +112,7 @@ def reset(es) -> None:
 def ensure_all(es, openai_key: str | None) -> dict[str, str]:
     """Create whatever is missing. Returns {thing: "created" | "exists" | "skipped"}."""
     result = {f"inference {m.INFERENCE_ID}": ensure_inference(es, openai_key)}
+    result[f"inference {m.CHAT_ID}"] = ensure_chat(es, openai_key)
     semantic = result[f"inference {m.INFERENCE_ID}"] != "skipped"
     for name, mapping in m.indices(semantic).items():
         result[f"index {name}"] = ensure_index(es, name, mapping)
