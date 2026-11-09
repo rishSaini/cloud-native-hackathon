@@ -107,7 +107,7 @@ def test_rsvp_records_attendee_and_returns_going_status(monkeypatch):
     assert any(query.startswith("INSERT INTO break_rsvps") for query, _ in connection.calls)
 
 
-@pytest.mark.parametrize("status", ["here", "on-the-way", "running-late"])
+@pytest.mark.parametrize("status", ["here", "on-the-way", "late"])
 def test_check_in_persists_the_requested_status(monkeypatch, status):
     connection = _Connection()
     monkeypatch.setattr(routes, "pool", lambda: _Pool(connection))
@@ -122,16 +122,16 @@ def test_check_in_persists_the_requested_status(monkeypatch, status):
     assert params[:2] == (status, status)
 
 
-def test_current_group_shows_running_late_for_members_and_viewer(monkeypatch):
+def test_current_group_shows_late_for_members_and_viewer(monkeypatch):
     connection = _Connection(
         group_row=(
             "g-1",
             "brk-tue-1530",
             "brk-tue-1530-tbl-quiet-window",
             datetime(2026, 11, 10, 22, 30, tzinfo=timezone.utc),
-            "running-late",
+            "late",
         ),
-        members=[("member", "running-late")],
+        members=[("member", "late")],
     )
     monkeypatch.setattr(routes, "pool", lambda: _Pool(connection))
     app = _app()
@@ -141,5 +141,5 @@ def test_current_group_shows_running_late_for_members_and_viewer(monkeypatch):
 
     assert response.status_code == 200
     group = response.json()["group"]
-    assert group["myStatus"] == "running-late"
-    assert group["members"][0]["status"] == "running-late"
+    assert group["myStatus"] == "late"
+    assert group["members"][0]["status"] == "late"

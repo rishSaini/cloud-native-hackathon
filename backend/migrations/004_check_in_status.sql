@@ -1,6 +1,6 @@
 ALTER TABLE group_members
   ADD COLUMN check_in_status TEXT
-  CHECK (check_in_status IN ('here', 'on-the-way', 'running-late'));
+  CHECK (check_in_status IN ('here', 'on-the-way', 'late'));
 
 UPDATE group_members
 SET check_in_status = 'here'
