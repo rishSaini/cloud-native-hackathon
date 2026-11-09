@@ -4,12 +4,11 @@
 #   Radar MCP: apply_resource with mode=create, then wait_for kind=job condition=complete
 #   or:        kubectl create -f deploy/jobs/db-migrate-002.yaml
 # To run again, copy it with a new name. Never reuse a Job name.
-# If ./scripts/setup.sh already ran, replace __TEAM__ and OWNER/REPO by hand.
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: db-migrate-002
-  namespace: team-__TEAM__
+  namespace: team-coffeecon
 spec:
   backoffLimit: 1
   activeDeadlineSeconds: 300
@@ -19,7 +18,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: migrate
-          image: ghcr.io/OWNER/REPO:latest
+          image: ghcr.io/rishsaini/cloud-native-hackathon:latest
           imagePullPolicy: Always
           workingDir: /app/backend
           command: [python, -m, app.db.migrate]
