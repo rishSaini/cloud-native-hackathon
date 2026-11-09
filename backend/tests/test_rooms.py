@@ -6,10 +6,12 @@ from app.controller.rooms import active_slots
 from app.k8s.nodes import CLOSED_TAINT, FULL_TAINT, KWOK_TAINT, desired_taints, label_patch, venue_caps
 
 
-def test_taints_follow_status():
-    assert desired_taints("open") == [KWOK_TAINT]
-    assert desired_taints("full") == [KWOK_TAINT, FULL_TAINT]
-    assert desired_taints("closed") == [KWOK_TAINT, CLOSED_TAINT]
+def test_taints_follow_status_and_preserve_unowned_taints():
+    other_taint = {"key": "example.com/custom", "value": "keep", "effect": "NoSchedule"}
+    current = [KWOK_TAINT, other_taint, FULL_TAINT, CLOSED_TAINT]
+    assert desired_taints("open", current) == [KWOK_TAINT, other_taint]
+    assert desired_taints("full", current) == [KWOK_TAINT, other_taint, FULL_TAINT]
+    assert desired_taints("closed", current) == [KWOK_TAINT, other_taint, CLOSED_TAINT]
     assert FULL_TAINT["effect"] == "NoSchedule" and CLOSED_TAINT["effect"] == "NoExecute"
 
 

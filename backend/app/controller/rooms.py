@@ -73,11 +73,11 @@ def reconcile_rooms(ctl) -> None:
         labels = node.metadata.labels
         room, slot = labels.get("affinity.dev/room"), labels.get("affinity.dev/slot")
         state = states.get(room, {})
-        taints = desired_taints(state.get("status", "open"))
         current = [{"key": t.key, "value": t.value, "effect": t.effect} for t in (node.spec.taints or [])]
+        taints = desired_taints(state.get("status", "open"), current)
         patch = label_patch(labels, caps.get(room, set()), state.get("signals") or {})
         if taint_key(current) != taint_key(taints) or patch:
-            with tracer.start_as_current_span("k8s.node.taint", links=_link_to(state.get("traceparent"))) as span:
+            with tracer.start_as_current_span("talkscout.k8s.node.taint", links=_link_to(state.get("traceparent"))) as span:
                 set_attrs(span, room_id=room, slot_id=slot)
                 body = {"spec": {"taints": taints}}
                 if patch:
