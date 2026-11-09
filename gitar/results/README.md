@@ -49,7 +49,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 | [#34](https://github.com/rishSaini/cloud-native-hackathon/pull/34) | K13: Ask Affinity (RAG through the ES inference API) | merged | 3 | 1 | [pr-0034.md](pr-0034.md) |
 | [#35](https://github.com/rishSaini/cloud-native-hackathon/pull/35) | K3: Group solver | merged | 3 | 0 | [pr-0035.md](pr-0035.md) |
 | [#36](https://github.com/rishSaini/cloud-native-hackathon/pull/36) | Cosmic glass redesign, Star ID, Show across the table | merged | 1 | 0 | [pr-0036.md](pr-0036.md) |
-| [#37](https://github.com/rishSaini/cloud-native-hackathon/pull/37) | K5: Ruff lint, coverage and Gitar review rules | open | 0 | 0 | [pr-0037.md](pr-0037.md) |
+| [#37](https://github.com/rishSaini/cloud-native-hackathon/pull/37) | K5: Ruff lint, coverage and Gitar review rules | merged | 0 | 0 | [pr-0037.md](pr-0037.md) |
 | [#38](https://github.com/rishSaini/cloud-native-hackathon/pull/38) | K4: Telemetry rules and affinity-api rename | merged | 2 | 0 | [pr-0038.md](pr-0038.md) |
 | [#39](https://github.com/rishSaini/cloud-native-hackathon/pull/39) | Grow: conversation coaching that fades, fair turns, private reflection | merged | 2 | 0 | [pr-0039.md](pr-0039.md) |
 | [#40](https://github.com/rishSaini/cloud-native-hackathon/pull/40) | K14: Dash0 dashboard, SLO checks and metrics export fix | merged | 1 | 0 | [pr-0040.md](pr-0040.md) |
