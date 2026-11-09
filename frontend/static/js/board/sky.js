@@ -62,6 +62,10 @@ export function createSky(canvas, { motion = true } = {}) {
   let dirtyRooms = true;
   let lastStill = 0;
   let hallCount = 0;
+  let groupList = [];             // break groups, in the order they formed
+  const groupPos = new Map();     // groupId -> { x, y, t0, slot }
+  let groupSlots = 0;
+  let kubectlLabels = false;
 
   function sprite(hue) {
     if (sprites.has(hue)) return sprites.get(hue);
@@ -107,7 +111,38 @@ export function createSky(canvas, { motion = true } = {}) {
     dirtyRooms = true;
   }
 
+  // Break tables: each group gets a stable slot on a loose grid over the whole sky,
+  // sized for everyone being grouped, so earlier groups never jump when new ones form.
+  function slotCenter(slot) {
+    const total = Math.max(groupSlots, 1);
+    const cols = Math.max(1, Math.ceil(Math.sqrt(total * (width / Math.max(1, height)))));
+    const rowsN = Math.ceil(total / cols);
+    const cw = (width - 60) / cols;
+    const ch = (height - 60) / rowsN;
+    const [u, v] = hash2(`slot-${slot}`);
+    return {
+      x: 30 + cw * ((slot % cols) + 0.5 + (u - 0.5) * 0.4),
+      y: 30 + ch * (Math.floor(slot / cols) + 0.5 + (v - 0.5) * 0.4),
+    };
+  }
+
+  function layoutGroups() {
+    for (const g of groupList) {
+      const p = groupPos.get(g.id);
+      if (p) Object.assign(p, slotCenter(p.slot));
+    }
+  }
+
   function targetFor(a) {
+    const gp = a.groupId && groupPos.get(a.groupId);
+    if (gp) {
+      const g = groupList.find((x) => x.id === a.groupId);
+      const k = Math.max(1, g?.members.length || 1);
+      const j = Math.max(0, g?.members.indexOf(a.displayId) ?? 0);
+      const r = 9 + k * 1.5;
+      const th = (j / k) * Math.PI * 2 + hash2(a.groupId)[0] * Math.PI;
+      return { x: gp.x + r * Math.cos(th), y: gp.y + r * Math.sin(th) };
+    }
     const region = regions.get(a.roomId) || regions.get(HALLWAY.id);
     if (!region) return { x: width / 2, y: height / 2 };
     const [u, v] = hash2(a.displayId);
@@ -180,7 +215,7 @@ export function createSky(canvas, { motion = true } = {}) {
       g.textAlign = "center";
       g.fillStyle = "#F4F1FF";
       g.font = `600 ${Math.max(16, r * 0.16)}px Nunito, system-ui, sans-serif`;
-      g.fillText(room.name, x, y + r + Math.max(24, r * 0.2));
+      g.fillText(kubectlLabels ? `node/${room.id}` : room.name, x, y + r + Math.max(24, r * 0.2));
       g.fillStyle = "#B9B6D9";
       g.font = `500 ${Math.max(13, r * 0.11)}px "JetBrains Mono", ui-monospace, monospace`;
       g.fillText(`${status} · ${room.taken} of ${room.seats}`, x, y + r + Math.max(46, r * 0.36));
@@ -193,9 +228,36 @@ export function createSky(canvas, { motion = true } = {}) {
     if (dirtyRooms) drawRooms();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // During a break, most people are at tables: the rooms fade back.
+    const groupedShare = attendees.length ? attendees.filter((a) => a.groupId).length / attendees.length : 0;
+    ctx.globalAlpha = 1 - Math.min(0.65, groupedShare * 0.8);
     ctx.drawImage(roomsLayer, 0, 0);
+    ctx.globalAlpha = 1;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const size = 14;
+    // Constellations: faint lines join each group's stars, with a soft glow pulse when it forms.
+    let pulsing = false;
+    for (const g of groupList) {
+      const pts = g.members.map((id) => stars.get(id)).filter(Boolean);
+      if (pts.length < 2) continue;
+      const pos = groupPos.get(g.id);
+      const age = pos && animate ? now - pos.t0 : Infinity;
+      const pulse = age < 1600 ? 1 - age / 1600 : 0;
+      if (pulse > 0) pulsing = true;
+      ctx.strokeStyle = `rgba(244, 241, 255, ${0.28 + 0.5 * pulse})`;
+      ctx.lineWidth = 1 + 1.5 * pulse;
+      ctx.beginPath();
+      pts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      if (pts.length > 2) ctx.closePath();
+      ctx.stroke();
+      if (pulse > 0 && pos) {
+        const glow = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 34);
+        glow.addColorStop(0, `rgba(244, 241, 255, ${0.35 * pulse})`);
+        glow.addColorStop(1, "rgba(244, 241, 255, 0)");
+        ctx.fillStyle = glow;
+        ctx.beginPath(); ctx.arc(pos.x, pos.y, 34, 0, Math.PI * 2); ctx.fill();
+      }
+    }
     let moving = false;
     for (const s of stars.values()) {
       if (s.t0 && animate) {
@@ -214,7 +276,7 @@ export function createSky(canvas, { motion = true } = {}) {
     }
     ctx.globalAlpha = 1;
     if (animate && !document.hidden) raf = requestAnimationFrame(frame);
-    else if (moving) raf = requestAnimationFrame(frame);
+    else if (moving || pulsing) raf = requestAnimationFrame(frame);
     lastStill = now;
   }
 
@@ -231,6 +293,7 @@ export function createSky(canvas, { motion = true } = {}) {
     canvas.height = Math.round(height * dpr);
     sprites.clear();
     layout();
+    layoutGroups();
     // Snap every star to its spot in the new layout (no glide on resize).
     for (const [displayId, s] of stars) {
       const t = targetFor({ displayId, roomId: s.roomId });
@@ -254,7 +317,16 @@ export function createSky(canvas, { motion = true } = {}) {
       rooms = nextRooms;
       attendees = board.attendees || [];
       const roomIds = new Set(rooms.map((r) => r.id));
-      const nextHall = attendees.filter((a) => !roomIds.has(a.roomId)).length;
+      const nextHall = attendees.filter((a) => !roomIds.has(a.roomId) && !a.groupId).length;
+      // Groups: keep slots for known groups, add new ones (with a pulse), drop vanished ones.
+      groupList = board.groups || [];
+      groupSlots = Math.max(groupSlots, Math.ceil(attendees.length / 3), groupList.length);
+      const live = new Set(groupList.map((g) => g.id));
+      for (const id of groupPos.keys()) if (!live.has(id)) groupPos.delete(id);
+      if (!groupList.length) groupSlots = 0;
+      groupList.forEach((g, i) => {
+        if (!groupPos.has(g.id)) groupPos.set(g.id, { ...slotCenter(i), slot: i, t0: performance.now() });
+      });
       // Re-lay out when the hallway's size changes noticeably (in steps of 10 people).
       const hallChanged = Math.round(nextHall / 10) !== Math.round(hallCount / 10) || (nextHall === 0) !== (hallCount === 0);
       hallCount = nextHall;
@@ -264,6 +336,11 @@ export function createSky(canvas, { motion = true } = {}) {
         dirtyRooms = true;
       }
       placeStars(performance.now());
+      schedule();
+    },
+    setKubectl(on) {
+      kubectlLabels = on;
+      dirtyRooms = true;
       schedule();
     },
     setMotion(on) {
