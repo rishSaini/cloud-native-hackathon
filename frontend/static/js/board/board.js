@@ -69,6 +69,10 @@ export default {
     const heroNum = h("span", { class: "hero-num" }, "–");
     const clock = h("p", { class: "board-clock code" });
     const pill = h("p", { class: "board-pill", role: "status", hidden: true }, "Reconnecting");
+    const banner = h("div", { class: "board-banner", hidden: true });
+    let bannerTimer = null;
+    let firstEvents = true; // events already in the first snapshot don't trigger a banner
+    let incidentNo = 400;
     const canvas = h("canvas", { class: "sky-canvas", "aria-hidden": "true" });
     const fallback = h("ul", { class: "room-grid", hidden: true, "aria-hidden": "true" });
     const cards = h("ul", { class: "status-cards" });
@@ -91,7 +95,7 @@ export default {
           h("p", { class: "hero-label" }, "at this break"),
         ),
       ),
-      h("div", { class: "board-sky" }, canvas, fallback),
+      h("div", { class: "board-sky" }, banner, canvas, fallback),
       h("aside", { class: "board-side", "aria-labelledby": "rooms-h" },
         h("h2", { id: "rooms-h", class: "side-title" }, "Rooms"),
         cards,
@@ -159,9 +163,34 @@ export default {
         if (tickerSeen.has(key)) continue;
         tickerSeen.add(key);
         tickerLines.push({ ...ev, key, fresh: true });
+        if (!firstEvents) maybeBanner(ev);
       }
+      firstEvents = false;
       while (tickerLines.length > TICKER_LINES) tickerLines.shift();
       if (tickerSeen.size > 500) tickerSeen.clear();
+    }
+
+    // "[INCIDENT-402] Room 251 closed ➔ evicting 35 pods to room-155, room-hall-b"
+    function maybeBanner(ev) {
+      let text = null;
+      const evict = /^(\d+) pods: (\S+) closed → (.+)$/.exec(ev.message || "");
+      if (ev.reason === "Evicted" && evict) {
+        text = `${evict[2]} closed ➔ evicting ${evict[1]} pods to ${evict[3]}`;
+      } else if (ev.reason === "Incident") {
+        text = `${ev.message} ➔ staff alerted, rescheduling pods that need it`;
+      }
+      if (!text) return;
+      incidentNo += 1;
+      banner.replaceChildren(
+        h("span", { class: "banner-tag code" }, `[INCIDENT-${incidentNo}]`),
+        h("span", { class: "banner-text code" }, text),
+      );
+      banner.hidden = false;
+      banner.classList.remove("enter");
+      void banner.offsetWidth; // restart the glide
+      banner.classList.add("enter");
+      clearTimeout(bannerTimer);
+      bannerTimer = setTimeout(() => { banner.hidden = true; }, 9000);
     }
 
     function paintTicker() {
@@ -251,6 +280,7 @@ export default {
       unsubs.forEach((u) => u());
       clearInterval(poll);
       clearInterval(clockTimer);
+      clearTimeout(bannerTimer);
       sky.destroy();
     };
   },
