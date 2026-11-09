@@ -1,0 +1,3 @@
+{"id": "sample-1", "title": "Sample: eBPF for runtime security", "abstract": "Placeholder talk for smoke tests. Replace with real schedule data.", "level": "intermediate"}
+{"id": "sample-2", "title": "Sample: Cutting Kubernetes costs", "abstract": "Placeholder talk about right-sizing clusters and FinOps.", "level": "beginner"}
+{"id": "sample-3", "title": "Sample: OpenTelemetry from zero", "abstract": "Placeholder talk about traces, metrics and logs.", "level": "beginner"}

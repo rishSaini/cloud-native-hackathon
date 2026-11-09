@@ -1,0 +1,9 @@
+#!/bin/sh
+# Removes AI tool attribution lines (for example "Co-Authored-By: Claude ...")
+# from commit messages, so commits list only the human authors.
+# The team discloses AI use in the README instead (hackathon Rule 5).
+msg_file="$1"
+tmp="$(mktemp)"
+grep -viE '^[[:space:]]*co-authored-by:.*(claude|anthropic|copilot|cursor|openai|chatgpt|codex|gemini|devin|aider)|generated (with|by) .*(claude|copilot|cursor|chatgpt|codex|gemini)' "$msg_file" > "$tmp"
+mv "$tmp" "$msg_file"
+exit 0

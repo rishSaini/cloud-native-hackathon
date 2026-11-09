@@ -1,0 +1,38 @@
+# Runs on every pull request. Gitar reads these results and diagnoses failures.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - deploy/kustomization.yaml
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+
+      - name: Install packages
+        run: pip install -r backend/requirements-dev.txt
+
+      - name: Run tests
+        working-directory: backend
+        run: python -m pytest -q
+
+      - name: Check that the Kubernetes manifests render
+        run: kubectl kustomize deploy > /dev/null
+
+      - name: Check that the image builds
+        run: docker build -t ci-check .
