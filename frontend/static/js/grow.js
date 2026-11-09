@@ -4,8 +4,9 @@
 //   phrase yourself (2), to "you've got this" (3+).
 // - Everyone gets a turn: a gentle round where each person has about a minute, every phone
 //   shows whose turn it is, and a rotating host keeps it fair. No microphone, no recording.
-// - A 30-second private reflection after each break; the answers adjust your next challenge.
-//   Only an anonymous "felt heard" share leaves the phone.
+// - A 30-second private reflection after each break; the answers are saved to your account
+//   (never shown to anyone else) and adjust your next challenge. Organizers only ever see an
+//   anonymous "felt heard" share across everyone.
 
 import { announce, motionOK } from "./a11y.js";
 import { api } from "./api.js";
@@ -143,7 +144,7 @@ export function openReflection({ groupId, hosted = false, onDone } = {}) {
       h("div", { class: "stack" }, check("askedQuestion", "Ask someone a question"), check("sharedWork", "Share what you're working on"))),
     choice("everyoneTurn", "Did everyone get a turn to talk?", [["yes", "Yes"], ["mostly", "Mostly"], ["no", "No"]]),
     choice("spokeEnough", "Did you get to say as much as you wanted?", [["yes", "Yes"], ["no", "Not really"]]),
-    h("p", { class: "muted" }, "Private to you. Only an anonymous \"felt heard\" number is shared, never your answers."),
+    h("p", { class: "muted" }, "Saved privately to your account to shape your next challenge. Nobody else sees your answers; organizers only see an anonymous \"felt heard\" share across everyone."),
     status,
     h("div", { class: "dialog-actions" }, h("button", { type: "button", class: "btn btn-secondary", onclick: () => d.close() }, "Skip"), send),
   );

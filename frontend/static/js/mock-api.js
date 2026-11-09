@@ -127,7 +127,8 @@ function snapshot() {
     attendees: state.attendees.map((a) => ({ ...a })),
     groups: state.groups.map((g) => ({ ...g, members: [...g.members] })),
     alone: state.alone,
-    feltHeard: heardTotal ? Math.round((heardYes / heardTotal) * 100) : state.feltHeard ?? null,
+    // A rehearsal value (finale) wins; otherwise the share from reflections, if any.
+    feltHeard: state.feltHeard ?? (heardTotal ? Math.round((heardYes / heardTotal) * 100) : null),
     events: state.events.slice(-12),
   };
 }
@@ -224,6 +225,7 @@ export const demo = {
   },
   reset() {
     state = freshState();
+    heardYes = 0; heardTotal = 0;
     emit("board", snapshot());
   },
 };
