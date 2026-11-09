@@ -15,6 +15,8 @@ places the person again.
 import logging
 from datetime import datetime, timezone
 
+from kubernetes.client.exceptions import ApiException
+
 from app.controller import placement
 from app.controller.loop import POD_SELECTOR, register
 from app.db import pool
@@ -49,14 +51,19 @@ def reconcile_reroutes(ctl) -> None:
                 continue
             attendee = pod.metadata.labels["affinity.dev/attendee"]
             slot = pod.metadata.labels["affinity.dev/slot"]
-            row = conn.execute(
-                "INSERT INTO moves (attendee_id, slot, count) VALUES (%s, %s, 0)"
-                " ON CONFLICT (attendee_id, slot) DO UPDATE SET count = moves.count RETURNING count",
-                (attendee, slot),
-            ).fetchone()
-            if row[0] >= MAX_MOVES_PER_SLOT:
-                continue  # moved once already this slot: stay, and the board shows the problem
-            conn.execute("UPDATE moves SET count = count + 1 WHERE attendee_id = %s AND slot = %s", (attendee, slot))
+            with conn.transaction():
+                row = conn.execute(
+                    "INSERT INTO moves (attendee_id, slot, count) VALUES (%s, %s, 0)"
+                    " ON CONFLICT (attendee_id, slot) DO UPDATE SET count = moves.count RETURNING count",
+                    (attendee, slot),
+                ).fetchone()
+                if row[0] >= MAX_MOVES_PER_SLOT:
+                    continue  # moved once already this slot: stay, and the board shows the problem
+                conn.execute("UPDATE moves SET count = count + 1 WHERE attendee_id = %s AND slot = %s", (attendee, slot))
             placement.reroute_started.setdefault(pod.metadata.name, datetime.now(timezone.utc))
-            ctl.core.delete_namespaced_pod(pod.metadata.name, ctl.namespace, grace_period_seconds=0)
+            try:
+                ctl.core.delete_namespaced_pod(pod.metadata.name, ctl.namespace, grace_period_seconds=0)
+            except ApiException as err:
+                if err.status != 404:
+                    raise
             log.info("rerouting %s: its room lost %s", pod.metadata.name, sorted(lost))

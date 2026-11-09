@@ -28,7 +28,7 @@ placement_duration = meter.create_histogram(
     "affinity_placement_duration_seconds", unit="s", description="Placement request to bound Pod"
 )
 reroute_duration = meter.create_histogram(
-    "affinity_reroute_duration_seconds", unit="s", description="Room change to the attendee's new placement"
+    "talkscout.affinity_reroute_duration_seconds", unit="s", description="Room change to the attendee's new placement"
 )
 # pod name -> when its reroute started (room change or eviction). Lost on restart: only the metric is.
 reroute_started: dict = {}
