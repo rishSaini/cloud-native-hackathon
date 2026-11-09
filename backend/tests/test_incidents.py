@@ -1,6 +1,6 @@
 """K11: incidents open once, move forward only, and resolving clears the room."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from elastic_transport import ApiResponseMeta, HttpHeaders
@@ -118,8 +118,10 @@ def test_resolving_captions_marks_the_room_working_and_cleared(es):
 
 
 def test_cleared_reports_stop_counting():
-    now = datetime(2026, 11, 10, 14, 30, tzinfo=timezone.utc)
-    minute = lambda ago: {"key": (now - timedelta(minutes=ago)).timestamp() * 1000, "doc_count": 3}
+    now = datetime(2026, 11, 10, 14, 30, tzinfo=UTC)
+    def minute(ago):
+        return {"key": (now - timedelta(minutes=ago)).timestamp() * 1000, "doc_count": 3}
+
     agg = {"signals": {"buckets": [{"key": "captions_down", "per_minute": {"buckets": [minute(2)]}}]}}
     assert state.confidences(agg, now)["captions_down"] > 2.5
     cleared = {"captions_down": (now - timedelta(minutes=1)).isoformat()}
@@ -178,7 +180,7 @@ def test_staff_cookie_login_then_list_and_patch(staff_client):
 
 
 def test_staff_resolution_keeps_captions_working_for_30_minutes():
-    now = datetime(2026, 11, 10, 14, 30, tzinfo=timezone.utc)
+    now = datetime(2026, 11, 10, 14, 30, tzinfo=UTC)
     cleared = {"captions_down": (now - timedelta(minutes=10)).isoformat()}
     assert state.staff_confirmed_captions("unknown", cleared, now) == "working"
     assert state.staff_confirmed_captions("down", cleared, now) == "down"

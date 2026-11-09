@@ -63,6 +63,6 @@ def update_incident(incident_id: str, patch: IncidentPatch, es=Depends(get_es)):
     try:
         return to_api(store.transition(es, incident_id, patch.state))
     except KeyError:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "No such incident")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "No such incident") from None
     except store.TransitionError as err:
-        raise HTTPException(status.HTTP_409_CONFLICT, str(err))
+        raise HTTPException(status.HTTP_409_CONFLICT, str(err)) from err

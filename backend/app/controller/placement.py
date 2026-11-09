@@ -9,7 +9,7 @@ and turns FailedScheduling events into plain language for that attendee only.
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from kubernetes.client.exceptions import ApiException
 from opentelemetry import metrics, trace
@@ -57,7 +57,7 @@ def scheduler_message(core, namespace: str, pod) -> str:
     events = core.list_namespaced_event(
         namespace, field_selector=f"involvedObject.uid={pod.metadata.uid},reason=FailedScheduling"
     ).items
-    latest = max(events, key=lambda e: e.last_timestamp or e.event_time or datetime.min.replace(tzinfo=timezone.utc), default=None)
+    latest = max(events, key=lambda e: e.last_timestamp or e.event_time or datetime.min.replace(tzinfo=UTC), default=None)
     return latest.message if latest else ""
 
 
@@ -120,7 +120,7 @@ def reconcile_placements(ctl) -> None:
                             "INSERT INTO notifications (attendee_id, kind, payload) VALUES (%s, 'placed', %s)",
                             (attendee, json.dumps({"slot": slot, "node": node, "room": room_of(node, slot)})),
                         )
-                        placement_duration.record((datetime.now(timezone.utc) - created_at).total_seconds())
+                        placement_duration.record((datetime.now(UTC) - created_at).total_seconds())
                 continue
 
             unplaced += 1

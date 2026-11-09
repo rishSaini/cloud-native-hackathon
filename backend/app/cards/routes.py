@@ -10,7 +10,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 
-from app.auth import attendee_from_session, COOKIE, current_attendee_id, new_attendee_id, set_session
+from app.auth import COOKIE, attendee_from_session, current_attendee_id, new_attendee_id, set_session
 from app.cards.capabilities import NEED_CODES
 from app.cards.store import get_store
 

@@ -6,7 +6,7 @@ minutes) is an Elasticsearch query, not app memory, because two app replicas
 run at once.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from elasticsearch import NotFoundError
 
@@ -46,7 +46,7 @@ def recently_reported(es, room: str, signal: str, reporter_hash: str) -> bool:
 
 def record_report(es, room: str, signal: str, reporter_hash: str, slot: str | None = None) -> dict:
     doc = {
-        "@timestamp": datetime.now(timezone.utc).isoformat(),
+        "@timestamp": datetime.now(UTC).isoformat(),
         "room": room,
         "signal": signal,
         "reporter_hash": reporter_hash,

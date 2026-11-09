@@ -61,4 +61,4 @@ def rank_talks_for(attendee_id: str, slot: str, k: int = 10) -> list[RankedNode]
         return []
     result = search_talks(es, interests, slot=slot, size=k, exclude_rooms=closed_rooms(es))
     nodes = [hit["node"] for hit in result["hits"] if hit.get("node")]
-    return [RankedNode(node=node, weight=w) for node, w in zip(nodes, weights(len(nodes)))]
+    return [RankedNode(node=node, weight=w) for node, w in zip(nodes, weights(len(nodes)), strict=True)]

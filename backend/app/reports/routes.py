@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 
 from app.auth import attendee_hash, current_attendee_id
 from app.es import get_es
-from app.reports.ingest import SIGNALS, record_report, recently_reported
+from app.reports.ingest import SIGNALS, recently_reported, record_report
 from app.telemetry.attrs import set_attrs
 
 router = APIRouter()
