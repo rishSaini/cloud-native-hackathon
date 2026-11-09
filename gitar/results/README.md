@@ -7,7 +7,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 
 | Pull requests | Reviewed by Gitar | Dashboard comments | Reviews | Inline comments | Fix commits by Gitar |
 |---|---|---|---|---|---|
-| 53 | 53 | 78 | 0 | 82 | 5 |
+| 54 | 53 | 78 | 0 | 82 | 6 |
 
 ## Pull requests
 
@@ -46,7 +46,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 | [#31](https://github.com/rishSaini/cloud-native-hackathon/pull/31) | K11: Accessibility incidents (open, acknowledge, resolve) | merged | 5 | 0 | [pr-0031.md](pr-0031.md) |
 | [#32](https://github.com/rishSaini/cloud-native-hackathon/pull/32) | Record the before audit in STORY.md | merged | 0 | 0 | [pr-0032.md](pr-0032.md) |
 | [#33](https://github.com/rishSaini/cloud-native-hackathon/pull/33) | K12: Public board (one msearch, no identifiers) | merged | 5 | 0 | [pr-0033.md](pr-0033.md) |
-| [#34](https://github.com/rishSaini/cloud-native-hackathon/pull/34) | K13: Ask Affinity (RAG through the ES inference API) | open | 3 | 0 | [pr-0034.md](pr-0034.md) |
+| [#34](https://github.com/rishSaini/cloud-native-hackathon/pull/34) | K13: Ask Affinity (RAG through the ES inference API) | open | 3 | 1 | [pr-0034.md](pr-0034.md) |
 | [#35](https://github.com/rishSaini/cloud-native-hackathon/pull/35) | K3: Group solver | open | 3 | 0 | [pr-0035.md](pr-0035.md) |
 | [#36](https://github.com/rishSaini/cloud-native-hackathon/pull/36) | Cosmic glass redesign, Star ID, Show across the table | merged | 1 | 0 | [pr-0036.md](pr-0036.md) |
 | [#37](https://github.com/rishSaini/cloud-native-hackathon/pull/37) | K5: Ruff lint, coverage and Gitar review rules | open | 0 | 0 | [pr-0037.md](pr-0037.md) |
@@ -66,6 +66,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 | [#51](https://github.com/rishSaini/cloud-native-hackathon/pull/51) | Night: the galaxy and stars back, with the editorial type and photos | open | 0 | 0 | [pr-0051.md](pr-0051.md) |
 | [#52](https://github.com/rishSaini/cloud-native-hackathon/pull/52) | R11: Sharing, connections, blocks, and safety reports | open | 4 | 0 | [pr-0052.md](pr-0052.md) |
 | [#53](https://github.com/rishSaini/cloud-native-hackathon/pull/53) | Couture: the night sky in the team's own design language | open | 0 | 0 | [pr-0053.md](pr-0053.md) |
+| [#54](https://github.com/rishSaini/cloud-native-hackathon/pull/54) | Personal: Affinity in the style of Diya's site, and for everyone | open | 0 | 0 | no Gitar activity |
 
 ## What Gitar flagged
 
@@ -154,6 +155,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 
 ## Fixes Gitar pushed
 
+- [#34 `e3ea5c5`](https://github.com/rishSaini/cloud-native-hackathon/commit/e3ea5c538551f238da0bc02f0b17e71faaee377b): fix: harden ask timeouts and telemetry names
 - [#41 `cd0332e`](https://github.com/rishSaini/cloud-native-hackathon/commit/cd0332eea8a98ff66aecead4192357d422e557e2): fix: prefix telemetry names with talkscout
 - [#43 `88b9a4f`](https://github.com/rishSaini/cloud-native-hackathon/commit/88b9a4f9022cd6fdb87b1573bfa517588af0bc3e): fix: preserve unmanaged node taints
 - [#44 `f3a7440`](https://github.com/rishSaini/cloud-native-hackathon/commit/f3a7440fca43a09a9219b7ef390e6077cfecdee2): fix: persist reroute moves and prefix telemetry
