@@ -188,3 +188,44 @@ body.on-sky {
   from { opacity: 0; transform: translate(-30%, -0.5rem); }
   to   { opacity: 1; transform: translate(-50%, 0); }
 }
+
+/* Finale: "0 people alone", large and centered over the constellations. */
+.finale {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease);
+  background: radial-gradient(ellipse at center, rgba(14, 20, 48, 0.72) 0%, rgba(14, 20, 48, 0.35) 45%, rgba(14, 20, 48, 0) 70%);
+}
+.finale[hidden] { display: none; }
+.finale.show { opacity: 1; }
+.finale-num {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(8rem, 16vw, 16rem);
+  line-height: 0.9;
+  color: var(--starlight);
+  text-shadow: 0 0 60px rgba(244, 241, 255, 0.55);
+}
+.finale-word { margin: 0.5rem 0 0; font-size: clamp(2rem, 3.6vw, 3.75rem); color: var(--starlight); }
+
+/* Demo mode key hint: small and discreet. */
+.demo-hint {
+  position: fixed;
+  left: 1rem; bottom: 0.5rem;
+  margin: 0;
+  font-size: 0.75rem;
+  color: rgba(185, 182, 217, 0.55);
+  z-index: 6;
+}
+
+/* kubectl mode */
+.board.kubectl .status-card .room-name { font-family: var(--font-code); font-weight: 500; }
+.board.kubectl .hero-word { font-family: var(--font-code); font-size: clamp(1.25rem, 1.8vw, 2.25rem); }

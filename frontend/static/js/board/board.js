@@ -6,7 +6,8 @@
 // The canvas is decorative for screen readers; a visually hidden summary carries the
 // same facts. With reduced motion or calm mode the canvas is replaced by a plain grid.
 
-import { motionOK, onPrefsChange, getPrefs } from "../a11y.js";
+import { announce, motionOK, onPrefsChange, getPrefs, setPrefs } from "../a11y.js";
+import { demo as mockDemo } from "../mock-api.js";
 import { api } from "../api.js";
 import { formatTime, h } from "../format.js";
 import { isLive, subscribe } from "../stream.js";
@@ -58,7 +59,8 @@ export default {
   title: "Board",
   chrome: false,
   sky: true,
-  async render(main) {
+  async render(main, { query } = {}) {
+    const demoMode = query?.get("demo") === "1";
     ensureStyles();
     let board = null;
     const fixedSeen = new Map();  // roomId -> { at: Date.now(), fixedAt }
@@ -67,6 +69,11 @@ export default {
 
     // ---- skeleton ----
     const heroNum = h("span", { class: "hero-num" }, "–");
+    const heroWord = h("span", { class: "hero-word" }, " people alone");
+    const finale = h("div", { class: "finale", hidden: true, "aria-hidden": "true" },
+      h("p", { class: "finale-num" }, "0"), h("p", { class: "finale-word" }, "people alone"));
+    const hint = demoMode ? h("p", { class: "demo-hint code", "aria-hidden": "true" },
+      "demo  C close room · G groups · I incident · F finale · K kubectl · R reset") : null;
     const clock = h("p", { class: "board-clock code" });
     const pill = h("p", { class: "board-pill", role: "status", hidden: true }, "Reconnecting");
     const banner = h("div", { class: "board-banner", hidden: true });
@@ -91,11 +98,11 @@ export default {
           pill,
         ),
         h("div", { class: "hero", "aria-hidden": "true" },
-          h("p", { class: "hero-line" }, heroNum, h("span", { class: "hero-word" }, " people alone")),
+          h("p", { class: "hero-line" }, heroNum, heroWord),
           h("p", { class: "hero-label" }, "at this break"),
         ),
       ),
-      h("div", { class: "board-sky" }, banner, canvas, fallback),
+      h("div", { class: "board-sky" }, banner, canvas, fallback, finale),
       h("aside", { class: "board-side", "aria-labelledby": "rooms-h" },
         h("h2", { id: "rooms-h", class: "side-title" }, "Rooms"),
         cards,
@@ -129,7 +136,7 @@ export default {
       const fixed = fixedSeen.get(room.id);
       const lines = [
         h("p", { class: "status-line" },
-          h("span", { class: "room-name" }, room.name),
+          h("span", { class: "room-name" }, kube() ? `node/${room.id}` : room.name),
           h("span", { class: "sep", "aria-hidden": "true" }, " · "),
           h("span", { class: `status-word s-${status.toLowerCase()}` }, status),
           h("span", { class: "sep", "aria-hidden": "true" }, " · "),
@@ -221,7 +228,13 @@ export default {
       }));
     }
 
+    function kube() { return !!getPrefs().kubectl; }
+
     function paintMode() {
+      view.classList.toggle("kubectl", kube());
+      sky.setKubectl(kube());
+      heroWord.textContent = kube() ? " pods unscheduled" : " people alone";
+      if (board) paint();
       const still = !motionOK();
       canvas.hidden = still;
       fallback.hidden = !still;
@@ -269,6 +282,43 @@ export default {
     const poll = setInterval(() => { if (!isLive()) refresh(); }, POLL_MS);
     const clockTimer = setInterval(() => { tickClock(); if (board) { trackFixed(); cards.replaceChildren(...board.rooms.map(cardFor)); } }, 5000);
 
+    // ---- demo mode: #/board?demo=1 ----
+    function playFinale() {
+      mockDemo.finale();
+      banner.hidden = true; // a clean stage for the finale
+      // Stars drift into constellations first; then "0 people alone" fades in.
+      finale.hidden = false;
+      finale.classList.remove("show");
+      setTimeout(() => finale.classList.add("show"), motionOK() ? 1400 : 0);
+      announce("Finale: everyone is in a group. Zero people alone.");
+    }
+    const KEYS = {
+      c: () => { mockDemo.closeBusiest(); announce("Closed the busiest room."); },
+      g: () => { mockDemo.formGroups(); announce("Formed break groups."); },
+      i: () => { mockDemo.openIncident(); announce("Opened a captions incident."); },
+      f: playFinale,
+      k: () => { setPrefs({ kubectl: !kube() }); announce(kube() ? "kubectl mode on." : "kubectl mode off."); },
+      r: () => {
+        mockDemo.reset();
+        finale.hidden = true; finale.classList.remove("show");
+        tickerLines.length = 0; tickerSeen.clear(); banner.hidden = true;
+        announce("Board reset.");
+      },
+    };
+    function onKey(e) {
+      if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest?.("input, textarea, select, [contenteditable]")) return;
+      const key = e.key.toLowerCase();
+      const fn = KEYS[key];
+      if (!fn) return;
+      e.preventDefault();
+      if (key !== "f" && key !== "k") { finale.hidden = true; finale.classList.remove("show"); }
+      fn();
+    }
+    if (demoMode) {
+      document.addEventListener("keydown", onKey);
+      view.append(hint);
+    }
+
     paintMode();
     await refresh();
 
@@ -282,6 +332,7 @@ export default {
       clearInterval(clockTimer);
       clearTimeout(bannerTimer);
       sky.destroy();
+      document.removeEventListener("keydown", onKey);
     };
   },
 };

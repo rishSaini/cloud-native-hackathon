@@ -254,6 +254,13 @@ function formGroups(everyone = false) {
   let t = 0;
   for (let i = 0; i < take.length; i += 3) {
     const members = take.slice(i, i + 3);
+    // Nobody is grouped alone: a single leftover joins the previous group (groups of 2–4).
+    if (members.length === 1 && state.groups.length) {
+      const last = state.groups[state.groups.length - 1];
+      members[0].groupId = last.id;
+      last.members.push(members[0].displayId);
+      break;
+    }
     const id = `g-${randomId()}`;
     const tableId = TABLES[t % TABLES.length];
     t += 1;
