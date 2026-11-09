@@ -67,7 +67,7 @@ main:focus { outline: none; }
   left: 0; right: 0; bottom: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   max-width: 36rem;
   margin: 0 auto;
   padding: 0.25rem 0.5rem env(safe-area-inset-bottom);

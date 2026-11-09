@@ -10,7 +10,8 @@ import { subscribe } from "./stream.js";
 // render may return a cleanup function, called when the person leaves the screen.
 const ROUTES = {
   "/": () => import("./screens/welcome.js"),
-  "/now": () => import("./screens/now.js"),
+  "/home": () => import("./screens/now.js"),
+  "/now": () => import("./screens/now.js"), // old links still work
   "/talks": () => import("./screens/talks.js"),
   "/card": () => import("./screens/card.js"),
   "/card/show": () => import("./screens/show.js"),
@@ -23,7 +24,7 @@ const ROUTES = {
   "/staff": () => import("./screens/staff.js"),
 };
 
-const TAB_FOR = { "/now": "now", "/talks": "now", "/card": "card", "/card/show": "card", "/group": "group", "/report": "report", "/met": "met", "/grow": "met" };
+const TAB_FOR = { "/home": "home", "/now": "home", "/talks": "home", "/card": "card", "/card/show": "card", "/group": "group", "/report": "report", "/met": "met", "/grow": "met" };
 
 const main = document.getElementById("main");
 const tabbar = document.getElementById("tabbar");

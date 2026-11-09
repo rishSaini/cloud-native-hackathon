@@ -85,10 +85,10 @@ export default {
           h("h1", { id: "step-h" }, twoTone("Find your talk. ", "Find your people.")),
           h("p", { class: "lede" }, "Here on your own? First conference? Not big on small talk? Same for lots of people here. Make a small card, and we'll find you a good talk and a friendly table at every break."),
           card
-            ? h("a", { class: "btn btn-primary btn-block", href: "#/card" }, "See my card")
+            ? h("a", { class: "btn btn-primary btn-block", href: "#/home" }, "Go home")
             : h("button", { type: "button", class: "btn btn-primary btn-block", onclick: () => go("template") }, "Make my card"),
           card
-            ? h("p", { class: "welcome-note" }, h("a", { href: "#/talks" }, "Browse talks"))
+            ? h("p", { class: "welcome-note" }, h("a", { href: "#/card" }, "See my card"))
             : h("p", { class: "muted welcome-note" }, "About 30 seconds. Only people at your table see your card."),
         );
       },
@@ -169,8 +169,8 @@ export default {
           star,
           h("h1", { id: "step-h" }, twoTone("Your card is ", "ready.")),
           h("p", { class: "lede" }, "You're ", h("code", { class: "display-id" }, id), ". Look for yourself on the big screen."),
-          h("a", { class: "btn btn-primary btn-block", href: "#/card" }, "See my card"),
-          h("p", { class: "welcome-note" }, h("a", { href: "#/group" }, "Find me a break group")),
+          h("a", { class: "btn btn-primary btn-block", href: "#/home" }, "Find me a talk"),
+          h("p", { class: "welcome-note" }, h("a", { href: "#/card" }, "See my card")),
         );
       },
     };
