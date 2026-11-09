@@ -28,20 +28,29 @@ HIGHLIGHT = {
 MEANING_BADGE = "Matched by meaning"
 
 
-def _filter(slot: str | None) -> dict:
-    return {"filter": [{"term": {"slot": slot}}]} if slot else {}
+def _filter(slot: str | None, exclude_rooms=()) -> dict:
+    filters = [{"term": {"slot": slot}}] if slot else []
+    if exclude_rooms:
+        filters.append({"bool": {"must_not": [{"terms": {"room": sorted(exclude_rooms)}}]}})
+    return {"filter": filters} if filters else {}
 
 
-def keyword_query(q: str, slot: str | None) -> dict:
-    return {"bool": {"must": [{"multi_match": {"query": q, "fields": LEXICAL_FIELDS}}], **_filter(slot)}}
+def keyword_query(q: str, slot: str | None, exclude_rooms=()) -> dict:
+    return {
+        "bool": {
+            "must": [{"multi_match": {"query": q, "fields": LEXICAL_FIELDS}}],
+            **_filter(slot, exclude_rooms),
+        }
+    }
 
 
-def hybrid_retriever(q: str, slot: str | None) -> dict:
+def hybrid_retriever(q: str, slot: str | None, exclude_rooms=()) -> dict:
+    flt = _filter(slot, exclude_rooms)
     return {
         "rrf": {
             "retrievers": [
-                {"standard": {"query": {"semantic": {"field": SEMANTIC_FIELD, "query": q}}, **_filter(slot)}},
-                {"standard": {"query": {"multi_match": {"query": q, "fields": LEXICAL_FIELDS}}, **_filter(slot)}},
+                {"standard": {"query": {"semantic": {"field": SEMANTIC_FIELD, "query": q}}, **flt}},
+                {"standard": {"query": {"multi_match": {"query": q, "fields": LEXICAL_FIELDS}}, **flt}},
             ]
         }
     }
@@ -67,20 +76,21 @@ def to_hit(raw: dict, mode: str) -> dict:
     }
 
 
-def _run(es, q: str, slot: str | None, size: int, mode: str) -> dict:
+def _run(es, q: str, slot: str | None, size: int, mode: str, exclude_rooms=()) -> dict:
     common = {"index": m.TALKS, "size": size, "source": SOURCE_FIELDS, "highlight": HIGHLIGHT}
     if mode == "hybrid":
-        return es.search(retriever=hybrid_retriever(q, slot), **common)
-    return es.search(query=keyword_query(q, slot), **common)
+        return es.search(retriever=hybrid_retriever(q, slot, exclude_rooms), **common)
+    return es.search(query=keyword_query(q, slot, exclude_rooms), **common)
 
 
-def search_talks(es, q: str, slot: str | None = None, size: int = 10) -> dict:
+def search_talks(es, q: str, slot: str | None = None, size: int = 10, exclude_rooms=()) -> dict:
+    """`exclude_rooms` drops talks in those rooms (K8 passes the closed rooms)."""
     with tracer.start_as_current_span("search.hybrid") as span:
         set_attrs(span, search_query_length=len(q))  # never the query text itself
         try:
             mode = "hybrid" if semantic_available(es) else "keyword"
             try:
-                resp = _run(es, q, slot, size, mode)
+                resp = _run(es, q, slot, size, mode, exclude_rooms)
             except NotFoundError:
                 raise
             except ApiError as err:  # for example, the embedding service is down
@@ -88,7 +98,7 @@ def search_talks(es, q: str, slot: str | None = None, size: int = 10) -> dict:
                     raise
                 log.warning("hybrid search failed (%s); falling back to keyword search", type(err).__name__)
                 mode = "keyword"
-                resp = _run(es, q, slot, size, mode)
+                resp = _run(es, q, slot, size, mode, exclude_rooms)
         except NotFoundError:
             log.warning("index %s not found", m.TALKS)
             set_attrs(span, search_hits=0)
