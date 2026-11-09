@@ -6,8 +6,8 @@ RUN pip install --no-cache-dir -r backend/requirements.txt
 
 COPY backend backend
 COPY frontend frontend
-# Kept in the image so a one-off Kubernetes Job can load data into Elasticsearch.
-COPY scripts/ingest.py scripts/ingest.py
+# Kept in the image so one-off Kubernetes Jobs (es_setup, ingest) can run them.
+COPY scripts scripts
 COPY data data
 
 ARG APP_VERSION=dev

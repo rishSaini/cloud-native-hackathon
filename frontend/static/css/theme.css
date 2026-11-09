@@ -534,3 +534,72 @@ h3 { font-family: var(--font-ui); font-weight: 700; }
 .met-list { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
 .met-where { margin: 0; color: var(--ink-soft); font-size: 0.9375rem; }
 .met-working { margin: 0.625rem 0 0; }
+
+/* ---------- Header settings link ---------- */
+.settings-link {
+  display: grid; place-items: center;
+  flex: none;
+  width: 44px; height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(232, 225, 213, 0.95);
+  background: var(--paper-raised);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+.settings-link svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+.settings-link:hover { background: #FFFFFF; }
+@media (max-width: 26rem) {
+  .app-header { gap: 0.5rem; }
+  .demo-badge { padding: 0.25rem 0.5rem; font-size: 0.8125rem; }
+}
+
+/* ---------- Settings ---------- */
+.settings .card h2 { margin-bottom: 0.25rem; }
+.setting-group { border: 0; margin: 0; padding: 0; }
+.setting-group legend { padding: 0; font-weight: 700; font-size: 1.0625rem; margin-bottom: 0.375rem; }
+.setting-group .hint { margin: 0 0 0.5rem; color: var(--ink-soft); font-size: 0.9375rem; }
+.setting-options { display: grid; gap: 0.5rem; }
+.setting-option { position: relative; }
+.setting-radio { position: absolute; opacity: 0; inset: 0; margin: 0; pointer-events: none; }
+.setting-option label {
+  display: flex; flex-direction: column; gap: 0.125rem;
+  min-height: 3.25rem;
+  padding: 0.625rem 1rem 0.625rem 2.75rem;
+  border: 1.5px solid var(--line);
+  border-radius: 1rem;
+  background: var(--paper-raised);
+  cursor: pointer;
+  position: relative;
+}
+.setting-option label::before {
+  content: "";
+  position: absolute; left: 1rem; top: 50%;
+  width: 1.125rem; height: 1.125rem;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  border: 2px solid var(--ink-soft);
+  background: #FFFFFF;
+}
+.setting-radio:checked + label { border-color: var(--teal-deep); background: var(--teal-soft); }
+.setting-radio:checked + label::before { border-color: var(--teal-deep); background: radial-gradient(circle, var(--teal-deep) 0 45%, #FFFFFF 50%); }
+.setting-radio:focus-visible + label { outline: 3px solid var(--teal-deep); outline-offset: 2px; }
+.setting-option-label { font-weight: 700; }
+.setting-option-detail { color: var(--ink-soft); font-size: 0.875rem; }
+.setting-options:has(#text-size-default) { grid-template-columns: repeat(3, 1fr); }
+.setting-options:has(#text-size-default) label { padding-left: 2.5rem; padding-right: 0.5rem; }
+#mode-kubectl + label .setting-option-detail { font-family: var(--font-code); font-size: 0.8125rem; }
+.text-preview { margin: 0; padding: 0.875rem 1rem; border-radius: 1rem; background: var(--paper); border: 1px dashed var(--line); font-family: var(--font-display); font-size: 1.25rem; }
+.privacy-list { margin: 0; padding-left: 1.25rem; display: grid; gap: 0.5rem; }
+.danger-zone { border-color: #E5BCC4; }
+.setting-options:has(#text-size-default) { grid-template-columns: repeat(auto-fit, minmax(6.25rem, 1fr)); }
+.setting-options:has(#text-size-default) label { padding-left: 2.375rem; padding-right: 0.375rem; }
+.setting-options:has(#text-size-default) label::before { left: 0.75rem; }
+.brand-mark { flex: none; }
+@media (max-width: 22rem) {
+  .app-header { flex-wrap: wrap; }
+}
+.demo-badge, .term-open { white-space: nowrap; flex: none; }
+.app-header .brand { min-width: 0; }
+/* The header wraps whenever its items don't fit (larger text, zoom); on a normal phone it's one line. */
+.app-header { flex-wrap: wrap; row-gap: 0.5rem; }
+.app-header .brand { min-width: auto; flex: none; }
