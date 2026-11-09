@@ -5,6 +5,7 @@ from pathlib import Path
 from elasticsearch import NotFoundError, TransportError
 from fastapi import Depends, FastAPI, Query
 from fastapi.responses import HTMLResponse, PlainTextResponse, Response
+from fastapi.staticfiles import StaticFiles
 from opentelemetry import metrics, trace
 
 from app import config
@@ -23,6 +24,10 @@ search_requests = meter.create_counter(
 app = FastAPI(title="TalkScout")
 
 FRONTEND = Path(__file__).resolve().parents[2] / "frontend" / "index.html"
+STATIC_DIR = FRONTEND.parent / "static"
+
+# The frontend's CSS and JavaScript modules. No build step: files are served as-is.
+app.mount("/static", StaticFiles(directory=STATIC_DIR, check_dir=False), name="static")
 
 
 # Kubernetes probes. They do not check Elasticsearch, so a slow Elasticsearch
