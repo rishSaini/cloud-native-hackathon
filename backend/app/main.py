@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from app import config
 from app.es import get_es
 
-app = FastAPI(title="TalkScout")
+app = FastAPI(title="talkscout")
 
 FRONTEND = Path(__file__).resolve().parents[2] / "frontend" / "index.html"
 STATIC_DIR = FRONTEND.parent / "static"

@@ -46,7 +46,7 @@ def similarity_matrix(attendee_ids: list[str], k: int = 20) -> dict[tuple[str, s
     if len(ids) < 2:
         return {}
     es = get_es()
-    with tracer.start_as_current_span("elasticsearch.candidates") as span:
+    with tracer.start_as_current_span("talkscout.elasticsearch.candidates") as span:
         docs = es.mget(index=m.PEOPLE, ids=ids)["docs"]
         interests = {d["_id"]: d["_source"]["interests"] for d in docs if d.get("found")}
         people = [p for p in ids if p in interests]

@@ -63,7 +63,7 @@ def talk_card(t: dict) -> dict:
 
 @router.post("/api/ask")
 def ask(body: AskIn, es=Depends(get_es)):
-    with tracer.start_as_current_span("ask.rag") as span:
+    with tracer.start_as_current_span("talkscout.ask.rag") as span:
         found = search_talks(es, body.question, slot=body.slot, size=TOP_K)
         talks = found["hits"]
         set_attrs(span, search_hits=len(talks))

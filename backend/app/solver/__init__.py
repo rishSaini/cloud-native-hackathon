@@ -27,9 +27,9 @@ from opentelemetry import metrics, trace
 
 tracer = trace.get_tracer("affinity")
 meter = metrics.get_meter("affinity")
-group_size_hist = meter.create_histogram("affinity_group_size", description="Sizes of groups formed")
+group_size_hist = meter.create_histogram("talkscout.group.size", description="Sizes of groups formed")
 solver_duration_hist = meter.create_histogram(
-    "affinity_solver_duration_seconds", unit="s", description="Group solver time"
+    "talkscout.solver.duration", unit="s", description="Group solver time"
 )
 
 REPEAT_PENALTY = 0.5
@@ -240,7 +240,7 @@ def solve(
     seed: int = 0,
 ) -> SolverResult:
     start = time.monotonic()
-    with tracer.start_as_current_span("solver.run") as span:
+    with tracer.start_as_current_span("talkscout.solver.run") as span:
         st = _State(people, tables, similarity, min_size, max_size)
         _greedy(st)
         _local_search(st, random.Random(seed), start + time_limit_ms / 1000)
