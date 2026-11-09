@@ -91,6 +91,12 @@ function showDemoBadge() {
 }
 
 window.addEventListener("hashchange", render);
+
+// The kubectl drawer loads on first use.
+document.getElementById("term-open")?.addEventListener("click", async () => {
+  const { openKubectl } = await import("./kubectl.js");
+  openKubectl();
+});
 onMockChange(showDemoBadge);
 showDemoBadge();
 render();
