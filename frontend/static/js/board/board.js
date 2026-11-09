@@ -70,6 +70,8 @@ export default {
     // ---- skeleton ----
     const heroNum = h("span", { class: "hero-num" }, "–");
     const heroWord = h("span", { class: "hero-word" }, " people alone");
+    // Anonymous: the share of reflections that said everyone got a turn.
+    const heardLine = h("p", { class: "hero-heard", hidden: true });
     const finale = h("div", { class: "finale", hidden: true, "aria-hidden": "true" },
       h("p", { class: "finale-num" }, "0"), h("p", { class: "finale-word" }, "people alone"));
     const hint = demoMode ? h("p", { class: "demo-hint code", "aria-hidden": "true" },
@@ -100,6 +102,7 @@ export default {
         h("div", { class: "hero", "aria-hidden": "true" },
           h("p", { class: "hero-line" }, heroNum, heroWord),
           h("p", { class: "hero-label" }, "at this break"),
+          heardLine,
         ),
       ),
       h("div", { class: "board-sky" }, banner, canvas, fallback, finale),
@@ -247,6 +250,8 @@ export default {
       trackFixed();
       addTicker(board.events);
       heroNum.textContent = String(board.alone ?? 0);
+      heardLine.hidden = board.feltHeard == null;
+      if (board.feltHeard != null) heardLine.textContent = `${board.feltHeard}% felt heard`;
       cards.replaceChildren(...(board.rooms || []).map(cardFor));
       paintTicker();
       paintFallback();

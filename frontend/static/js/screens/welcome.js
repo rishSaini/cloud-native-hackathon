@@ -79,13 +79,13 @@ export default {
           heroArt(),
           h("p", { class: "eyebrow" }, "KubeCon · Salt Lake City"),
           h("h1", { id: "step-h" }, "Find your talk. Find your people."),
-          h("p", { class: "lede" }, "Make a small card about what you're working on and how people should talk to you. We'll find you a good talk and a friendly table at every break."),
+          h("p", { class: "lede" }, "Here on your own? First conference? Not big on small talk? Same for lots of people here. Make a small card, and we'll find you a good talk and a friendly table at every break."),
           card
             ? h("a", { class: "btn btn-primary btn-block", href: "#/now" }, "Go to now")
             : h("button", { type: "button", class: "btn btn-primary btn-block", onclick: () => go("template") }, "Make my card"),
           card
             ? h("p", { class: "welcome-note" }, h("a", { href: "#/card" }, "See my card"))
-            : h("p", { class: "muted welcome-note" }, "It takes about 30 seconds. Your card is private: only people in your group see it."),
+            : h("p", { class: "muted welcome-note" }, "About 30 seconds. Only people at your table see your card."),
         );
       },
 
@@ -103,8 +103,8 @@ export default {
         return h("section", { "aria-labelledby": "step-h" },
           backButton("welcome"),
           progress("template"),
-          h("h1", { id: "step-h" }, "How should people talk to you?"),
-          h("p", { class: "muted" }, "Pick one to start. You can change the words next."),
+          h("h1", { id: "step-h" }, "What makes conversations easier for you?"),
+          h("p", { class: "muted" }, "Pick whatever sounds most like you. You can change the words next."),
           h("ul", { class: "tiles" }, tiles),
         );
       },
@@ -154,8 +154,8 @@ export default {
         return h("section", {},
           backButton("card"),
           progress("needs"),
-          h("h1", { id: "step-h" }, "What helps you?"),
-          h("p", { class: "muted" }, "Tick anything that helps, or none. You can change this later."),
+          h("h1", { id: "step-h" }, "What helps you feel comfortable?"),
+          h("p", { class: "muted" }, "Everyone has something. Tick anything that helps, or none. You can change this later."),
           form,
         );
       },

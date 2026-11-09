@@ -13,16 +13,34 @@ from fastapi.testclient import TestClient
 os.environ.setdefault("AFFINITY_STRICT_TELEMETRY", "1")
 
 
-class FakeES:
-    """Stands in for Elasticsearch so tests run without a cluster."""
+class _FakeIndices:
+    def __init__(self, properties):
+        self.properties = properties
 
-    def __init__(self, docs):
+    def get_mapping(self, index):
+        return {index: {"mappings": {"properties": self.properties}}}
+
+
+class FakeES:
+    """Stands in for Elasticsearch so tests run without a cluster.
+
+    `semantic=True` makes the talks mapping include `abstract_semantic`, so
+    search runs in hybrid mode. `last_search` holds the last search() kwargs.
+    """
+
+    def __init__(self, docs, semantic=False):
         self.docs = docs
+        properties = {"title": {"type": "text"}}
+        if semantic:
+            properties["abstract_semantic"] = {"type": "semantic_text"}
+        self.indices = _FakeIndices(properties)
+        self.last_search = None
 
     def ping(self):
         return True
 
     def search(self, **kwargs):
+        self.last_search = kwargs
         return {
             "hits": {
                 "total": {"value": len(self.docs)},

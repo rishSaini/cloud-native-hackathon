@@ -7,7 +7,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 
 | Pull requests | Reviewed by Gitar | Dashboard comments | Reviews | Inline comments | Fix commits by Gitar |
 |---|---|---|---|---|---|
-| 26 | 25 | 34 | 0 | 33 | 0 |
+| 54 | 54 | 79 | 0 | 82 | 7 |
 
 ## Pull requests
 
@@ -16,29 +16,57 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 | [#1](https://github.com/rishSaini/cloud-native-hackathon/pull/1) | K0: Contract stubs for search, solver, and telemetry | merged | 0 | 0 | [pr-0001.md](pr-0001.md) |
 | [#2](https://github.com/rishSaini/cloud-native-hackathon/pull/2) | R0: contract stubs for auth, break inputs and free seats | merged | 0 | 0 | [pr-0002.md](pr-0002.md) |
 | [#3](https://github.com/rishSaini/cloud-native-hackathon/pull/3) | Export Gitar reviews to gitar/results for the demo | merged | 2 | 0 | [pr-0003.md](pr-0003.md) |
-| [#4](https://github.com/rishSaini/cloud-native-hackathon/pull/4) | K1: Elasticsearch foundation (indices, data stream, inference endpoint) | open | 1 | 0 | [pr-0004.md](pr-0004.md) |
+| [#4](https://github.com/rishSaini/cloud-native-hackathon/pull/4) | K1: Elasticsearch foundation (indices, data stream, inference endpoint) | merged | 1 | 0 | [pr-0004.md](pr-0004.md) |
 | [#5](https://github.com/rishSaini/cloud-native-hackathon/pull/5) | Serve frontend/static at /static | merged | 1 | 0 | [pr-0005.md](pr-0005.md) |
 | [#6](https://github.com/rishSaini/cloud-native-hackathon/pull/6) | Affinity frontend foundation (step 1) | merged | 2 | 0 | [pr-0006.md](pr-0006.md) |
 | [#7](https://github.com/rishSaini/cloud-native-hackathon/pull/7) | Onboarding and your card (step 2) | merged | 1 | 0 | [pr-0007.md](pr-0007.md) |
-| [#8](https://github.com/rishSaini/cloud-native-hackathon/pull/8) | K2: Synthetic schedule (20 talks on the contract's Nodes) and ingest | open | 0 | 0 | [pr-0008.md](pr-0008.md) |
+| [#8](https://github.com/rishSaini/cloud-native-hackathon/pull/8) | K2: Synthetic schedule (20 talks on the contract's Nodes) and ingest | merged | 0 | 0 | [pr-0008.md](pr-0008.md) |
 | [#9](https://github.com/rishSaini/cloud-native-hackathon/pull/9) | Now screen: placement, status pill and reroute banner (step 3) | merged | 1 | 0 | [pr-0009.md](pr-0009.md) |
 | [#10](https://github.com/rishSaini/cloud-native-hackathon/pull/10) | Set up team coffeecon | merged | 0 | 0 | [pr-0010.md](pr-0010.md) |
-| [#11](https://github.com/rishSaini/cloud-native-hackathon/pull/11) | K6: Hybrid talk search (semantic + BM25 with RRF) | open | 2 | 0 | [pr-0011.md](pr-0011.md) |
+| [#11](https://github.com/rishSaini/cloud-native-hackathon/pull/11) | K6: Hybrid talk search (semantic + BM25 with RRF) | merged | 2 | 0 | [pr-0011.md](pr-0011.md) |
 | [#12](https://github.com/rishSaini/cloud-native-hackathon/pull/12) | Big-screen board, part 1 (step 4) | merged | 2 | 0 | [pr-0012.md](pr-0012.md) |
-| [#13](https://github.com/rishSaini/cloud-native-hackathon/pull/13) | K7: People index and kNN similarity matrix | open | 1 | 0 | [pr-0013.md](pr-0013.md) |
-| [#14](https://github.com/rishSaini/cloud-native-hackathon/pull/14) | K8: Talk ranking for placement (rank_talks_for) | open | 1 | 0 | [pr-0014.md](pr-0014.md) |
+| [#13](https://github.com/rishSaini/cloud-native-hackathon/pull/13) | K7: People index and kNN similarity matrix | merged | 1 | 0 | [pr-0013.md](pr-0013.md) |
+| [#14](https://github.com/rishSaini/cloud-native-hackathon/pull/14) | K8: Talk ranking for placement (rank_talks_for) | merged | 1 | 0 | [pr-0014.md](pr-0014.md) |
 | [#15](https://github.com/rishSaini/cloud-native-hackathon/pull/15) | Group screen with check-in, block and report (step 5) | merged | 2 | 0 | [pr-0015.md](pr-0015.md) |
-| [#16](https://github.com/rishSaini/cloud-native-hackathon/pull/16) | K9: Room reports (data stream, ES rate limit) | open | 2 | 0 | [pr-0016.md](pr-0016.md) |
+| [#16](https://github.com/rishSaini/cloud-native-hackathon/pull/16) | K9: Room reports (data stream, ES rate limit) | merged | 2 | 0 | [pr-0016.md](pr-0016.md) |
 | [#17](https://github.com/rishSaini/cloud-native-hackathon/pull/17) | Design pass: warm paper theme, badge-style name cards | merged | 1 | 0 | [pr-0017.md](pr-0017.md) |
-| [#18](https://github.com/rishSaini/cloud-native-hackathon/pull/18) | K10: Room-state engine (ES aggregation, decay, hysteresis, sweep CronJob) | open | 1 | 0 | [pr-0018.md](pr-0018.md) |
+| [#18](https://github.com/rishSaini/cloud-native-hackathon/pull/18) | K10: Room-state engine (ES aggregation, decay, hysteresis, sweep CronJob) | merged | 1 | 0 | [pr-0018.md](pr-0018.md) |
 | [#19](https://github.com/rishSaini/cloud-native-hackathon/pull/19) | Report and Staff screens, room climate, eviction banner (step 6) | merged | 3 | 0 | [pr-0019.md](pr-0019.md) |
 | [#20](https://github.com/rishSaini/cloud-native-hackathon/pull/20) | kubectl drawer: a terminal over the paper layout | merged | 1 | 0 | [pr-0020.md](pr-0020.md) |
 | [#21](https://github.com/rishSaini/cloud-native-hackathon/pull/21) | Comfort dial: high energy, steady, low sensory, recharging | merged | 3 | 0 | [pr-0021.md](pr-0021.md) |
 | [#22](https://github.com/rishSaini/cloud-native-hackathon/pull/22) | Arrival, exchange stars, and People you've met | merged | 1 | 0 | [pr-0022.md](pr-0022.md) |
-| [#23](https://github.com/rishSaini/cloud-native-hackathon/pull/23) | R1: KWOK spike kit and decision doc (vcluster run pending) | open | 1 | 0 | [pr-0023.md](pr-0023.md) |
-| [#24](https://github.com/rishSaini/cloud-native-hackathon/pull/24) | R5: Controller skeleton, RBAC and Deployment | open | 1 | 0 | [pr-0024.md](pr-0024.md) |
+| [#23](https://github.com/rishSaini/cloud-native-hackathon/pull/23) | R1: KWOK spike kit and decision doc (vcluster run pending) | merged | 1 | 0 | [pr-0023.md](pr-0023.md) |
+| [#24](https://github.com/rishSaini/cloud-native-hackathon/pull/24) | R5: Controller skeleton, RBAC and Deployment | merged | 1 | 0 | [pr-0024.md](pr-0024.md) |
 | [#25](https://github.com/rishSaini/cloud-native-hackathon/pull/25) | Board part 2: constellations, demo keys and the finale (step 7) | merged | 3 | 0 | [pr-0025.md](pr-0025.md) |
-| [#26](https://github.com/rishSaini/cloud-native-hackathon/pull/26) | R3: Postgres (CNPG), schema and migration runner | open | 0 | 0 | no Gitar activity |
+| [#26](https://github.com/rishSaini/cloud-native-hackathon/pull/26) | R3: Postgres (CNPG), schema and migration runner | merged | 0 | 0 | [pr-0026.md](pr-0026.md) |
+| [#27](https://github.com/rishSaini/cloud-native-hackathon/pull/27) | R2: Venue, 34 KWOK Nodes and priority classes | merged | 1 | 0 | [pr-0027.md](pr-0027.md) |
+| [#28](https://github.com/rishSaini/cloud-native-hackathon/pull/28) | Settings screen (step 8) | merged | 1 | 0 | [pr-0028.md](pr-0028.md) |
+| [#29](https://github.com/rishSaini/cloud-native-hackathon/pull/29) | R6: Talk placement (attendee Pods, seats, plain-language Pending) | merged | 5 | 0 | [pr-0029.md](pr-0029.md) |
+| [#30](https://github.com/rishSaini/cloud-native-hackathon/pull/30) | R4: Sessions and encrypted cards | merged | 1 | 0 | [pr-0030.md](pr-0030.md) |
+| [#31](https://github.com/rishSaini/cloud-native-hackathon/pull/31) | K11: Accessibility incidents (open, acknowledge, resolve) | merged | 5 | 0 | [pr-0031.md](pr-0031.md) |
+| [#32](https://github.com/rishSaini/cloud-native-hackathon/pull/32) | Record the before audit in STORY.md | merged | 0 | 0 | [pr-0032.md](pr-0032.md) |
+| [#33](https://github.com/rishSaini/cloud-native-hackathon/pull/33) | K12: Public board (one msearch, no identifiers) | merged | 5 | 0 | [pr-0033.md](pr-0033.md) |
+| [#34](https://github.com/rishSaini/cloud-native-hackathon/pull/34) | K13: Ask Affinity (RAG through the ES inference API) | open | 3 | 1 | [pr-0034.md](pr-0034.md) |
+| [#35](https://github.com/rishSaini/cloud-native-hackathon/pull/35) | K3: Group solver | open | 3 | 0 | [pr-0035.md](pr-0035.md) |
+| [#36](https://github.com/rishSaini/cloud-native-hackathon/pull/36) | Cosmic glass redesign, Star ID, Show across the table | merged | 1 | 0 | [pr-0036.md](pr-0036.md) |
+| [#37](https://github.com/rishSaini/cloud-native-hackathon/pull/37) | K5: Ruff lint, coverage and Gitar review rules | open | 0 | 0 | [pr-0037.md](pr-0037.md) |
+| [#38](https://github.com/rishSaini/cloud-native-hackathon/pull/38) | K4: Telemetry rules and affinity-api rename | open | 0 | 0 | [pr-0038.md](pr-0038.md) |
+| [#39](https://github.com/rishSaini/cloud-native-hackathon/pull/39) | Grow: conversation coaching that fades, fair turns, private reflection | merged | 2 | 0 | [pr-0039.md](pr-0039.md) |
+| [#40](https://github.com/rishSaini/cloud-native-hackathon/pull/40) | K14: Dash0 dashboard, SLO checks and metrics export fix | open | 1 | 0 | [pr-0040.md](pr-0040.md) |
+| [#41](https://github.com/rishSaini/cloud-native-hackathon/pull/41) | K16: End-to-end integration test and AFFINITY.md update | open | 2 | 1 | [pr-0041.md](pr-0041.md) |
+| [#42](https://github.com/rishSaini/cloud-native-hackathon/pull/42) | For everyone: reframe onboarding beyond access needs | merged | 0 | 0 | [pr-0042.md](pr-0042.md) |
+| [#43](https://github.com/rishSaini/cloud-native-hackathon/pull/43) | R7: Room state to Node taints and labels | merged | 2 | 1 | [pr-0043.md](pr-0043.md) |
+| [#44](https://github.com/rishSaini/cloud-native-hackathon/pull/44) | R8: Reroute on room closure and lost capabilities | open | 2 | 1 | [pr-0044.md](pr-0044.md) |
+| [#45](https://github.com/rishSaini/cloud-native-hackathon/pull/45) | Editorial redesign: fashion-magazine feel, full-browser layout | merged | 2 | 1 | [pr-0045.md](pr-0045.md) |
+| [#46](https://github.com/rishSaini/cloud-native-hackathon/pull/46) | R10: Break groups (solver + table Pods) | open | 4 | 1 | [pr-0046.md](pr-0046.md) |
+| [#47](https://github.com/rishSaini/cloud-native-hackathon/pull/47) | R13: Bounded demo seed (public API only) | open | 2 | 1 | [pr-0047.md](pr-0047.md) |
+| [#48](https://github.com/rishSaini/cloud-native-hackathon/pull/48) | R9: Live updates over SSE (LISTEN/NOTIFY, works across replicas) | open | 2 | 0 | [pr-0048.md](pr-0048.md) |
+| [#49](https://github.com/rishSaini/cloud-native-hackathon/pull/49) | R12: Deletion everywhere (Postgres, Elasticsearch, Pods) | open | 1 | 0 | [pr-0049.md](pr-0049.md) |
+| [#50](https://github.com/rishSaini/cloud-native-hackathon/pull/50) | Fashion palette, Playfair + DM Sans, and real photographs | open | 0 | 0 | [pr-0050.md](pr-0050.md) |
+| [#51](https://github.com/rishSaini/cloud-native-hackathon/pull/51) | Night: the galaxy and stars back, with the editorial type and photos | open | 0 | 0 | [pr-0051.md](pr-0051.md) |
+| [#52](https://github.com/rishSaini/cloud-native-hackathon/pull/52) | R11: Sharing, connections, blocks, and safety reports | open | 4 | 0 | [pr-0052.md](pr-0052.md) |
+| [#53](https://github.com/rishSaini/cloud-native-hackathon/pull/53) | Couture: the night sky in the team's own design language | open | 0 | 0 | [pr-0053.md](pr-0053.md) |
+| [#54](https://github.com/rishSaini/cloud-native-hackathon/pull/54) | Personal: Affinity in the style of Diya's site, and for everyone | open | 0 | 0 | [pr-0054.md](pr-0054.md) |
 
 ## What Gitar flagged
 
@@ -75,3 +103,62 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 - [#25 `frontend/static/js/board/sky.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/25#discussion_r4518297284): 💡 Bug: Resize snap ignores groupId, so grouped stars glide back after resize
 - [#25 `frontend/static/js/board/sky.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/25#discussion_r4518297415): 💡 Edge Case: New group slot uses list index, can collide with a surviving group
 - [#25 `frontend/static/js/board/board.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/25#discussion_r4518297507): 💡 Edge Case: Demo keys inject mock snapshots into a live (non-mock) board
+- [#27 `deploy/priorityclasses.yaml`](https://github.com/rishSaini/cloud-native-hackathon/pull/27#discussion_r4518379723): ⚠️ Security: PriorityClass description says its Pods are attendees with access needs
+- [#28 `frontend/static/js/screens/settings.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/28#discussion_r4518417166): ⚠️ Bug: Failed card load tells cardholders they have no card to delete
+- [#29 `deploy/controller.yaml`](https://github.com/rishSaini/cloud-native-hackathon/pull/29#discussion_r4518441864): 🚨 Bug: Controller Deployment never sets DATABASE_URL, so placement always fails
+- [#29 `deploy/rbac.yaml`](https://github.com/rishSaini/cloud-native-hackathon/pull/29#discussion_r4518442048): 🚨 Bug: ClusterRoleBinding names namespace team-__TEAM__, which setup has replaced
+- [#29 `deploy/rbac.yaml`](https://github.com/rishSaini/cloud-native-hackathon/pull/29#discussion_r4518442262): ⚠️ Security: ClusterRole lets the controller create/delete Pods in every namespace
+- [#29 `backend/app/placements/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/29#discussion_r4518442393): ⚠️ Quality: New /api/placements routes have no tests
+- [#29 `backend/app/controller/placement.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/29#discussion_r4518442563): 💡 Edge Case: Pending options are only recomputed when the reason text changes
+- [#30 `backend/app/auth.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/30#discussion_r4518474469): 🚨 Security: Missing secrets silently fall back to public dev keys
+- [#31 `backend/app/incidents/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/31#discussion_r4518511097): ⚠️ Security: Staff token goes in the login URL and leaks into traces and logs
+- [#31 `backend/app/incidents/store.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/31#discussion_r4518511314): ⚠️ Bug: Concurrent recomputes can open duplicate incidents for one room
+- [#31 `backend/app/incidents/store.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/31#discussion_r4518511469): ⚠️ Bug: affinity_incidents_open gauge is per-process and goes stale
+- [#31 `backend/app/incidents/store.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/31#discussion_r4518511611): 💡 Quality: New spans and metrics don't use the talkscout./search. prefix
+- [#31 `backend/app/incidents/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/31#discussion_r4518511734): 💡 Edge Case: Non-ASCII staff token makes compare_digest raise, so the route returns 500
+- [#33 `backend/app/incidents/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/33#discussion_r4518599559): ⚠️ Security: Staff token sent in the URL query string ends up in logs and traces
+- [#33 `backend/app/incidents/store.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/33#discussion_r4518599742): ⚠️ Bug: Concurrent reports can open duplicate incidents (check-then-insert race)
+- [#33 `backend/app/board/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/33#discussion_r4518599897): 💡 Edge Case: Board freshness aggregation isn't limited to contract rooms
+- [#33 `backend/app/reports/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/33#discussion_r4518600059): 💡 Quality: New spans/metrics don't use the required talkscout./search. prefix
+- [#33 `frontend/static/js/screens/staff.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/33#discussion_r4518838124): 💡 Edge Case: Signed-out polling overwrites the failed-login message
+- [#34 `backend/app/ask/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/34#discussion_r4518647892): ⚠️ Bug: Ask: client times out at 10s, so slow completions return 500, not 503
+- [#34 `backend/app/incidents/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/34#discussion_r4518648059): ⚠️ Security: Staff token sent in a GET query string ends up in access logs
+- [#34 `backend/app/ask/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/34#discussion_r4518648182): 💡 Quality: New spans and metrics don't use the talkscout./search. prefix
+- [#35 `backend/app/solver/__init__.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/35#discussion_r4518680480): 💡 Bug: group.size span attribute records the group count, not a group size
+- [#35 `backend/app/solver/__init__.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/35#discussion_r4518680625): 💡 Performance: Greedy phase is O(n³) and ignores time_limit_ms
+- [#35 `backend/app/solver/__init__.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/35#discussion_r4518680720): 💡 Edge Case: Hardness ignores blocks made against a person
+- [#36 `frontend/static/js/screens/show.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/36#discussion_r4518696296): 💡 Bug: Wake lock can be acquired after Show screen cleanup and never released
+- [#39 `frontend/static/js/grow.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/39#discussion_r4518713150): ⚠️ Security: Privacy copy says answers never leave the phone, but all are POSTed
+- [#39 `frontend/static/js/mock-api.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/39#discussion_r4518713352): 💡 Bug: Mock felt-heard counters ignore demo reset and override finale value
+- [#40 `observability/dash0/checks/affinity-slos.yaml`](https://github.com/rishSaini/cloud-native-hackathon/pull/40#discussion_r4518729123): ⚠️ Bug: Incident SLO check fires on acknowledged incidents, not on unacknowledged ones
+- [#41 `backend/app/ask/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/41#discussion_r4518746597): ⚠️ Quality: New spans and metrics break the talkscout./search. naming rule
+- [#41 `backend/app/incidents/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/41#discussion_r4518746736): ⚠️ Security: Staff token goes in the URL query string and lands in logs/traces
+- [#43 `backend/app/controller/rooms.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/43#discussion_r4518819781): ⚠️ Bug: Taint patch overwrites every taint the controller doesn't own
+- [#43 `backend/app/controller/rooms.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/43#discussion_r4518819941): 💡 Quality: Span name k8s.node.taint doesn't use a required prefix
+- [#44 `backend/app/controller/reroute.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/44#discussion_r4518818871): ⚠️ Bug: A failed Pod delete rolls back move counts for Pods already deleted
+- [#44 `backend/app/controller/rooms.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/44#discussion_r4518819040): 💡 Quality: New span name lacks the required talkscout./search. prefix
+- [#45 `frontend/static/css/editorial.css`](https://github.com/rishSaini/cloud-native-hackathon/pull/45#discussion_r4518827401): ⚠️ Bug: Laptop Contents sidebar reappears on no-chrome Show/Staff screens
+- [#45 `frontend/static/css/editorial.css`](https://github.com/rishSaini/cloud-native-hackathon/pull/45#discussion_r4518827532): 💡 Edge Case: Now spread puts the 'Make your card first' card alone in column 2
+- [#46 `backend/app/breaks/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/46#discussion_r4518841724): ⚠️ Quality: Four new API routes have no tests in backend/tests/
+- [#46 `backend/app/controller/groups.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/46#discussion_r4518841872): ⚠️ Bug: A failed group formation leaves Pods that no longer match the DB
+- [#46 `backend/app/breaks/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/46#discussion_r4518841997): 💡 Bug: Check-in drops 'running-late': it is stored and shown as 'on-the-way'
+- [#46 `backend/app/solver/__init__.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/46#discussion_r4518842127): 💡 Quality: New spans/metrics don't use the required talkscout./search. prefix
+- [#47 `deploy/jobs/seed-demo-001.yaml`](https://github.com/rishSaini/cloud-native-hackathon/pull/47#discussion_r4518855297): 🚨 Bug: Job runs scripts/seed_demo.py, but the image doesn't contain it
+- [#47 `scripts/seed_demo.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/47#discussion_r4518855427): ⚠️ Edge Case: State file is written only at the end, so a failed run can't be reset
+- [#48 `backend/tests/test_stream.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/48#discussion_r4518904405): ⚠️ Quality: New GET /api/stream route has no route-level test
+- [#48 `backend/app/stream/hub.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/48#discussion_r4518904543): ⚠️ Edge Case: Notifications sent while LISTEN reconnects are lost to open streams
+- [#49 `backend/app/cards/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/49#discussion_r4518913332): ⚠️ Bug: Old session cookie still works after deletion and recreates the attendee
+- [#52 `backend/app/cards/share.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/52#discussion_r4518944844): ⚠️ Security: Share links fall back to a public signing key, and DB expiry is ignored
+- [#52 `backend/app/social/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/52#discussion_r4518944982): ⚠️ Bug: Simultaneous mutual proposals can both return pending with no connection
+- [#52 `backend/app/social/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/52#discussion_r4518945103): 💡 Edge Case: Unknown displayId in /api/connections causes a 500 and reveals who exists
+- [#52 `backend/tests/test_share.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/52#discussion_r4518945202): ⚠️ Quality: New API routes have no route tests
+
+## Fixes Gitar pushed
+
+- [#34 `e3ea5c5`](https://github.com/rishSaini/cloud-native-hackathon/commit/e3ea5c538551f238da0bc02f0b17e71faaee377b): fix: harden ask timeouts and telemetry names
+- [#41 `cd0332e`](https://github.com/rishSaini/cloud-native-hackathon/commit/cd0332eea8a98ff66aecead4192357d422e557e2): fix: prefix telemetry names with talkscout
+- [#43 `88b9a4f`](https://github.com/rishSaini/cloud-native-hackathon/commit/88b9a4f9022cd6fdb87b1573bfa517588af0bc3e): fix: preserve unmanaged node taints
+- [#44 `f3a7440`](https://github.com/rishSaini/cloud-native-hackathon/commit/f3a7440fca43a09a9219b7ef390e6077cfecdee2): fix: persist reroute moves and prefix telemetry
+- [#45 `b37908b`](https://github.com/rishSaini/cloud-native-hackathon/commit/b37908b0f22e30325f6d488bebfda1694fd291c3): fix: correct laptop navigation and now layout
+- [#46 `077a9d7`](https://github.com/rishSaini/cloud-native-hackathon/commit/077a9d7ade782c34702628b4254b23a848f98ead): fix: persist break check-in statuses
+- [#47 `f026081`](https://github.com/rishSaini/cloud-native-hackathon/commit/f026081da9674d1b43504379d2809ea51899350c): fix: persist demo seeding state incrementally
