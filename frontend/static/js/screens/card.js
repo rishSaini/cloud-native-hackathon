@@ -22,7 +22,7 @@ export default {
       return h("section", { class: "card coming-soon", "aria-labelledby": "screen-h" },
         h("h1", { id: "screen-h" }, "No card yet"),
         h("p", { class: "muted" }, "Make a small card so people know what you're working on and how to talk to you."),
-        h("a", { class: "btn btn-primary", href: "#/" }, "Make my card"),
+        h("a", { class: "btn btn-primary", href: "#/?start=card" }, "Make my card"),
       );
     }
 
