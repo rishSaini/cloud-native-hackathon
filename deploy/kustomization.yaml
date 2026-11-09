@@ -11,6 +11,7 @@ resources:
   - elasticsearch.yaml
   - rbac.yaml
   - controller.yaml
+  - postgres.yaml
 images:
   - name: app
     newName: ghcr.io/rishsaini/cloud-native-hackathon
