@@ -21,7 +21,7 @@ class RsvpIn(BaseModel):
 
 
 class CheckInIn(BaseModel):
-    status: Literal["here", "on-the-way", "running-late"] = "here"
+    status: Literal["here", "on-the-way", "late"] = "here"
 
 
 def require_staff(request: Request) -> None:
