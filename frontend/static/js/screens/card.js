@@ -94,7 +94,7 @@ export default {
   },
 };
 
-function confirmDelete(onConfirm) {
+export function confirmDelete(onConfirm) {
   const dialog = h("dialog", { class: "dialog", "aria-labelledby": "del-h", "aria-describedby": "del-body" },
     h("h2", { id: "del-h" }, "Delete your card?"),
     h("p", { id: "del-body" }, "This deletes your card and your private needs. It also removes you from any group and turns off links you've shared. You can make a new card any time."),
