@@ -68,7 +68,7 @@ export default {
     main.insertBefore(comfortDial({ compact: true, idPrefix: "now-comfort", onChange: (v) => { card.comfort = v; paintTuned(); } }), region);
 
     // Your upcoming break: the group as a tiny constellation, or an invitation to join one.
-    const breakSlot = h("div", {});
+    const breakSlot = h("div", { class: "now-aside" });
     async function paintBreak() {
       const brk = nextBreak();
       let group = null;

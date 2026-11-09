@@ -170,7 +170,7 @@ body:not(.on-sky) .tabbar a[aria-current="page"] svg { filter: none; color: var(
 
 @media (min-width: 64rem) {
   body:not(.on-sky) { counter-reset: navitem; }
-  body:not(.on-sky) .tabbar {
+  body:not(.on-sky):not(.no-chrome) .tabbar {
     top: 0; bottom: 0; right: auto;
     width: 15rem;
     display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
@@ -210,7 +210,7 @@ body:not(.on-sky) .tabbar a[aria-current="page"] svg { filter: none; color: var(
 
   .now { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 1.25rem 3.5rem; align-items: start; }
   .now > * { grid-column: 1; }
-  .now > :last-child { grid-column: 2; grid-row: 1 / span 12; position: sticky; top: 9rem; }
+  .now > .now-aside { grid-column: 2; grid-row: 1 / span 12; position: sticky; top: 9rem; }
   .now > .card + .card { margin-top: 0; }
 
   .card-page { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem 3.5rem; align-items: start; }
