@@ -28,7 +28,7 @@
 
   <div class="app-shell">
     <header class="app-header" id="app-header">
-      <a class="brand" href="#/card" aria-label="Affinity home">
+      <a class="brand" href="#/home" aria-label="Affinity home">
         <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <circle cx="6" cy="8" r="2.2"/><circle cx="17" cy="6" r="2.2"/><circle cx="12" cy="17" r="2.2"/>
           <path d="M6 8 L17 6 L12 17 Z" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".6"/>
@@ -61,6 +61,10 @@
   </div>
 
   <nav class="tabbar" id="tabbar" aria-label="Main">
+    <a href="#/home" data-tab="home">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/></svg>
+      <span>Home</span>
+    </a>
     <a href="#/card" data-tab="card">
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><circle cx="9" cy="11" r="2"/><path d="M6.5 15.5c.8-1.4 4.2-1.4 5 0M14 10h4M14 13.5h3"/></svg>
       <span>Card</span>

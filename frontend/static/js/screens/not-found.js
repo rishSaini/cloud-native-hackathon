@@ -6,6 +6,6 @@ export default {
     title: "Not found",
     heading: "We couldn't find that page",
     body: "The link may be old. Here's a way back.",
-    action: { label: "Go to your card", href: "#/card" },
+    action: { label: "Go home", href: "#/home" },
   }),
 };

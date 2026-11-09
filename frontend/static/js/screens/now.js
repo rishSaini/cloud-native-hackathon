@@ -24,7 +24,7 @@ const STEPS = [
 let autoRequested = false;
 
 export default {
-  title: "Now",
+  title: "Home",
   async render(main) {
     const { card, error: loadError } = await loadMe();
     if (loadError) { main.append(loadErrorView()); return; }
@@ -63,7 +63,7 @@ export default {
       h("p", { class: "greeting-line" }, `${partOfDay}, `, h("span", { class: "accent-word" }, `${card.name || "friend"}.`)),
       tuned,
     );
-    main.querySelector("h1")?.replaceWith(h("h1", { class: "visually-hidden" }, "Now"));
+    main.querySelector("h1")?.replaceWith(h("h1", { class: "visually-hidden" }, "Home"));
     main.insertBefore(greeting, region);
     main.insertBefore(comfortDial({ compact: true, idPrefix: "now-comfort", onChange: (v) => { card.comfort = v; paintTuned(); } }), region);
 
