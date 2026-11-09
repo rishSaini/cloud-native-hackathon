@@ -8,6 +8,8 @@ Elasticsearch rejects any field that is not listed here.
 
 INFERENCE_ID = "affinity-embed"
 EMBEDDING_MODEL = "text-embedding-3-small"
+CHAT_ID = "affinity-chat"  # K13: completion endpoint for Ask Affinity
+CHAT_MODEL = "gpt-4.1-mini"
 
 TALKS = "talks"
 PEOPLE = "people"

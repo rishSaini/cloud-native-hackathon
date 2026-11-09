@@ -78,3 +78,7 @@ app.include_router(incidents_router)
 from app.board.routes import router as board_router  # noqa: E402
 
 app.include_router(board_router)
+
+from app.ask.routes import router as ask_router  # noqa: E402
+
+app.include_router(ask_router)
