@@ -1,0 +1,55 @@
+/* Affinity design tokens. Use these everywhere instead of raw values.
+   Contrast (WCAG 2.x), checked against --paper / --paper-raised and --sky / --sky-raised:
+   ink 13.3:1, ink-soft 6.2:1, *-text accents 4.8–5.9:1 on paper,
+   starlight 16.3:1, starlight-soft 9.3:1, *-sky status 5.4–8.9:1 on sky.
+   The base accents (--coral, --teal, --ok, --warn, --alert) are for fills, borders
+   and large shapes only. For text on paper use the -text variants. */
+:root {
+  /* paper (phone) */
+  --paper: #FBF7F0;
+  --paper-raised: #FFFDF9;
+  --ink: #2A2A35;
+  --ink-soft: #5E5C66;
+  --line: #E8E1D5;
+
+  /* sky (board) */
+  --sky: #0E1430;
+  --sky-raised: #18204A;
+  --starlight: #F4F1FF;
+  --starlight-soft: #B9B6D9;
+
+  /* accents: fills and shapes */
+  --coral: #E8735A;
+  --teal: #2BA59A;
+
+  /* accents: text and buttons on paper (AA with white text too) */
+  --coral-text: #B5482F;
+  --teal-text: #1D7A71;
+
+  /* calm status colors, always paired with a word */
+  --ok: #3E9E6E;
+  --warn: #C98A1B;
+  --alert: #C4566A;
+  --ok-text: #2E7A54;
+  --warn-text: #8F5F0A;
+  --alert-text: #A8394E;
+  --ok-sky: #6CC79A;
+  --warn-sky: #C98A1B;
+  --alert-sky: #E88A9B;
+
+  /* type */
+  --font-ui: "Nunito", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-code: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* shape and motion */
+  --radius-card: 20px;
+  --radius-control: 12px;
+  --ease: cubic-bezier(0.65, 0, 0.35, 1);
+  --move: 500ms;
+  --flip: 400ms;
+  --banner: 250ms;
+
+  /* layout */
+  --tabbar-height: 4.5rem;
+  --gutter: 1rem;
+}
