@@ -14,7 +14,7 @@ from app.telemetry.attrs import set_attrs
 router = APIRouter()
 tracer = trace.get_tracer("affinity")
 reports_total = metrics.get_meter("affinity").create_counter(
-    "talkscout.room.reports", description="Room reports accepted, by signal"
+    "talkscout.room_reports", description="Room reports accepted, by signal"
 )
 
 Signal = Literal[SIGNALS]  # type: ignore[valid-type]

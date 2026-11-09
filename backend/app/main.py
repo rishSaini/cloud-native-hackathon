@@ -95,3 +95,11 @@ app.include_router(placements_router)
 from app.cards.routes import router as cards_router  # noqa: E402
 
 app.include_router(cards_router)
+
+from app.breaks.routes import router as breaks_router  # noqa: E402
+
+app.include_router(breaks_router)
+
+from app.stream.routes import router as stream_router  # noqa: E402
+
+app.include_router(stream_router)
