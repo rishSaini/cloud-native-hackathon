@@ -400,3 +400,4 @@ body:not(.on-sky) .section-eyebrow { margin-top: 1.25rem; }
 body:not(.on-sky) .greeting { margin-top: 2.5rem; }
 body:not(.on-sky) .greeting-line { font-family: var(--font-display) !important; font-style: normal !important; font-weight: 800 !important; letter-spacing: -0.035em !important; }
 body:not(.on-sky) .greeting-line .accent-word { font-family: var(--font-italic); font-style: italic; font-weight: 500; letter-spacing: -0.01em; }
+@media (max-width: 680px) { body:not(.on-sky) .brand { margin-right: auto; } }
