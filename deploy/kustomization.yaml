@@ -3,7 +3,7 @@
 # by hand.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: team-__TEAM__
+namespace: team-coffeecon
 resources:
   - deployment.yaml
   - service.yaml
@@ -13,4 +13,4 @@ resources:
 images:
   - name: app
     newName: ghcr.io/rishsaini/cloud-native-hackathon
-    newTag: 509a931
+    newTag: 104f1b7
