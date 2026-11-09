@@ -4,6 +4,7 @@ from pathlib import Path
 from elasticsearch import TransportError
 from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse, PlainTextResponse, Response
+from fastapi.staticfiles import StaticFiles
 
 from app import config
 from app.es import get_es
@@ -11,6 +12,10 @@ from app.es import get_es
 app = FastAPI(title="TalkScout")
 
 FRONTEND = Path(__file__).resolve().parents[2] / "frontend" / "index.html"
+STATIC_DIR = FRONTEND.parent / "static"
+
+# The frontend's CSS and JavaScript modules. No build step: files are served as-is.
+app.mount("/static", StaticFiles(directory=STATIC_DIR, check_dir=False), name="static")
 
 
 # Kubernetes probes. They do not check Elasticsearch, so a slow Elasticsearch
@@ -82,3 +87,11 @@ app.include_router(board_router)
 from app.ask.routes import router as ask_router  # noqa: E402
 
 app.include_router(ask_router)
+
+from app.placements.routes import router as placements_router  # noqa: E402
+
+app.include_router(placements_router)
+
+from app.cards.routes import router as cards_router  # noqa: E402
+
+app.include_router(cards_router)

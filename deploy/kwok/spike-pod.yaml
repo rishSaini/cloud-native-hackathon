@@ -1,0 +1,33 @@
+# R1 spike: a pause Pod that should bind to the fake Node spike-room.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spike-attendee
+  namespace: team-__TEAM__
+  labels:
+    affinity.dev/attendee: spike
+spec:
+  tolerations:
+    - key: kwok.x-k8s.io/node
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: type
+                operator: In
+                values: ["kwok"]
+  containers:
+    - name: attendee
+      image: registry.k8s.io/pause:3.10
+      resources:
+        requests: {cpu: 1m, memory: 1Mi}
+        limits: {cpu: 1m, memory: 1Mi, affinity.dev/seats: "1"}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65535
+        allowPrivilegeEscalation: false
+        seccompProfile: {type: RuntimeDefault}
+        capabilities: {drop: ["ALL"]}
