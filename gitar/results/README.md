@@ -7,7 +7,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 
 | Pull requests | Reviewed by Gitar | Dashboard comments | Reviews | Inline comments | Fix commits by Gitar |
 |---|---|---|---|---|---|
-| 54 | 53 | 78 | 0 | 82 | 6 |
+| 54 | 54 | 79 | 0 | 82 | 7 |
 
 ## Pull requests
 
@@ -55,10 +55,10 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 | [#40](https://github.com/rishSaini/cloud-native-hackathon/pull/40) | K14: Dash0 dashboard, SLO checks and metrics export fix | open | 1 | 0 | [pr-0040.md](pr-0040.md) |
 | [#41](https://github.com/rishSaini/cloud-native-hackathon/pull/41) | K16: End-to-end integration test and AFFINITY.md update | open | 2 | 1 | [pr-0041.md](pr-0041.md) |
 | [#42](https://github.com/rishSaini/cloud-native-hackathon/pull/42) | For everyone: reframe onboarding beyond access needs | merged | 0 | 0 | [pr-0042.md](pr-0042.md) |
-| [#43](https://github.com/rishSaini/cloud-native-hackathon/pull/43) | R7: Room state to Node taints and labels | open | 2 | 1 | [pr-0043.md](pr-0043.md) |
+| [#43](https://github.com/rishSaini/cloud-native-hackathon/pull/43) | R7: Room state to Node taints and labels | merged | 2 | 1 | [pr-0043.md](pr-0043.md) |
 | [#44](https://github.com/rishSaini/cloud-native-hackathon/pull/44) | R8: Reroute on room closure and lost capabilities | open | 2 | 1 | [pr-0044.md](pr-0044.md) |
 | [#45](https://github.com/rishSaini/cloud-native-hackathon/pull/45) | Editorial redesign: fashion-magazine feel, full-browser layout | merged | 2 | 1 | [pr-0045.md](pr-0045.md) |
-| [#46](https://github.com/rishSaini/cloud-native-hackathon/pull/46) | R10: Break groups (solver + table Pods) | open | 4 | 0 | [pr-0046.md](pr-0046.md) |
+| [#46](https://github.com/rishSaini/cloud-native-hackathon/pull/46) | R10: Break groups (solver + table Pods) | open | 4 | 1 | [pr-0046.md](pr-0046.md) |
 | [#47](https://github.com/rishSaini/cloud-native-hackathon/pull/47) | R13: Bounded demo seed (public API only) | open | 2 | 1 | [pr-0047.md](pr-0047.md) |
 | [#48](https://github.com/rishSaini/cloud-native-hackathon/pull/48) | R9: Live updates over SSE (LISTEN/NOTIFY, works across replicas) | open | 2 | 0 | [pr-0048.md](pr-0048.md) |
 | [#49](https://github.com/rishSaini/cloud-native-hackathon/pull/49) | R12: Deletion everywhere (Postgres, Elasticsearch, Pods) | open | 1 | 0 | [pr-0049.md](pr-0049.md) |
@@ -66,7 +66,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 | [#51](https://github.com/rishSaini/cloud-native-hackathon/pull/51) | Night: the galaxy and stars back, with the editorial type and photos | open | 0 | 0 | [pr-0051.md](pr-0051.md) |
 | [#52](https://github.com/rishSaini/cloud-native-hackathon/pull/52) | R11: Sharing, connections, blocks, and safety reports | open | 4 | 0 | [pr-0052.md](pr-0052.md) |
 | [#53](https://github.com/rishSaini/cloud-native-hackathon/pull/53) | Couture: the night sky in the team's own design language | open | 0 | 0 | [pr-0053.md](pr-0053.md) |
-| [#54](https://github.com/rishSaini/cloud-native-hackathon/pull/54) | Personal: Affinity in the style of Diya's site, and for everyone | open | 0 | 0 | no Gitar activity |
+| [#54](https://github.com/rishSaini/cloud-native-hackathon/pull/54) | Personal: Affinity in the style of Diya's site, and for everyone | open | 0 | 0 | [pr-0054.md](pr-0054.md) |
 
 ## What Gitar flagged
 
@@ -160,4 +160,5 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 - [#43 `88b9a4f`](https://github.com/rishSaini/cloud-native-hackathon/commit/88b9a4f9022cd6fdb87b1573bfa517588af0bc3e): fix: preserve unmanaged node taints
 - [#44 `f3a7440`](https://github.com/rishSaini/cloud-native-hackathon/commit/f3a7440fca43a09a9219b7ef390e6077cfecdee2): fix: persist reroute moves and prefix telemetry
 - [#45 `b37908b`](https://github.com/rishSaini/cloud-native-hackathon/commit/b37908b0f22e30325f6d488bebfda1694fd291c3): fix: correct laptop navigation and now layout
+- [#46 `077a9d7`](https://github.com/rishSaini/cloud-native-hackathon/commit/077a9d7ade782c34702628b4254b23a848f98ead): fix: persist break check-in statuses
 - [#47 `f026081`](https://github.com/rishSaini/cloud-native-hackathon/commit/f026081da9674d1b43504379d2809ea51899350c): fix: persist demo seeding state incrementally
