@@ -9,3 +9,5 @@ export function personHue(id) {
 
 export const starColor = (id) => `hsl(${personHue(id)} 70% 78%)`;
 export const accentColor = (id) => `hsl(${personHue(id)} 55% 45%)`;
+// Behind white initials: white text is at least 4.75:1 on this for every hue.
+export const avatarColor = (id) => `hsl(${personHue(id)} 45% 32%)`;

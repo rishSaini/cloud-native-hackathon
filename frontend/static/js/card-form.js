@@ -8,13 +8,14 @@
 import { FIELDS, cardPreview } from "./card-view.js";
 import { h } from "./format.js";
 
+// Each template has a small line icon (static SVG path data, decorative).
 export const TEMPLATES = [
-  { id: "face", label: "Please face me when you talk", howToTalk: "Please face me when you talk." },
-  { id: "time", label: "Give me time to finish my words", howToTalk: "Give me time to finish my words." },
-  { id: "name", label: "Say your name when you walk up", howToTalk: "Say your name when you walk up." },
-  { id: "one", label: "I do better one-on-one", howToTalk: "I do better one-on-one. Come say hi when it's quieter." },
-  { id: "first", label: "This is my first conference", howToTalk: "This is my first conference. Say hi and tell me what you're working on." },
-  { id: "blank", label: "Start from scratch", howToTalk: "" },
+  { id: "face", label: "Please face me when you talk", howToTalk: "Please face me when you talk.", icon: '<circle cx="12" cy="12" r="8.5"/><path d="M9 10h.01M15 10h.01M8.5 14.5c1.8 2 5.2 2 7 0"/>' },
+  { id: "time", label: "Give me time to finish my words", howToTalk: "Give me time to finish my words.", icon: '<path d="M7 3.5h10M7 20.5h10M8 3.5c0 4 8 5 8 8.5s-8 4.5-8 8.5M16 3.5c0 4-8 5-8 8.5s8 4.5 8 8.5"/>' },
+  { id: "name", label: "Say your name when you walk up", howToTalk: "Say your name when you walk up.", icon: '<path d="M4.5 5.5h15a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 3.5v-3.5h-1A1.5 1.5 0 0 1 3 15V7a1.5 1.5 0 0 1 1.5-1.5z"/><path d="M8 11h8"/>' },
+  { id: "one", label: "I do better one-on-one", howToTalk: "I do better one-on-one. Come say hi when it's quieter.", icon: '<circle cx="8" cy="9" r="2.6"/><circle cx="16" cy="9" r="2.6"/><path d="M3.5 18.5c.8-2.6 2.6-3.8 4.5-3.8s3.7 1.2 4.5 3.8M11.5 18.5c.8-2.6 2.6-3.8 4.5-3.8s3.7 1.2 4.5 3.8"/>' },
+  { id: "first", label: "This is my first conference", howToTalk: "This is my first conference. Say hi and tell me what you're working on.", icon: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM18.5 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>' },
+  { id: "blank", label: "Start from scratch", howToTalk: "", icon: '<path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5zM13.5 7l3 3"/>' },
 ];
 
 // Room and table needs. The backend maps these to opaque capability codes (cap-c1 …).

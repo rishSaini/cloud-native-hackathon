@@ -37,6 +37,7 @@ function face(card, side) {
 
 function header(card) {
   return h("div", { class: "card-head" },
+    h("p", { class: "card-hello" }, "Hi, I'm"),
     h("p", { class: "card-name" }, card.name || "Your name"),
     card.pronouns ? h("p", { class: "card-pronouns" }, card.pronouns) : null,
   );
