@@ -9,6 +9,7 @@ import { loadErrorView } from "../load-error.js";
 import { loadMe } from "../store.js";
 import { isLive, POLL_MS, subscribe } from "../stream.js";
 import { badgeList } from "./talks.js";
+import { climateView } from "../climate.js";
 
 const STEPS = [
   { key: "Pending", word: "Finding you a seat" },
@@ -198,8 +199,11 @@ export default {
         h("h2", { id: "now-h", class: "now-title" }, talk.title),
         h("p", { class: "now-when" }, `${formatDayTime(talk.startsAt)} · `, h("strong", {}, room.name)),
         room.walkingHint ? h("p", { class: "now-walk" }, room.walkingHint) : null,
-        badgeList(room.badges),
-        placement.reportedMinutesAgo != null ? h("p", { class: "report-age muted" }, `Room status reported ${ago(placement.reportedMinutesAgo)}`) : null,
+        // Report-based climate when the API sends it; otherwise the simple badges.
+        room.climate
+          ? climateView(room.climate, { seats: room.seats, taken: room.taken })
+          : badgeList(room.badges),
+        !room.climate && placement.reportedMinutesAgo != null ? h("p", { class: "report-age muted" }, `Room status reported ${ago(placement.reportedMinutesAgo)}`) : null,
         banner ? null : h("button", {
           type: "button", class: "btn btn-secondary btn-block", "data-key": "show-options",
           "aria-expanded": String(showOptions), onclick: () => { showOptions = !showOptions; paint(); },

@@ -160,3 +160,31 @@ body.on-sky {
   .board-head { flex-direction: column; }
   .hero { text-align: left; }
 }
+
+/* Incident / eviction banner: glides in across the top, then leaves after 9 seconds. */
+.board { position: relative; }
+.board-banner {
+  position: absolute;
+  top: 0.25rem; left: 50%;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: min(90%, 70rem);
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  background: #3A2414;
+  border: 2px solid var(--warn-sky);
+  box-shadow: 0 0 40px rgba(201, 138, 27, 0.35);
+  transform: translateX(-50%);
+  font-size: clamp(1rem, 1.2vw, 1.375rem);
+  white-space: nowrap;
+}
+.board-banner[hidden] { display: none; }
+.board-banner.enter { animation: banner-glide 700ms var(--ease) both; }
+.banner-tag { color: #F5C26B; font-weight: 600; }
+.banner-text { color: var(--starlight); overflow: hidden; text-overflow: ellipsis; }
+@keyframes banner-glide {
+  from { opacity: 0; transform: translate(-30%, -0.5rem); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}

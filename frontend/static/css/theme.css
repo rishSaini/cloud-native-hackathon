@@ -292,3 +292,79 @@ h3 { font-family: var(--font-ui); font-weight: 700; }
 
 /* ---------- Footer ---------- */
 .app-footer { opacity: 0.8; }
+
+/* ---------- Room climate ---------- */
+.climate { display: grid; gap: 0.5rem; padding: 0.875rem 1rem; border-radius: 1rem; background: var(--paper); border: 1px solid rgba(232, 225, 213, 0.9); }
+.climate-title { margin: 0; font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.02em; color: var(--ink-soft); }
+.climate .badges { margin: 0; }
+.climate-none, .climate .report-age { margin: 0; font-size: 0.9375rem; }
+.density { display: grid; gap: 0.25rem; }
+.density-bar { height: 0.625rem; border-radius: 999px; background: var(--paper-deep); overflow: hidden; }
+.density-bar span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #4FB386, var(--ok)); }
+.density.warn .density-bar span { background: linear-gradient(90deg, #E2A93B, var(--warn)); }
+.density.alert .density-bar span { background: linear-gradient(90deg, #D9788A, var(--alert)); }
+.density-text { margin: 0; font-size: 0.875rem; font-weight: 600; color: var(--ink-soft); }
+.results .density { margin-top: 0.625rem; }
+
+/* ---------- Report ---------- */
+.change-room { margin: 0 0 0.75rem; }
+.change-room summary { display: inline-flex; align-items: center; min-height: 44px; color: var(--teal-deep); font-weight: 700; cursor: pointer; }
+.change-room .field { margin-top: 0.25rem; }
+.report-result { min-height: 1.5em; margin: 0 0 0.75rem; font-weight: 700; }
+.report-result:empty { margin: 0; }
+.report-result.ok, .report-result.info, .report-result.staff, .report-result.error {
+  padding: 0.75rem 1rem; border-radius: 1rem; box-shadow: var(--shadow-sm);
+}
+.report-result.ok { background: var(--teal-soft); color: var(--teal-deep); }
+.report-result.info { background: var(--sun-soft); color: var(--ink); font-weight: 600; }
+.report-result.staff { background: var(--coral-soft); color: var(--coral-deep); }
+.report-result.error { background: #FAEDEF; color: var(--alert-text); }
+.signal-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; }
+.signal-grid li.wide { grid-column: 1 / -1; }
+.signal {
+  width: 100%;
+  min-height: 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  text-align: left;
+  border: 1.5px solid rgba(232, 225, 213, 0.95);
+  border-radius: 1.25rem;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-sm);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: var(--ink);
+  transition: transform 160ms var(--ease), box-shadow 160ms var(--ease), border-color 160ms var(--ease);
+}
+.signal:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: #D9CBB8; }
+.signal:active { transform: translateY(1px); }
+.signal:disabled { opacity: 0.6; }
+.signal-icon { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: var(--teal-soft); color: var(--teal-deep); }
+.signal-icon svg { width: 1.375rem; height: 1.375rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.signal-staff { min-height: 5rem; flex-direction: row; align-items: center; flex-wrap: wrap; border-color: #E5BCC4; background: #FFF6F4; }
+.signal-staff .signal-icon { background: #FAE0E5; color: var(--alert-text); }
+.signal-staff .signal-label { flex: 1; }
+.signal-note { width: 100%; font-size: 0.875rem; font-weight: 600; color: var(--alert-text); }
+
+/* ---------- Staff ---------- */
+.staff { max-width: 48rem; margin: 0 auto; padding: 1.5rem var(--gutter) 3rem; }
+.incidents { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
+.incident {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--alert);
+  border-radius: 1rem;
+}
+.incident.acknowledged { border-left-color: var(--warn); }
+.incident.empty { border-left-color: var(--ok); color: var(--ink-soft); }
+.incident-main { flex: 1 1 16rem; }
+.incident-room { margin: 0; font-weight: 700; font-size: 1.25rem; }
+.incident-kind { margin: 0.125rem 0; font-size: 1.0625rem; }
+.incident-meta { margin: 0; color: var(--ink-soft); font-size: 0.9375rem; }
+.incident-actions { display: flex; gap: 0.5rem; }

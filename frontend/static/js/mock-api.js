@@ -87,6 +87,9 @@ function freshState() {
     if (room.taken < room.seats) { a.roomId = room.id; room.taken += 1; }
   }
   rooms.forEach(updateStatus);
+  // Room climate comes only from attendee reports. Seed a few, with their age.
+  const seeds = [{ noise: "quiet", light: "good" }, { noise: "loud" }, { light: "dim" }, {}];
+  rooms.forEach((r, i) => { r.climate = { ...seeds[i % seeds.length], at: Date.now() - (2 + i * 3) * 60000 }; });
   // "Alone" = not yet in a break group. It starts high and the finale brings it to 0.
   return { rooms, attendees, groups: [], alone: attendees.length, events: [] };
 }
@@ -119,6 +122,7 @@ function snapshot() {
     rooms: state.rooms.map((r) => ({
       id: r.id, name: r.name, seats: r.seats, taken: r.taken, status: r.status,
       incident: r.incident ? { ...r.incident } : null,
+      climate: climateFor(r),
     })),
     attendees: state.attendees.map((a) => ({ ...a })),
     groups: state.groups.map((g) => ({ ...g, members: [...g.members] })),
@@ -194,6 +198,8 @@ export const demo = {
     updateStatus(busiest);
     logEvent("Evicted", `${busiest.id} closed`);
     const evicted = state.attendees.filter((a) => a.roomId === busiest.id);
+    const targets = state.rooms.filter((r) => !r.closed && r.taken < r.seats).map((r) => r.id).slice(0, 2);
+    if (evicted.length) logEvent("Evicted", `${evicted.length} pods: ${busiest.id} closed → ${targets.join(", ") || "Pending"}`);
     for (const a of evicted) {
       const target = state.rooms.filter((r) => !r.closed && r.taken < r.seats).sort((x, y) => x.taken / x.seats - y.taken / y.seats)[0];
       if (target) moveAttendee(a, target, "Scheduled");
@@ -284,6 +290,18 @@ function optionsFor(slot, exceptId) {
   }).filter(Boolean);
 }
 
+/** Only what attendees reported, with how long ago. Never a measured number. */
+function climateFor(r) {
+  const c = r.climate || {};
+  const captions = r.incident && r.incident.state !== "resolved" ? "down" : c.captions || null;
+  return {
+    noise: c.noise || null,
+    light: c.light || null,
+    captions,
+    minutesAgo: c.at ? Math.max(0, Math.round((Date.now() - c.at) / 60000)) : null,
+  };
+}
+
 function placementFor(talk, room, status) {
   const r = state.rooms.find((x) => x.id === room.id) || room;
   const seatsLeft = Math.max(0, r.seats - (r.taken || 0));
@@ -293,7 +311,7 @@ function placementFor(talk, room, status) {
   return {
     status,
     talk: { id: talk.id, title: talk.title, startsAt: talk.startsAt, slot: talk.slot },
-    room: { id: r.id, name: r.name, seatsLeft, badges, walkingHint: WALK[r.id] || null },
+    room: { id: r.id, name: r.name, seatsLeft, seats: r.seats, taken: r.taken, badges, walkingHint: WALK[r.id] || null, climate: climateFor(r) },
     reason: null,
     options: optionsFor(talk.slot, r.id),
     kubectl: `${me.displayId}   ${status === "Scheduled" ? "Running" : status}   ${r.id}`,
@@ -461,8 +479,29 @@ export const api = {
     };
   },
   async reportRoom(roomId, signal) {
+    ensureState();
     await sleep(300);
+    const room = state.rooms.find((r) => r.id === roomId);
     const staffAlerted = signal === "captions_down" || signal === "access_blocked";
+    if (room) {
+      const c = (room.climate ||= {});
+      const effects = {
+        very_loud: { noise: "loud" }, quiet: { noise: "quiet" },
+        too_dim: { light: "dim" }, too_bright: { light: "bright" },
+        captions_working: { captions: "working" },
+      };
+      Object.assign(c, effects[signal] || {}, { at: Date.now() });
+      if (signal === "full") { room.taken = room.seats; updateStatus(room); }
+      if (staffAlerted && (!room.incident || room.incident.state === "resolved")) {
+        room.incident = { id: `inc-${randomId()}`, type: signal === "captions_down" ? "captions" : "access", reportedAt: stamp(), state: "open", reports: 1 };
+        updateStatus(room);
+        logEvent("Incident", `${room.id} ${signal === "captions_down" ? "captions down" : "access problem"}`);
+        emit("incident", { roomId: room.id, ...room.incident });
+      } else if (staffAlerted) {
+        room.incident.reports += 1;
+      }
+      logEvent("Reported", `${room.id} ${signal}`);
+    }
     return { agreeing: Math.floor(Math.random() * 5), staffAlerted };
   },
   async board() {
@@ -497,7 +536,10 @@ function decorate(t) {
     if (room.incident && room.incident.state !== "resolved") badges.push("captions-down");
     else badges.push("captions");
   }
-  return { id: t.id, title: t.title, abstract: t.abstract, room: t.room, roomName: t.roomName, startsAt: t.startsAt, slot: t.slot, badges };
+  return {
+    id: t.id, title: t.title, abstract: t.abstract, room: t.room, roomName: t.roomName, startsAt: t.startsAt, slot: t.slot, badges,
+    seats: room?.seats, taken: room?.taken, climate: room ? climateFor(room) : null,
+  };
 }
 
 export const fakeName = () => pick(FAKE_NAMES);
