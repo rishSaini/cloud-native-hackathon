@@ -70,3 +70,7 @@ app.include_router(search_router)
 from app.reports.routes import router as reports_router  # noqa: E402
 
 app.include_router(reports_router)
+
+from app.incidents.routes import router as incidents_router  # noqa: E402
+
+app.include_router(incidents_router)

@@ -17,7 +17,7 @@ this trace.
 
 import math
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from elasticsearch import NotFoundError
 from opentelemetry import propagate, trace
@@ -49,12 +49,19 @@ DEFAULT_STATE = {
 
 # ---------- Pure logic ----------
 
-def confidences(agg: dict, now: datetime) -> dict[str, float]:
-    """Decayed confidence per signal, from the signal x minute aggregation."""
+def confidences(agg: dict, now: datetime, cleared: dict[str, str] | None = None) -> dict[str, float]:
+    """Decayed confidence per signal, from the signal x minute aggregation.
+
+    `cleared` maps a signal to the time staff resolved it (K11): reports from
+    before that minute stop counting, so a fixed room does not flip back.
+    """
     result = {}
+    cleared_ms = {sig: datetime.fromisoformat(ts).timestamp() * 1000 for sig, ts in (cleared or {}).items()}
     for sig in agg["signals"]["buckets"]:
         total = 0.0
         for minute in sig["per_minute"]["buckets"]:
+            if minute["key"] < cleared_ms.get(sig["key"], float("-inf")):
+                continue
             age = (now.timestamp() * 1000 - minute["key"]) / 60000 - 0.5  # middle of the minute
             total += minute["doc_count"] * math.exp(-max(age, 0.0) / DECAY_MINUTES)
         result[sig["key"]] = round(total * WEIGHTS.get(sig["key"], 1.0), 3)
@@ -131,8 +138,10 @@ def recompute(room: str, now: datetime | None = None, es=None) -> dict:
     es = es or get_es()
     now = now or datetime.now(timezone.utc)
     prev = current_state(es, room)
-    conf = confidences(report_aggregation(es, room), now)
+    cleared = (prev.get("confidence") or {}).get("cleared") or {}
+    conf = confidences(report_aggregation(es, room), now, cleared)
     nxt = derive(prev, conf)
+    nxt["signals"]["captions"] = staff_confirmed_captions(nxt["signals"]["captions"], cleared, now)
     changed = nxt["status"] != prev.get("status", "open") or nxt["signals"] != {
         **DEFAULT_STATE["signals"], **(prev.get("signals") or {})
     }
@@ -145,11 +154,32 @@ def recompute(room: str, now: datetime | None = None, es=None) -> dict:
                 doc={
                     "room": room,
                     **nxt,
-                    "confidence": conf,
+                    "confidence": {**conf, "cleared": cleared},
                     "changed_at": now.isoformat(),
                     "traceparent": current_traceparent(),
                 },
                 doc_as_upsert=True,  # keeps Rishabh's seats fields
                 refresh="wait_for",
             )
+        open_incidents(es, room, prev, nxt)
     return {"room": room, **nxt, "confidence": conf, "changed": changed}
+
+
+def staff_confirmed_captions(captions: str, cleared: dict[str, str], now: datetime) -> str:
+    """A staff resolution (K11) is evidence too: captions count as working for
+    30 minutes after it, unless new "down" reports turn them down again."""
+    stamp = cleared.get("captions_down")
+    if captions == "unknown" and stamp and now - datetime.fromisoformat(stamp) < timedelta(minutes=30):
+        return "working"
+    return captions
+
+
+def open_incidents(es, room: str, prev: dict, nxt: dict) -> None:
+    """K11: captions going down or access becoming blocked opens a staff incident."""
+    from app.incidents.store import open_incident
+
+    before = {**DEFAULT_STATE["signals"], **(prev.get("signals") or {})}
+    if nxt["signals"]["captions"] == "down" and before["captions"] != "down":
+        open_incident(es, room, "captions")
+    if nxt["signals"]["access_blocked"] and not before["access_blocked"]:
+        open_incident(es, room, "access")
