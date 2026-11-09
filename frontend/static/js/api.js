@@ -118,6 +118,12 @@ export const api = {
     request("POST", `/api/breaks/${enc(breakId)}/rsvp`, { going })),
   checkIn: withFallback("checkIn", (groupId, status = "here") =>
     request("POST", `/api/groups/${enc(groupId)}/check-in`, { status })),
+  // Not in the task plans yet (confirm with Rishabh): the person's current break group, and leaving it.
+  currentGroup: withFallback("currentGroup", async () => {
+    const data = await request("GET", "/api/groups/current");
+    return data?.group ?? data;
+  }),
+  leaveGroup: withFallback("leaveGroup", (groupId) => request("POST", `/api/groups/${enc(groupId)}/leave`, {})),
   proposeConnection: withFallback("proposeConnection", (displayId) =>
     request("POST", "/api/connections", { displayId })),
   block: withFallback("block", (blockedDisplayId) => request("POST", "/api/blocks", { blockedDisplayId })),

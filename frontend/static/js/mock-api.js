@@ -167,6 +167,8 @@ function tick() {
 
 // ---- demo controls (board shortcuts drive these) ----
 export const demo = {
+  /** Forms the phone's group now; startedMinutesAgo > 3 shows the no-show message. */
+  formMyGroup(opts = {}) { formMyGroup("brk-tue-1530", opts); },
   closeBusiest() {
     ensureState();
     const busiest = [...state.rooms].filter((r) => !r.closed).sort((a, b) => b.taken / b.seats - a.taken / a.seats)[0];
@@ -299,6 +301,48 @@ function placementFor(talk, room, status) {
   };
 }
 
+// ---- the phone's own break group ----
+let myGroup = null;
+let groupTimer = null;
+const MEMBER_CARDS = [
+  { pronouns: "she/her", howToTalk: "Give me time to finish my words.", workingOn: "making apps start faster", askMeAbout: "checkpoint and restore" },
+  { pronouns: "they/them", howToTalk: "Say your name when you walk up.", workingOn: "testing startup speed in CI", askMeAbout: "flaky benchmarks" },
+  { pronouns: "he/him", howToTalk: "I do better one-on-one. Come say hi when it's quieter.", workingOn: "smaller container images", askMeAbout: "distroless images" },
+];
+
+function formMyGroup(breakId, { startedMinutesAgo = null } = {}) {
+  const names = [...FAKE_NAMES].sort(() => Math.random() - 0.5);
+  const startsAt = startedMinutesAgo == null
+    ? new Date(Date.now() + 2 * 60000).toISOString()
+    : new Date(Date.now() - startedMinutesAgo * 60000).toISOString();
+  myGroup = {
+    id: `g-${randomId()}`,
+    breakId: breakId || "brk-tue-1530",
+    tableId: "tbl-quiet-window",
+    place: "the quiet table by the window",
+    startsAt,
+    opener: "How do you test startup speed?",
+    myStatus: null,
+    members: MEMBER_CARDS.slice(0, 2).map((card, i) => ({
+      displayId: `attendee-${randomId()}`,
+      name: names[i],
+      ...card,
+      status: "on-the-way",
+    })),
+  };
+  emit("group", { group: groupCopy() });
+  // One person arrives a little later; the other doesn't, to show the no-show rule.
+  setTimeout(() => {
+    if (!myGroup) return;
+    myGroup.members[0].status = "here";
+    emit("group", { group: groupCopy() });
+  }, 12000);
+}
+
+function groupCopy() {
+  return myGroup ? { ...myGroup, members: myGroup.members.map((m) => ({ ...m })) } : null;
+}
+
 // ---- API methods (same names and shapes as api.js) ----
 export const api = {
   async createAttendee() {
@@ -357,11 +401,29 @@ export const api = {
   },
   async rsvpBreak(breakId, going = true) {
     await sleep(250);
+    clearTimeout(groupTimer);
+    if (going && !myGroup) groupTimer = setTimeout(() => formMyGroup(breakId), 2500);
     return { breakId, status: going ? "going" : "not-going" };
   },
   async checkIn(groupId, status = "here") {
     await sleep(250);
+    if (myGroup?.id === groupId) {
+      myGroup.myStatus = status;
+      emit("group", { group: groupCopy() });
+    }
     return { groupId, status };
+  },
+  async currentGroup() {
+    await sleep(150);
+    return groupCopy();
+  },
+  async leaveGroup(groupId) {
+    await sleep(250);
+    if (myGroup?.id === groupId) {
+      myGroup = null;
+      emit("group", { group: null });
+    }
+    return { ok: true };
   },
   async proposeConnection(displayId) {
     await sleep(300);
