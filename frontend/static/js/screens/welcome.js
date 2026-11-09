@@ -5,7 +5,7 @@
 import { announce, focusScreen, motionOK } from "../a11y.js";
 import { cardFields, emptyCard, livePreview, needsFields, TEMPLATES } from "../card-form.js";
 import { accentColor } from "../color.js";
-import { h } from "../format.js";
+import { h, twoTone } from "../format.js";
 import { loadErrorView } from "../load-error.js";
 import { loadMe, saveMyCard } from "../store.js";
 
@@ -78,10 +78,10 @@ export default {
         return h("section", { class: "welcome", "aria-labelledby": "step-h" },
           h("figure", { class: "welcome-visual" },
             heroArt(),
-            h("figcaption", { class: "welcome-caption" }, "A break table, as a constellation"),
+            h("figcaption", { class: "welcome-caption" }, "Your break table, as a constellation"),
           ),
           h("p", { class: "eyebrow" }, "KubeCon · Salt Lake City"),
-          h("h1", { id: "step-h" }, "Find your talk. Find your people."),
+          h("h1", { id: "step-h" }, twoTone("Find your talk. ", "Find your people.")),
           h("p", { class: "lede" }, "Here on your own? First conference? Not big on small talk? Same for lots of people here. Make a small card, and we'll find you a good talk and a friendly table at every break."),
           card
             ? h("a", { class: "btn btn-primary btn-block", href: "#/now" }, "Go to now")
@@ -106,8 +106,8 @@ export default {
         return h("section", { "aria-labelledby": "step-h" },
           backButton("welcome"),
           progress("template"),
-          h("h1", { id: "step-h" }, "What makes conversations easier for you?"),
-          h("p", { class: "muted" }, "Pick whatever sounds most like you. You can change the words next."),
+          h("h1", { id: "step-h" }, twoTone("How do you like to ", "meet people?")),
+          h("p", { class: "muted" }, "Pick whatever sounds most like you. Everyone here is meeting new people too."),
           h("ul", { class: "tiles" }, tiles),
         );
       },
@@ -157,8 +157,8 @@ export default {
         return h("section", {},
           backButton("card"),
           progress("needs"),
-          h("h1", { id: "step-h" }, "What helps you feel comfortable?"),
-          h("p", { class: "muted" }, "Everyone has something. Tick anything that helps, or none. You can change this later."),
+          h("h1", { id: "step-h" }, twoTone("What\u2019s your break-time ", "vibe?")),
+          h("p", { class: "muted" }, "Pick any, or none. You can change this later."),
           form,
         );
       },
@@ -170,7 +170,7 @@ export default {
         if (me?.displayId) star.style.setProperty("--star", accentColor(me.displayId));
         return h("section", { class: "done", "aria-labelledby": "step-h" },
           star,
-          h("h1", { id: "step-h" }, "Your card is ready"),
+          h("h1", { id: "step-h" }, twoTone("Your card is ", "ready.")),
           h("p", { class: "lede" }, "You're ", h("code", { class: "display-id" }, id), ". Look for yourself on the big screen."),
           h("a", { class: "btn btn-primary btn-block", href: "#/now" }, "Find me a talk"),
           h("p", { class: "welcome-note" }, h("a", { href: "#/card" }, "See my card")),

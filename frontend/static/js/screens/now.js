@@ -60,7 +60,7 @@ export default {
     };
     paintTuned();
     const greeting = h("div", { class: "greeting" },
-      h("p", { class: "greeting-line" }, `${partOfDay}, ${card.name || "friend"} `, h("span", { class: "sparkle", "aria-hidden": "true" }, "✦")),
+      h("p", { class: "greeting-line" }, `${partOfDay}, `, h("span", { class: "accent-word" }, `${card.name || "friend"}.`)),
       tuned,
     );
     main.querySelector("h1")?.replaceWith(h("h1", { class: "visually-hidden" }, "Now"));
