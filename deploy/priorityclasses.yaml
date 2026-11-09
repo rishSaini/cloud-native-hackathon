@@ -1,0 +1,19 @@
+# Placement priorities (R2). People with hard requirements are placed first, so
+# accessible seats are not taken before they are. Never preempts anyone already seated.
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: affinity-hard-requirement
+value: 1000
+preemptionPolicy: Never
+globalDefault: false
+description: "Attendees with access needs: placed first, never bump anyone."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: affinity-standard
+value: 100
+preemptionPolicy: Never
+globalDefault: false
+description: "Everyone else."

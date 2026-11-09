@@ -1,0 +1,42 @@
+# One-off Job: creates Affinity's Elasticsearch inference endpoint, indices and
+# data stream in the team cluster (K1). It is not in kustomization.yaml, so
+# Argo CD never owns it (see examples/agent-workflows/README.md).
+#
+# Run it once, after Secret app-credentials has OPENAI_API_KEY:
+#   Radar MCP: apply_resource with mode=create, then wait_for kind=job condition=complete
+#   or:        kubectl create -f deploy/jobs/es-setup-001.yaml
+# To run it again, copy it with a new name (es-setup-002). Never reuse a Job name.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: es-setup-001
+  namespace: team-coffeecon
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 300
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: es-setup
+          image: ghcr.io/rishsaini/cloud-native-hackathon:latest
+          imagePullPolicy: Always
+          workingDir: /app
+          command: [python, scripts/es_setup.py]
+          env:
+            - name: ES_URL
+              value: http://elasticsearch:9200
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-credentials
+                  key: OPENAI_API_KEY
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            seccompProfile: {type: RuntimeDefault}
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: 500m, memory: 256Mi}

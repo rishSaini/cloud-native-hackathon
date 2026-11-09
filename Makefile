@@ -8,10 +8,10 @@ PY    := $(CURDIR)/$(VENV)/bin/python
 BIN   := $(CURDIR)/$(VENV)/bin
 IMAGE := talkscout:dev
 
-.PHONY: help setup es-up kibana es-down ingest run test image run-image gitar-results
+.PHONY: help setup es-up kibana es-down ingest run test image run-image es-setup schedule gitar-results
 
 help: ## List commands
-	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-14s %s\n", $$1, $$2}'
+	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-14s %s\n", $$1, $$2}'
 
 setup: ## Create the venv, install packages, turn on git hooks, create .env
 	python3 -m venv $(VENV)
@@ -28,8 +28,8 @@ kibana: ## Start Kibana at http://localhost:5601
 es-down: ## Stop Elasticsearch and Kibana (keeps the data)
 	docker compose --profile kibana down
 
-ingest: ## Load data/sample.jsonl into Elasticsearch
-	"$(PY)" scripts/ingest.py data/sample.jsonl
+ingest: ## Load the synthetic schedule (data/sample-schedule.json) into Elasticsearch
+	"$(PY)" scripts/ingest.py
 
 run: ## Run the app at http://localhost:8000 (with telemetry if OTEL_EXPORTER_OTLP_ENDPOINT is set)
 ifdef OTEL_EXPORTER_OTLP_ENDPOINT
@@ -46,6 +46,12 @@ image: ## Build the container image, as CI does
 
 run-image: image ## Run the container image at http://localhost:8080
 	docker run --rm -p 8080:8080 --env-file .env -e ES_URL=http://host.docker.internal:9200 $(IMAGE)
+
+es-setup: ## Create the Elasticsearch indices and inference endpoint (safe to rerun)
+	"$(PY)" scripts/es_setup.py
+
+schedule: ## Regenerate data/sample-schedule.json from scripts/gen_schedule.py
+	"$(PY)" scripts/gen_schedule.py
 
 gitar-results: ## Export Gitar reviews into gitar/results (needs gh auth)
 	"$(PY)" scripts/gitar_export.py

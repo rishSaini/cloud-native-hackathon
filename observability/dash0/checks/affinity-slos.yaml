@@ -1,0 +1,63 @@
+# Affinity SLO checks (K14), in Prometheus rule format. Dash0 check rules use
+# PromQL; import each rule in Dash0 (Alerting > Checks > New check, paste the
+# expression), or apply this file where the Dash0 operator syncs PrometheusRules.
+#
+# Targets from docs/AFFINITY.md "SLOs". These are design targets, not measured
+# results, until real traffic flows.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: affinity-slos
+spec:
+  groups:
+    - name: affinity-slos
+      rules:
+        # Nobody alone: 99% of opted-in attendees are in a group at each break.
+        # Denominator: people alone plus people grouped (sum of group sizes).
+        - alert: AffinityPeopleAloneAtBreaks
+          expr: |
+            increase(affinity_alone_at_break_total[1h])
+              / clamp_min(increase(affinity_alone_at_break_total[1h]) + increase(affinity_group_size_sum[1h]), 1)
+              > 0.01
+          for: 0m
+          labels: {severity: critical, slo: nobody-alone}
+          annotations:
+            summary: "More than 1% of opted-in attendees ended up alone at a break"
+
+        # Fast reroute: 95% of room changes reach the phone within 5 seconds.
+        - alert: AffinityRerouteSlow
+          expr: |
+            histogram_quantile(0.95, sum by (le) (rate(affinity_reroute_duration_seconds_bucket[15m]))) > 5
+          for: 5m
+          labels: {severity: warning, slo: fast-reroute}
+          annotations:
+            summary: "Reroute p95 is above 5 seconds"
+
+        # Placement: requests get placed. Unplaced attendees staying above zero for
+        # 10 minutes means the scheduler cannot place someone (full slot or no match).
+        - alert: AffinityAttendeesUnplaced
+          expr: |
+            min_over_time(affinity_unplaced_attendees[10m]) > 0
+          for: 0m
+          labels: {severity: warning, slo: placement-success}
+          annotations:
+            summary: "Some attendees have had no placement for 10 minutes"
+
+        # Placement speed: p95 from request to bound Pod under 10 seconds.
+        - alert: AffinityPlacementSlow
+          expr: |
+            histogram_quantile(0.95, sum by (le) (rate(affinity_placement_duration_seconds_bucket[15m]))) > 10
+          for: 5m
+          labels: {severity: warning, slo: placement-speed}
+          annotations:
+            summary: "Placement p95 is above 10 seconds"
+
+        # Incident response: captions or access incidents get attention within 5 minutes.
+        # affinity_incidents_open counts open and acknowledged incidents.
+        - alert: AffinityIncidentNotHandled
+          expr: |
+            min_over_time(affinity_incidents_open[5m]) > 0
+          for: 0m
+          labels: {severity: critical, slo: incident-response}
+          annotations:
+            summary: "An accessibility incident has stayed unresolved for 5 minutes"

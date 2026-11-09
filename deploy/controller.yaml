@@ -1,0 +1,103 @@
+# The placement controller (R5): same image as the app, one replica.
+# Recreate, so two controllers never reconcile at the same time.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller
+  labels:
+    app: controller
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: controller
+  template:
+    metadata:
+      labels:
+        app: controller
+    spec:
+      serviceAccountName: affinity-controller
+      containers:
+        - name: controller
+          image: app
+          workingDir: /app/backend
+          command:
+            - sh
+            - -c
+            - >-
+              if [ -n "$OTEL_EXPORTER_OTLP_ENDPOINT" ];
+              then export OTEL_RESOURCE_ATTRIBUTES="service.version=$APP_VERSION,$OTEL_RESOURCE_ATTRIBUTES";
+              exec opentelemetry-instrument python -m app.controller;
+              else exec python -m app.controller; fi
+          ports:
+            - name: health
+              containerPort: 8081
+          envFrom:
+            - secretRef:
+                name: app-credentials
+                optional: true
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ES_URL
+              value: http://elasticsearch:9200
+            - name: OTEL_SERVICE_NAME
+              value: affinity-controller
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: http/protobuf
+            - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
+              value: "true"
+            - name: OTEL_LOGS_EXPORTER
+              value: otlp
+            # K17: service identity for Dash0 (dash0hq/agent-skills, resources and k8s rules).
+            # service.version is added at start from the image's APP_VERSION.
+            - name: K8S_POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: K8S_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.namespace=affinity,deployment.environment.name=cnh-2026,service.instance.id=$(K8S_POD_UID),k8s.namespace.name=team-coffeecon,k8s.pod.uid=$(K8S_POD_UID),k8s.pod.name=$(K8S_POD_NAME),k8s.node.name=$(K8S_NODE_NAME),k8s.container.name=controller"
+            # Placement reads attendees and seats from Postgres (R6). Same Secret as the app.
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-app
+                  key: uri
+                  optional: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 192Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop: ["ALL"]
