@@ -5,12 +5,15 @@ import { announce, focusScreen } from "../a11y.js";
 import { cardFields, livePreview, needsFields } from "../card-form.js";
 import { flipCard } from "../card-view.js";
 import { h } from "../format.js";
+import { loadErrorView } from "../load-error.js";
 import { deleteMyCard, loadMe, saveMyCard } from "../store.js";
 
 export default {
   title: "Your card",
   async render(main, { navigate }) {
-    let { me, card } = await loadMe();
+    const loaded = await loadMe();
+    if (loaded.error) { main.append(loadErrorView()); return; }
+    let { me, card } = loaded;
 
     function empty() {
       return h("section", { class: "card coming-soon", "aria-labelledby": "screen-h" },
