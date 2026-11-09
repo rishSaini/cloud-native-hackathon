@@ -25,13 +25,11 @@ class ReportIn(BaseModel):
     slot: str | None = Field(None, pattern=r"^[a-z]{3}-\d{4}$")
 
 
-def recompute_state(room: str):
-    """Run K10's room-state engine if it exists yet."""
-    try:
-        from app.reports.state import recompute
-    except ImportError:
-        return None
-    return recompute(room)
+def recompute_state(room: str, es):
+    """Run K10's room-state engine (inline, so one request can flip the room)."""
+    from app.reports.state import recompute
+
+    return recompute(room, es=es)
 
 
 @router.post("/api/rooms/{room_id}/reports", status_code=status.HTTP_202_ACCEPTED)
@@ -51,5 +49,5 @@ def report_room(
             )
         record_report(es, room_id, body.signal, reporter, body.slot)
         reports_total.add(1, {"report.signal": body.signal})
-        state = recompute_state(room_id)
+        state = recompute_state(room_id, es)
     return {"accepted": True, "room": room_id, "signal": body.signal, "state": state}

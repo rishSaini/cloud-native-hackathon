@@ -30,7 +30,8 @@ class FakeReportsES:
 
 
 @pytest.fixture
-def client():
+def client(monkeypatch):
+    monkeypatch.setattr("app.reports.routes.recompute_state", lambda room, es: {"status": "open"})
     es = FakeReportsES()
     app.dependency_overrides[get_es] = lambda: es
     app.dependency_overrides[current_attendee_id] = lambda: "att-7f3k"
