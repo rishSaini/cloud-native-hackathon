@@ -3,6 +3,7 @@
 import logging
 import signal
 
+from app.controller import placement  # noqa: F401  (registers the placement reconciler)
 from app.controller.loop import Controller
 from app.k8s.client import core_api, namespace
 
