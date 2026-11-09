@@ -1,0 +1,13 @@
+# Lint for the Python backend and scripts (K5). CI runs `ruff check`; Gitar diagnoses failures.
+line-length = 120
+target-version = "py311"
+extend-exclude = [".venv", "deploy/kwok/upstream"]
+
+[lint]
+# E/W: style errors, F: real bugs (unused names, undefined names), I: import order,
+# B: likely bugs, UP: modern syntax.
+select = ["E", "W", "F", "I", "B", "UP"]
+ignore = ["B008"]  # FastAPI's Depends()/Query() in defaults is the intended pattern
+
+[lint.isort]
+known-first-party = ["app"]
