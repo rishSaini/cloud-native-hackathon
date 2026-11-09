@@ -88,10 +88,12 @@ function freshState() {
 }
 
 function updateStatus(room) {
-  if (room.incident && room.incident.state !== "resolved") room.status = "INCIDENT";
-  else if (room.closed) room.status = "CLOSED";
+  const before = room.status;
+  if (room.closed) room.status = "CLOSED";
+  else if (room.incident && room.incident.state !== "resolved") room.status = "INCIDENT";
   else if (room.taken >= room.seats) room.status = "FULL";
   else room.status = "OPEN";
+  if (before && before !== room.status) emit("room", { id: room.id, name: room.name, status: room.status });
 }
 
 function stamp() {
@@ -162,7 +164,24 @@ export const demo = {
   closeBusiest() {
     ensureState();
     const busiest = [...state.rooms].filter((r) => !r.closed).sort((a, b) => b.taken / b.seats - a.taken / a.seats)[0];
-    if (!busiest) return;
+    if (busiest) demo.closeRoom(busiest.id);
+  },
+  /** Closes the room the phone's attendee is placed in, to show a reroute. */
+  closeMine() {
+    if (myPlacement?.room?.id) demo.closeRoom(myPlacement.room.id);
+  },
+  reopenRoom(id) {
+    ensureState();
+    const room = state.rooms.find((r) => r.id === id);
+    if (!room) return;
+    room.closed = false;
+    updateStatus(room);
+    logEvent("Ready", `${room.id} open`);
+  },
+  closeRoom(id) {
+    ensureState();
+    const busiest = state.rooms.find((r) => r.id === id);
+    if (!busiest || busiest.closed) return;
     busiest.closed = true;
     updateStatus(busiest);
     logEvent("Evicted", `${busiest.id} closed`);
@@ -228,11 +247,33 @@ function formGroups(everyone = false) {
 }
 
 function reroute(fromRoom) {
-  const to = state.rooms.filter((r) => !r.closed && r.status !== "FULL" && r.id !== fromRoom.id)[0];
-  if (!to || !myPlacement) return;
+  if (!myPlacement?.talk) return;
+  const to = openRooms(fromRoom.id)[0];
+  if (!to) return;
   const talk = talks.find((t) => t.room === to.id && t.slot === myPlacement.talk.slot) || myPlacement.talk;
   myPlacement = placementFor(talk, to, "Scheduled");
-  emit("reroute", { from: { id: fromRoom.id, name: fromRoom.name }, placement: myPlacement });
+  myPlacement.kubectl = `${me.displayId}   Evicted → Pending → Scheduled   ${to.id}`;
+  emit("reroute", { id: `rr-${randomId()}`, from: { id: fromRoom.id, name: fromRoom.name }, reason: fromRoom.closed ? "closed" : "full", placement: { ...myPlacement } });
+}
+
+function openRooms(exceptId) {
+  return state.rooms
+    .filter((r) => r.status === "OPEN" && r.id !== exceptId)
+    .sort((a, b) => a.taken / a.seats - b.taken / b.seats);
+}
+
+const WALK = {
+  "room-101": "First floor, past registration on the left.",
+  "room-155": "First floor, end of the east hallway.",
+  "room-251": "Second floor, take the elevator by the coffee bar.",
+  "room-hall-b": "Ground level, follow signs for Hall B.",
+};
+
+function optionsFor(slot, exceptId) {
+  return openRooms(exceptId).slice(0, 3).map((r) => {
+    const t = talks.find((x) => x.slot === slot && x.room === r.id);
+    return t && { talk: { id: t.id, title: t.title, startsAt: t.startsAt, slot }, room: { id: r.id, name: r.name, seatsLeft: r.seats - r.taken } };
+  }).filter(Boolean);
 }
 
 function placementFor(talk, room, status) {
@@ -244,8 +285,9 @@ function placementFor(talk, room, status) {
   return {
     status,
     talk: { id: talk.id, title: talk.title, startsAt: talk.startsAt, slot: talk.slot },
-    room: { id: r.id, name: r.name, seatsLeft, badges },
+    room: { id: r.id, name: r.name, seatsLeft, badges, walkingHint: WALK[r.id] || null },
     reason: null,
+    options: optionsFor(talk.slot, r.id),
     kubectl: `${me.displayId}   ${status === "Scheduled" ? "Running" : status}   ${r.id}`,
     reportedMinutesAgo: Math.floor(Math.random() * 5),
   };
@@ -280,19 +322,21 @@ export const api = {
     const token = randomId() + randomId() + randomId();
     return { url: `${location.origin}/c/${token}`, expiresInSeconds: 600 };
   },
-  async requestPlacement(slot) {
+  async requestPlacement(slot, { preferRoom = null } = {}) {
     ensureState();
     if (!me) await api.createAttendee();
     await sleep(400);
-    myPlacement = { status: "Pending", talk: null, room: null, reason: null, kubectl: `${me.displayId}   Pending   <none>` };
+    myPlacement = { status: "Pending", talk: null, room: null, reason: null, slot, kubectl: `${me.displayId}   Pending   <none>` };
     setTimeout(() => {
-      const room = state.rooms.filter((r) => r.status === "OPEN").sort((a, b) => a.taken / a.seats - b.taken / b.seats)[0];
-      const talk = talks.find((t) => t.slot === slot && t.room === room?.id) || talks.find((t) => t.slot === slot);
+      const preferred = preferRoom && state.rooms.find((r) => r.id === preferRoom && r.status === "OPEN");
+      const room = preferred || openRooms()[0];
+      const talk = room && talks.find((t) => t.slot === slot && t.room === room.id);
       if (!room || !talk) {
         myPlacement = {
-          status: "Pending", talk: null, room: null,
-          reason: "Every matching talk is full right now. We'll keep looking.",
-          kubectl: `Pending: 0/${state.rooms.length} nodes available: Insufficient affinity.dev/seats`,
+          status: "Pending", talk: null, room: null, slot,
+          reason: "Every matching talk is full right now. We'll keep looking and tell you when a seat opens.",
+          options: [],
+          kubectl: `Pending: 0/${state.rooms.length} nodes available: ${state.rooms.length} Insufficient affinity.dev/seats`,
         };
       } else {
         myPlacement = placementFor(talk, room, "Scheduled");

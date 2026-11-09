@@ -5,10 +5,13 @@
 // Privacy: request bodies carry card text, questions and reports, so they are never put in
 // URLs and never logged. Errors carry only the HTTP status and path.
 
-import { api as mock } from "./mock-api.js";
+import { api as mock, demo as mockDemo } from "./mock-api.js";
 
 const params = new URLSearchParams(location.search + "&" + (location.hash.split("?")[1] || ""));
 const forceMock = params.get("mock") === "1";
+
+// In mock mode, expose the demo controls for rehearsals: affinityDemo.closeMine() shows a reroute.
+if (forceMock) window.affinityDemo = mockDemo;
 
 const mockedMethods = new Set();
 const mockListeners = new Set();
@@ -103,7 +106,9 @@ export const api = {
   deleteCard: withFallback("deleteCard", () => request("DELETE", "/api/card")),
   shareCard: withFallback("shareCard", () => request("POST", "/api/card/share", {})),
 
-  requestPlacement: withFallback("requestPlacement", (slot) => request("POST", "/api/placements", { slot })),
+  // preferRoom asks for a specific room (Undo after a reroute, or picking another option). Confirm with Rishabh.
+  requestPlacement: withFallback("requestPlacement", (slot, { preferRoom = null } = {}) =>
+    request("POST", "/api/placements", preferRoom ? { slot, preferRoom } : { slot })),
   currentPlacement: withFallback("currentPlacement", async () => {
     const data = await request("GET", "/api/placements/current");
     return data?.placement ?? data;
