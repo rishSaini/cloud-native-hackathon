@@ -11,7 +11,7 @@ IMAGE := talkscout:dev
 .PHONY: help setup es-up kibana es-down ingest run test image run-image es-setup schedule
 
 help: ## List commands
-	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
+	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
 
 setup: ## Create the venv, install packages, turn on git hooks, create .env
 	python3 -m venv $(VENV)

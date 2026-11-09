@@ -1,24 +1,12 @@
 import json
-import logging
 from pathlib import Path
 
-from elasticsearch import NotFoundError, TransportError
-from fastapi import Depends, FastAPI, Query
+from elasticsearch import TransportError
+from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse, PlainTextResponse, Response
-from opentelemetry import metrics, trace
 
 from app import config
 from app.es import get_es
-
-log = logging.getLogger("talkscout")
-
-# These are no-ops until the app runs under `opentelemetry-instrument`.
-tracer = trace.get_tracer("talkscout")
-meter = metrics.get_meter("talkscout")
-search_requests = meter.create_counter(
-    "talkscout.search.requests",
-    description="Search requests, split by whether they returned any results",
-)
 
 app = FastAPI(title="TalkScout")
 
@@ -44,40 +32,6 @@ def health(es=Depends(get_es)):
         "version": config.APP_VERSION,
         "elasticsearch": "up" if es_up else "down",
     }
-
-
-@app.get("/api/search")
-def search(
-    q: str = Query(min_length=1),
-    size: int = Query(10, ge=1, le=50),
-    es=Depends(get_es),
-):
-    with tracer.start_as_current_span("search.keyword") as span:
-        span.set_attribute("search.query_length", len(q))
-        try:
-            resp = es.search(
-                index=config.ES_INDEX,
-                size=size,
-                query={"multi_match": {"query": q, "fields": ["*"], "lenient": True}},
-            )
-        except NotFoundError:
-            log.warning("index %s not found", config.ES_INDEX)
-            return {
-                "hits": [],
-                "total": 0,
-                "note": f"Index '{config.ES_INDEX}' not found. Run: make ingest",
-            }
-
-        hits = [
-            {"id": h["_id"], "score": h["_score"], **h["_source"]}
-            for h in resp["hits"]["hits"]
-        ]
-        span.set_attribute("search.hits", len(hits))
-
-    search_requests.add(1, {"has_results": bool(hits)})
-    if not hits:
-        log.info("zero-result search: %s", q)
-    return {"hits": hits, "total": resp["hits"]["total"]["value"]}
 
 
 @app.get("/rum.js")
@@ -107,3 +61,9 @@ def rum_config():
 def index():
     # The page prints the version, so you can check which commit is live.
     return FRONTEND.read_text().replace("{{VERSION}}", config.APP_VERSION)
+
+
+# Routers. Append-only: one include line per router.
+from app.search.routes import router as search_router  # noqa: E402
+
+app.include_router(search_router)
