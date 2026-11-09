@@ -30,6 +30,22 @@ function countdownText(startsAt, now = Date.now()) {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+function pinIcon() {
+  const el = h("span", { class: "pin", "aria-hidden": "true" });
+  el.innerHTML = '<svg viewBox="0 0 24 24" focusable="false"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg>';
+  return el;
+}
+
+// Stars drifting together; "joined" draws the lines between them. Static, decorative markup.
+function starsArt(joined) {
+  const el = h("div", { class: `exchange-art${joined ? " joined" : ""}`, "aria-hidden": "true" });
+  el.innerHTML = `<svg viewBox="0 0 200 80" focusable="false">
+    <g class="ex-lines" fill="none" stroke="#C9B9A6" stroke-width="1.5" stroke-linecap="round"><path d="M40 52 L100 24 L160 50 M40 52 L160 50"/></g>
+    <circle class="ex-star s1" cx="40" cy="52" r="9"/><circle class="ex-star s2" cx="100" cy="24" r="11"/><circle class="ex-star s3" cx="160" cy="50" r="9"/>
+  </svg>`;
+  return el;
+}
+
 export default {
   title: "Your break group",
   async render(main) {
@@ -51,6 +67,8 @@ export default {
 
     let group = null;
     let busy = false;
+    let connected = new Set();
+    let exchanging = false;
     let notice = null;
     const brk = nextBreak();
 
@@ -164,27 +182,108 @@ export default {
         busy = false; paint();
       };
 
-      return h("section", { class: "stack", "aria-labelledby": "g-h" },
+      const arrived = group.myStatus === "here";
+      const everyoneHere = arrived && group.members.every((m) => m.status === "here");
+
+      // Navigation mode: before you arrive, the page is about finding the table.
+      const navigation = h("section", { class: "card nav-panel", "aria-labelledby": "g-h" },
+        h("p", { class: "nav-eyebrow" }, started ? "Your group is meeting now" : h("span", {}, "Your table in ", countdown)),
+        h("h2", { id: "g-h", class: "nav-landmark" }, pinIcon(), group.landmark || group.place),
+        h("p", { class: "nav-place" }, `${formatTime(group.startsAt)}, ${group.place}`),
+        group.directions ? h("p", { class: "nav-directions" }, group.directions) : null,
+        h("ul", { class: "nav-who", "aria-label": "Who's there" },
+          h("li", { class: `who ${group.myStatus === "late" ? "st-late" : ""}` }, h("span", { class: "who-name" }, "You"), h("span", { class: "who-status" }, group.myStatus === "late" ? "Running late" : "On your way")),
+          group.members.map((m) => h("li", { class: `who st-${m.status || "on-the-way"}` },
+            h("span", { class: "who-name" }, m.name), h("span", { class: "who-status" }, STATUS_WORDS[m.status] || "On the way")))),
+        noShow ? h("p", { class: "notice", role: "status" }, "We're adding someone so nobody waits alone.") : null,
+        h("div", { class: "group-actions" },
+          h("button", { type: "button", class: "btn btn-primary", disabled: busy || null, "data-key": "here", onclick: arrive }, "I'm here"),
+          h("button", { type: "button", class: "btn btn-secondary", disabled: busy || null, "data-key": "late", onclick: checkIn("late") }, "Running late"),
+        ),
+      );
+
+      // Card mode: once you're at the table, the people come first.
+      const atTable = h("div", { class: "stack" },
         reveal(group.members),
         h("div", { class: "card group-when" },
-          h("h2", { id: "g-h" }, started ? "Your group is meeting now" : "Your table in ", started ? null : countdown),
-          h("p", { class: "group-place" }, `${formatTime(group.startsAt)}, ${group.place}`),
-          group.myStatus ? h("p", { class: "my-status" }, `You: ${STATUS_WORDS[group.myStatus] || group.myStatus}`) : null,
+          h("h2", { id: "g-h" }, "You're at the table"),
+          h("p", { class: "group-place" }, `${group.landmark ? `${group.landmark} · ` : ""}${group.place}`),
           comfortOf(currentCard()) === "recharge" ? h("p", { class: "comfort-pill recharge" }, "You're recharging. Your group sees: listening only, no conversation expected.") : null,
           noShow ? h("p", { class: "notice", role: "status" }, "We're adding someone so nobody waits alone.") : null,
         ),
-        h("h2", { class: "section-title" }, `With ${group.members.map((m) => m.name).join(" and ")}`),
+        everyoneHere ? exchangeView() : null,
+      );
+
+      return h("section", { class: "stack" },
+        arrived ? atTable : navigation,
+        h("h2", { class: "section-title" }, arrived ? `With ${group.members.map((m) => m.name).join(" and ")}` : "Read their cards on the way"),
         h("ul", { class: "members" }, group.members.map(memberCard)),
         group.opener ? h("p", { class: "opener" }, h("span", { class: "opener-label" }, "Try asking: "), group.opener) : null,
-        h("div", { class: "group-actions" },
-          h("button", { type: "button", class: "btn btn-primary", disabled: busy || null, "data-key": "here", onclick: checkIn("here") }, "I'm here"),
-          h("button", { type: "button", class: "btn btn-secondary", disabled: busy || null, "data-key": "late", onclick: checkIn("late") }, "Running late"),
-        ),
         h("div", { class: "group-safety" },
           h("button", { type: "button", class: "btn btn-secondary", "data-key": "report", onclick: () => openReport({ groupId: group.id }) }, "Report a concern"),
           h("button", { type: "button", class: "btn btn-quiet-ink", "data-key": "leave", onclick: () => confirmLeave(leave) }, "Leave group"),
         ),
       );
+
+      async function arrive() {
+        await checkIn("here")();
+        if (group?.myStatus !== "here") return;
+        // "You've arrived": a double pulse, then the cards take over.
+        if (navigator.vibrate && navigator.userActivation?.hasBeenActive !== false && !getPrefs().calm) {
+          try { navigator.vibrate([80, 60, 80]); } catch { /* not allowed */ }
+        }
+        revealed.delete(group.id);
+        paint();
+        focusScreen(main);
+      }
+    }
+
+    function exchangeView() {
+      const names = group.members.map((m) => m.name).join(" and ");
+      const allConnected = group.members.every((m) => connected.has(m.displayId));
+      if (allConnected) {
+        return h("section", { class: "card exchange done", "aria-labelledby": "ex-h" },
+          starsArt(true),
+          h("h2", { id: "ex-h" }, "Stars exchanged"),
+          h("p", {}, `You're connected with ${names}. We saved where you met.`),
+          h("a", { class: "btn btn-secondary btn-block", href: "#/met" }, "See people you've met"),
+        );
+      }
+      return h("section", { class: `card exchange${exchanging ? " sending" : ""}`, "aria-labelledby": "ex-h" },
+        starsArt(false),
+        h("h2", { id: "ex-h" }, "Everyone's here!"),
+        h("p", {}, "Exchange stars to stay connected. It's saved only if they agree too, and you keep their name and where you met."),
+        h("button", {
+          type: "button", class: "btn btn-primary btn-block", "data-key": "exchange", disabled: exchanging || null,
+          onclick: exchangeStars,
+        }, exchanging ? "Waiting for them to agree…" : "Exchange stars"),
+      );
+    }
+
+    async function exchangeStars() {
+      exchanging = true;
+      paint();
+      announce("Sent. Waiting for them to agree.");
+      try {
+        await Promise.all(group.members.filter((m) => !connected.has(m.displayId)).map((m) => api.proposeConnection(m.displayId, group.id)));
+      } catch {
+        exchanging = false;
+        notice = "We couldn't send that. Please try again.";
+        paint();
+      }
+    }
+
+    async function refreshConnections() {
+      try {
+        const list = await api.connections();
+        const before = connected.size;
+        connected = new Set(list.map((c) => c.displayId));
+        if (group && exchanging && group.members.every((m) => connected.has(m.displayId))) {
+          exchanging = false;
+          announce("Stars exchanged. They're saved in People you've met.");
+        }
+        if (connected.size !== before) paint();
+      } catch { /* keep what we have */ }
     }
 
     async function leave() {
@@ -239,12 +338,14 @@ export default {
     }, 1000);
 
     const unsub = subscribe("group", (data) => {
-      if (data && "group" in data) setGroup(data.group, { fromEvent: true });
+      if (data && "group" in data) { setGroup(data.group, { fromEvent: true }); refreshConnections(); }
       else refresh(); // a summary event: fetch our own group
     });
 
     paint();
     await refresh();
-    return () => { clearInterval(tick); unsub(); };
+    refreshConnections();
+    const connPoll = setInterval(() => { if (exchanging) refreshConnections(); }, 3000);
+    return () => { clearInterval(tick); clearInterval(connPoll); unsub(); };
   },
 };
