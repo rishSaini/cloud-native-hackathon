@@ -6,7 +6,6 @@ import { announce } from "../a11y.js";
 import { api } from "../api.js";
 import { h } from "../format.js";
 import { QUESTION_COACH } from "../grow.js";
-import { photo } from "../photos.js";
 
 function sparkline(values) {
   if (values.length < 2) return null;
@@ -38,7 +37,6 @@ export default {
 
     function paint() {
       region.replaceChildren(
-        photo("grow", { caption: "One step at a time" }),
         h("p", { class: "lede" }, "Every break is practice. The goal is to need us less: the top step is starting conversations on your own."),
 
         h("section", { class: "card", "aria-labelledby": "ladder-h" },

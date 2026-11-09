@@ -9,7 +9,6 @@ import { loadErrorView } from "../load-error.js";
 import { confirmLeave, openBlock, openReport } from "../safety.js";
 import { comfortOf, comfortPill } from "../comfort.js";
 import { openerView, openReflection, turnRound } from "../grow.js";
-import { photo } from "../photos.js";
 import { nextBreak } from "../slots.js";
 import { currentCard, loadMe } from "../store.js";
 import { subscribe } from "../stream.js";
@@ -197,7 +196,6 @@ export default {
 
       // Navigation mode: before you arrive, the page is about finding the table.
       const navigation = h("section", { class: "card nav-panel", "aria-labelledby": "g-h" },
-        photo("table"),
         h("p", { class: "nav-eyebrow" }, started ? "Your group is meeting now" : h("span", {}, "Your table in ", countdown)),
         h("h2", { id: "g-h", class: "nav-landmark" }, pinIcon(), group.landmark || group.place),
         h("p", { class: "nav-place" }, `${formatTime(group.startsAt)}, ${group.place}`),
