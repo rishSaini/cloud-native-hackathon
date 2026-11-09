@@ -46,14 +46,21 @@ export default {
 
     // Keep the screen on while showing the card; fail silently where unsupported.
     let lock = null;
+    let disposed = false;
     const requestLock = async () => {
-      try { lock = await navigator.wakeLock?.request("screen"); } catch { lock = null; }
+      try {
+        const next = await navigator.wakeLock?.request("screen");
+        // If the person left while we were waiting, let go straight away.
+        if (disposed) { try { next?.release(); } catch { /* ignore */ } return; }
+        lock = next;
+      } catch { lock = null; }
     };
     requestLock();
     const onVisible = () => { if (!document.hidden) requestLock(); };
     document.addEventListener("visibilitychange", onVisible);
 
     return () => {
+      disposed = true;
       document.removeEventListener("visibilitychange", onVisible);
       try { lock?.release(); } catch { /* already released */ }
     };
