@@ -7,7 +7,6 @@ import { cardFields, emptyCard, livePreview, needsFields, TEMPLATES } from "../c
 import { accentColor } from "../color.js";
 import { h } from "../format.js";
 import { loadErrorView } from "../load-error.js";
-import { photo } from "../photos.js";
 import { loadMe, saveMyCard } from "../store.js";
 
 const STEPS = ["template", "card", "needs"];
@@ -77,9 +76,9 @@ export default {
     const screens = {
       welcome() {
         return h("section", { class: "welcome", "aria-labelledby": "step-h" },
-          h("div", { class: "welcome-visual" },
-            photo("welcome", { cls: "hero-photo", caption: "The quiet table, 3:30", eager: true }),
+          h("figure", { class: "welcome-visual" },
             heroArt(),
+            h("figcaption", { class: "welcome-caption" }, "A break table, as a constellation"),
           ),
           h("p", { class: "eyebrow" }, "KubeCon · Salt Lake City"),
           h("h1", { id: "step-h" }, "Find your talk. Find your people."),

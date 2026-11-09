@@ -5,7 +5,6 @@ import { api } from "../api.js";
 import { accentColor, avatarColor, starColor } from "../color.js";
 import { formatDayTime, h } from "../format.js";
 import { loadErrorView } from "../load-error.js";
-import { photo } from "../photos.js";
 import { currentMe, loadMe } from "../store.js";
 
 function memoryLine(p) {
@@ -76,7 +75,7 @@ export default {
       h("a", { class: "card grow-link", href: "#/grow" },
         h("span", { class: "grow-link-title" }, "Your growth ✦"),
         h("span", { class: "muted" }, "Your comfort ladder, small wins and a question coach")),
-      photo("met"));
+);
 
     let people = [];
     try { people = await api.connections(); } catch {
