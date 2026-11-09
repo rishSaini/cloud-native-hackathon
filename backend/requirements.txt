@@ -8,3 +8,4 @@ opentelemetry-instrumentation-logging==0.66b2
 kubernetes==37.0.2
 psycopg[binary]==3.3.8
 psycopg-pool==3.3.3
+cryptography==50.0.2

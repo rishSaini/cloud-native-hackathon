@@ -117,3 +117,7 @@ def index():
 from app.placements.routes import router as placements_router  # noqa: E402
 
 app.include_router(placements_router)
+
+from app.cards.routes import router as cards_router  # noqa: E402
+
+app.include_router(cards_router)

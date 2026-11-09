@@ -31,3 +31,12 @@ def label(code: str) -> str:
     if code not in MEANINGS:
         raise ValueError(f"unknown capability code: {code}")
     return f"affinity.dev/{code}"
+
+
+# The frontend's need IDs (frontend/static/js/card-form.js) -> codes. Only codes are stored.
+NEED_CODES = {
+    "captions": "cap-c1",
+    "step_free": "cap-c2",
+    "quiet": "cap-c3",
+    "lighting": "cap-c4",
+}
