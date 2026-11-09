@@ -26,3 +26,17 @@ export function isRunning(startsAt, now = Date.now()) {
   const start = Date.parse(startsAt);
   return now >= start && now < start + TALK_MINUTES * 60000;
 }
+
+// Breaks from the shared contract.
+export const BREAKS = [
+  { id: "brk-tue-1000", startsAt: "2026-11-10T10:00:00-07:00" },
+  { id: "brk-tue-1530", startsAt: "2026-11-10T15:30:00-07:00" },
+];
+
+const BREAK_MINUTES = 30;
+
+/** The break happening now, else the next one, else the last one. */
+export function nextBreak(now = Date.now()) {
+  for (const b of BREAKS) if (now < Date.parse(b.startsAt) + BREAK_MINUTES * 60000) return b;
+  return BREAKS[BREAKS.length - 1];
+}
