@@ -10,7 +10,9 @@ import { loadMe } from "../store.js";
 import { isLive, POLL_MS, subscribe } from "../stream.js";
 import { badgeList } from "./talks.js";
 import { climateView } from "../climate.js";
-import { comfortDial } from "../comfort.js";
+import { COMFORT, comfortDial, comfortOf } from "../comfort.js";
+import { avatarColor } from "../color.js";
+import { nextBreak } from "../slots.js";
 
 const STEPS = [
   { key: "Pending", word: "Finding you a seat" },
@@ -48,7 +50,54 @@ export default {
       return;
     }
 
-    main.insertBefore(comfortDial({ compact: true, idPrefix: "now-comfort" }), region);
+    // A personal greeting, then the dial, so the day feels tuned to you.
+    const hour = Number(new Intl.DateTimeFormat("en-US", { timeZone: "America/Denver", hour: "numeric", hour12: false }).format(new Date()));
+    const partOfDay = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+    const tuned = h("p", { class: "tuned" });
+    const paintTuned = () => {
+      const c = COMFORT.find((x) => x.id === comfortOf(card));
+      tuned.replaceChildren("Your day is tuned for ", h("span", { class: "tuned-chip" }, c?.label || "Steady"));
+    };
+    paintTuned();
+    const greeting = h("div", { class: "greeting" },
+      h("p", { class: "greeting-line" }, `${partOfDay}, ${card.name || "friend"} `, h("span", { class: "sparkle", "aria-hidden": "true" }, "✦")),
+      tuned,
+    );
+    main.querySelector("h1")?.replaceWith(h("h1", { class: "visually-hidden" }, "Now"));
+    main.insertBefore(greeting, region);
+    main.insertBefore(comfortDial({ compact: true, idPrefix: "now-comfort", onChange: (v) => { card.comfort = v; paintTuned(); } }), region);
+
+    // Your upcoming break: the group as a tiny constellation, or an invitation to join one.
+    const breakSlot = h("div", {});
+    async function paintBreak() {
+      const brk = nextBreak();
+      let group = null;
+      try { group = await api.currentGroup(); } catch { /* show the invitation */ }
+      if (!group) {
+        breakSlot.replaceChildren(h("section", { class: "card break-card", "aria-labelledby": "brk-h" },
+          h("p", { class: "section-eyebrow" }, `Your upcoming break · ${formatTime(brk.startsAt)}`),
+          h("h2", { id: "brk-h" }, "Want company at the break?"),
+          h("p", { class: "muted" }, "We'll find you a small table with people working on similar things."),
+          h("a", { class: "btn btn-secondary btn-block", href: "#/group" }, "Find me a group"),
+        ));
+        return;
+      }
+      const people = [{ name: "You", id: null }, ...group.members.map((m) => ({ name: m.name, id: m.displayId }))];
+      const chain = h("ol", { class: "mini-constellation", "aria-label": `You, ${group.members.map((m) => m.name).join(", ")}` },
+        people.map((p) => {
+          const dot = h("span", { class: "mini-star", "aria-hidden": "true" }, p.name.slice(0, 1));
+          if (p.id) dot.style.background = avatarColor(p.id);
+          return h("li", {}, dot, h("span", { class: "mini-name" }, p.name));
+        }));
+      breakSlot.replaceChildren(h("section", { class: "card break-card", "aria-labelledby": "brk-h" },
+        h("p", { class: "section-eyebrow" }, `Your upcoming break · ${formatTime(group.startsAt)}`),
+        h("h2", { id: "brk-h" }, group.landmark || group.place),
+        h("p", { class: "muted" }, group.place),
+        chain,
+        group.opener ? h("p", { class: "icebreaker" }, h("span", {}, "Icebreaker: "), group.opener) : null,
+        h("a", { class: "btn btn-secondary btn-block", href: "#/group" }, "Open your group"),
+      ));
+    }
 
     // ---- data ----
     function statusOf(p) {
@@ -219,10 +268,12 @@ export default {
       region.replaceChildren(
         bannerView() || "",
         error ? h("p", { class: "notice error", role: "alert" }, error) : "",
+        h("p", { class: "section-eyebrow" }, "Current recommended talk"),
         placementView(),
         showOptions && placement?.options ? h("section", { class: "card", "aria-labelledby": "opts-h" }, h("h2", { id: "opts-h" }, "Other talks with space"), optionsList(placement.options)) : "",
         kubectlView() || "",
         h("a", { class: "btn btn-secondary btn-block find-link", href: "#/talks" }, "Browse and search talks"),
+        breakSlot,
       );
       if (focusedKey) region.querySelector(`[data-key="${focusedKey}"]`)?.focus();
     }
@@ -246,6 +297,8 @@ export default {
     const fastPoll = setInterval(() => { if (requesting && !isLive()) refresh(); }, 3000);
 
     paint();
+    paintBreak();
+    unsubs.push(subscribe("group", () => paintBreak()));
     await refresh();
     if (!placement && !autoRequested) {
       autoRequested = true;

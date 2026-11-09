@@ -195,7 +195,7 @@ export default {
           h("li", { class: `who ${group.myStatus === "late" ? "st-late" : ""}` }, h("span", { class: "who-name" }, "You"), h("span", { class: "who-status" }, group.myStatus === "late" ? "Running late" : "On your way")),
           group.members.map((m) => h("li", { class: `who st-${m.status || "on-the-way"}` },
             h("span", { class: "who-name" }, m.name), h("span", { class: "who-status" }, STATUS_WORDS[m.status] || "On the way")))),
-        noShow ? h("p", { class: "notice", role: "status" }, "We're adding someone so nobody waits alone.") : null,
+        noShow ? h("p", { class: "notice merge-glow", role: "status" }, "Merging your group so nobody waits alone…") : null,
         h("div", { class: "group-actions" },
           h("button", { type: "button", class: "btn btn-primary", disabled: busy || null, "data-key": "here", onclick: arrive }, "I'm here"),
           h("button", { type: "button", class: "btn btn-secondary", disabled: busy || null, "data-key": "late", onclick: checkIn("late") }, "Running late"),
@@ -209,7 +209,7 @@ export default {
           h("h2", { id: "g-h" }, "You're at the table"),
           h("p", { class: "group-place" }, `${group.landmark ? `${group.landmark} · ` : ""}${group.place}`),
           comfortOf(currentCard()) === "recharge" ? h("p", { class: "comfort-pill recharge" }, "You're recharging. Your group sees: listening only, no conversation expected.") : null,
-          noShow ? h("p", { class: "notice", role: "status" }, "We're adding someone so nobody waits alone.") : null,
+          noShow ? h("p", { class: "notice merge-glow", role: "status" }, "Merging your group so nobody waits alone…") : null,
         ),
         everyoneHere ? exchangeView() : null,
       );
