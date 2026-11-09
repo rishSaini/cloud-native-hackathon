@@ -12,7 +12,8 @@
   <!-- Fonts are optional: system fonts take over if the venue Wi-Fi blocks Google Fonts. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Nunito:wght@400;500;600&display=swap">
+  <!-- Loaded without blocking: a slow or blocked fonts request must not hold up the app. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Nunito:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="/static/css/tokens.css">
   <link rel="stylesheet" href="/static/css/base.css">
   <link rel="stylesheet" href="/static/css/phone.css">
