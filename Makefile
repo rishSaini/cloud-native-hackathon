@@ -8,7 +8,7 @@ PY    := $(CURDIR)/$(VENV)/bin/python
 BIN   := $(CURDIR)/$(VENV)/bin
 IMAGE := talkscout:dev
 
-.PHONY: help setup es-up kibana es-down ingest run test image run-image es-setup
+.PHONY: help setup es-up kibana es-down ingest run test image run-image es-setup schedule
 
 help: ## List commands
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -28,8 +28,8 @@ kibana: ## Start Kibana at http://localhost:5601
 es-down: ## Stop Elasticsearch and Kibana (keeps the data)
 	docker compose --profile kibana down
 
-ingest: ## Load data/sample.jsonl into Elasticsearch
-	"$(PY)" scripts/ingest.py data/sample.jsonl
+ingest: ## Load the synthetic schedule (data/sample-schedule.json) into Elasticsearch
+	"$(PY)" scripts/ingest.py
 
 run: ## Run the app at http://localhost:8000 (with telemetry if OTEL_EXPORTER_OTLP_ENDPOINT is set)
 ifdef OTEL_EXPORTER_OTLP_ENDPOINT
@@ -49,3 +49,6 @@ run-image: image ## Run the container image at http://localhost:8080
 
 es-setup: ## Create the Elasticsearch indices and inference endpoint (safe to rerun)
 	"$(PY)" scripts/es_setup.py
+
+schedule: ## Regenerate data/sample-schedule.json from scripts/gen_schedule.py
+	"$(PY)" scripts/gen_schedule.py
