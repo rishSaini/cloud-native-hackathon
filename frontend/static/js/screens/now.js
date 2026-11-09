@@ -5,6 +5,7 @@ import { announce, getPrefs, onPrefsChange } from "../a11y.js";
 import { api } from "../api.js";
 import { ago, formatDayTime, formatTime, h } from "../format.js";
 import { isRunning, nextSlot } from "../slots.js";
+import { loadErrorView } from "../load-error.js";
 import { loadMe } from "../store.js";
 import { isLive, POLL_MS, subscribe } from "../stream.js";
 import { badgeList } from "./talks.js";
@@ -21,7 +22,8 @@ let autoRequested = false;
 export default {
   title: "Now",
   async render(main) {
-    const { card } = await loadMe();
+    const { card, error: loadError } = await loadMe();
+    if (loadError) { main.append(loadErrorView()); return; }
 
     let placement = null;
     let requesting = false;
