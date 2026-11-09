@@ -247,6 +247,166 @@ body.no-chrome .app-footer { display: none; }
   to   { opacity: 1;    transform: scale(1.1); }
 }
 
+button.back-link { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; }
+
+/* Onboarding */
+.step-count { color: var(--ink-soft); font-size: 0.9375rem; font-weight: 600; margin: 0.25rem 0 0.5rem; }
+.tiles { list-style: none; margin: 1.25rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
+.tile {
+  width: 100%;
+  min-height: 4rem;
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper-raised);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: 0 2px 8px rgba(42, 42, 53, 0.04);
+  transition: border-color 150ms var(--ease), transform 150ms var(--ease);
+}
+.tile:hover { border-color: var(--coral); transform: translateY(-1px); }
+.tile:active { transform: translateY(0); }
+
+textarea.input { min-height: 6rem; resize: vertical; line-height: 1.5; }
+.req { font-weight: 500; color: var(--ink-soft); }
+.field-error { margin: 0.375rem 0 0; color: var(--alert-text); font-weight: 600; }
+.field-error[hidden] { display: none; }
+.input[aria-invalid="true"] { border-color: var(--alert-text); }
+.form-status { min-height: 1.5em; margin: 0; color: var(--ink-soft); }
+
+.check { display: flex; align-items: flex-start; gap: 0.75rem; }
+.check input[type="checkbox"] {
+  flex: none;
+  width: 1.5rem; height: 1.5rem;
+  margin: 0.125rem 0 0;
+  accent-color: var(--teal-text);
+}
+.check label { flex: 1; font-weight: 500; }
+.check label .hint { display: block; margin-top: 0.25rem; color: var(--ink-soft); font-size: 0.9375rem; font-weight: 400; }
+.check-tile {
+  align-items: center;
+  min-height: 3.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--paper-raised);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-control);
+}
+.check-tile:has(input:checked) { border-color: var(--teal-text); background: #EEF6F4; }
+.check-tile label { cursor: pointer; padding: 0.25rem 0; }
+
+.needs { border: 0; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+.needs legend { font-weight: 600; font-size: 1.125rem; padding: 0; margin-bottom: 0.25rem; }
+.needs .hint { margin: 0; color: var(--ink-soft); }
+
+/* Live preview: below the form on phones, beside it on wide screens. */
+.form-with-preview { display: grid; gap: 1.5rem; margin-top: 1rem; }
+.preview-label { font-weight: 600; color: var(--ink-soft); margin: 0 0 0.5rem; font-size: 0.9375rem; }
+.preview-cards { display: grid; gap: 0.75rem; }
+@media (min-width: 40rem) {
+  .app-shell:has(.form-with-preview) { max-width: 60rem; }
+  .form-with-preview { grid-template-columns: 1fr 20rem; align-items: start; }
+  .preview { position: sticky; top: 1rem; }
+}
+
+/* Name card (preview and flip card share these) */
+.name-card, .flip-face {
+  position: relative;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+  box-shadow: 0 1px 2px rgba(42, 42, 53, 0.04), 0 8px 24px rgba(42, 42, 53, 0.07);
+  overflow: hidden;
+}
+.name-card::before, .flip-face::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 6px;
+  background: var(--accent, var(--coral-text));
+}
+.card-head { margin-bottom: 0.75rem; }
+.card-name { font-size: 1.5rem; font-weight: 600; margin: 0; line-height: 1.2; overflow-wrap: anywhere; }
+.card-pronouns { margin: 0.125rem 0 0; color: var(--ink-soft); }
+.card-fields { margin: 0; display: grid; gap: 0.75rem; }
+.card-row dt { font-size: 0.875rem; font-weight: 600; color: var(--ink-soft); }
+.card-row dd { margin: 0.125rem 0 0; overflow-wrap: anywhere; }
+.card-row-big dd { font-size: 1.25rem; font-weight: 600; line-height: 1.35; }
+.card-empty { margin: 0; font-style: italic; }
+
+/* Flip card: 3D flip, or a crossfade with reduced motion. */
+.flip-wrap { display: grid; gap: 0.75rem; margin-top: 1rem; }
+.flip-scene { perspective: 1200px; cursor: pointer; }
+.flip-inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform var(--flip) var(--ease);
+}
+.flip-face {
+  grid-area: 1 / 1;
+  min-height: 15rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-back { transform: rotateY(180deg); }
+.flip-scene.is-flipped .flip-inner { transform: rotateY(180deg); }
+.flip-hint { position: absolute; right: 1.25rem; bottom: 0.75rem; margin: 0; font-size: 0.875rem; }
+.flip-face .card-fields { padding-bottom: 1.5rem; }
+
+.flip-scene.no-motion .flip-inner { transform: none !important; transition: none; }
+.flip-scene.no-motion .flip-face { transform: none; transition: opacity 300ms var(--ease) !important; }
+.flip-scene.no-motion .flip-back { opacity: 0; }
+.flip-scene.no-motion.is-flipped .flip-front { opacity: 0; }
+.flip-scene.no-motion.is-flipped .flip-back { opacity: 1; }
+html.calm .flip-scene.no-motion .flip-face { transition: none !important; }
+
+.card-actions { display: grid; gap: 0.75rem; margin-top: 1.5rem; }
+.btn-quiet { background: transparent; color: var(--alert-text); border-color: transparent; text-decoration: underline; text-underline-offset: 3px; }
+.btn-danger { background: var(--alert-text); color: #FFFFFF; }
+.btn-danger:hover { background: #8E2D40; }
+
+.display-id {
+  font-family: var(--font-code);
+  font-size: 0.9375em;
+  padding: 0.0625rem 0.375rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+/* Delete confirmation */
+.dialog {
+  width: min(28rem, calc(100vw - 2rem));
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  color: var(--ink);
+  box-shadow: 0 20px 60px rgba(42, 42, 53, 0.25);
+}
+.dialog::backdrop { background: rgba(42, 42, 53, 0.45); }
+.dialog-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: flex-end; margin-top: 1rem; }
+.dialog-actions .btn { flex: 1 1 10rem; }
+
+/* Done moment: the person's star softly appears. */
+.done { text-align: center; padding-top: 1.5rem; }
+.done .lede { margin: 0.5rem 0 1.75rem; }
+.done-star {
+  --star: var(--coral);
+  width: 4.5rem; height: 4.5rem;
+  margin: 1rem auto 1.75rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFFFFF 0%, var(--star) 38%, transparent 70%);
+  box-shadow: 0 0 40px 10px color-mix(in srgb, var(--star) 45%, transparent);
+}
+.done-star.animate { animation: star-in 1.6s var(--ease) both, breathe 3.6s var(--ease) 1.6s infinite alternate; }
+@keyframes star-in {
+  from { opacity: 0; transform: scale(0.3); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
 /* Wider screens */
 @media (min-width: 48rem) {
   h1 { font-size: 2rem; }

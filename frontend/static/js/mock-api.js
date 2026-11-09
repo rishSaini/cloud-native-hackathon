@@ -260,13 +260,13 @@ export const api = {
   },
   async getCard() {
     await sleep(150);
-    return myCard ? { ...myCard } : null;
+    return myCard ? { ...myCard, displayId: me?.displayId } : null;
   },
   async saveCard(card) {
     await sleep(250);
     if (!me) await api.createAttendee();
     myCard = { ...card };
-    return { ...myCard };
+    return { ...myCard, displayId: me.displayId };
   },
   async deleteCard() {
     await sleep(250);
