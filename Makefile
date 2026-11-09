@@ -8,7 +8,7 @@ PY    := $(CURDIR)/$(VENV)/bin/python
 BIN   := $(CURDIR)/$(VENV)/bin
 IMAGE := talkscout:dev
 
-.PHONY: help setup es-up kibana es-down ingest run test image run-image
+.PHONY: help setup es-up kibana es-down ingest run test image run-image es-setup
 
 help: ## List commands
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -46,3 +46,6 @@ image: ## Build the container image, as CI does
 
 run-image: image ## Run the container image at http://localhost:8080
 	docker run --rm -p 8080:8080 --env-file .env -e ES_URL=http://host.docker.internal:9200 $(IMAGE)
+
+es-setup: ## Create the Elasticsearch indices and inference endpoint (safe to rerun)
+	"$(PY)" scripts/es_setup.py
