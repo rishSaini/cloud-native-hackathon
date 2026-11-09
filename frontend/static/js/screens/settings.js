@@ -30,7 +30,8 @@ function radioGroup({ name, legend, hint, options, value, onChange }) {
 export default {
   title: "Settings",
   async render(main, { navigate }) {
-    const { card } = await loadMe();
+    // Display settings work even if the card can't load; only the delete section depends on it.
+    let { card, error } = await loadMe();
     const region = h("div", { class: "stack settings" });
     main.append(h("h1", { class: "screen-title" }, "Settings"), region);
 
@@ -106,10 +107,13 @@ export default {
 
         h("section", { class: "card stack danger-zone", "aria-labelledby": "delete-h" },
           h("h2", { id: "delete-h" }, "Delete my card and data"),
-          h("p", { class: "muted" }, card
-            ? "This removes your card, your private needs, your groups and any links you've shared. It can't be undone, but you can make a new card any time."
-            : "You don't have a card right now, so there's nothing to delete."),
-          card ? h("button", { type: "button", class: "btn btn-danger btn-block", onclick: () => dialog.showModal() }, "Delete my card and data") : null,
+          h("p", { class: "muted" }, error
+            ? "We couldn't check your card right now. Your data is safe. Check your connection and try again."
+            : card
+              ? "This removes your card, your private needs, your groups and any links you've shared. It can't be undone, but you can make a new card any time."
+              : "You don't have a card right now, so there's nothing to delete."),
+          error ? h("button", { type: "button", class: "btn btn-secondary btn-block", "data-key": "retry", onclick: retryLoad }, "Try again") : null,
+          card && !error ? h("button", { type: "button", class: "btn btn-danger btn-block", onclick: () => dialog.showModal() }, "Delete my card and data") : null,
           status,
         ),
       );
@@ -117,6 +121,10 @@ export default {
     }
 
     const status = h("p", { class: "form-status", role: "status" });
+    async function retryLoad() {
+      ({ card, error } = await loadMe({ force: true }));
+      paint();
+    }
     const dialog = confirmDelete(async () => {
       status.textContent = "Deleting…";
       try {
