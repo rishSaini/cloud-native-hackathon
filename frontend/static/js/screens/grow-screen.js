@@ -26,7 +26,7 @@ export default {
   title: "Your growth",
   async render(main) {
     main.append(h("h1", { class: "screen-title" }, "Your growth"));
-    const region = h("div", { class: "stack" });
+    const region = h("div", { class: "stack grow-page" });
     main.append(region);
 
     let g;

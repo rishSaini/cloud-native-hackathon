@@ -47,7 +47,7 @@ function setChrome(route, screen) {
   const chrome = screen.chrome !== false;
   document.body.classList.toggle("no-chrome", !chrome);
   document.body.classList.toggle("on-sky", !!screen.sky);
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", screen.sky ? "#0E1430" : "#02040A");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", screen.sky ? "#0E1430" : "#F3EFE7");
   const tab = TAB_FOR[route];
   for (const link of tabbar.querySelectorAll("a[data-tab]")) {
     if (link.dataset.tab === tab) link.setAttribute("aria-current", "page");

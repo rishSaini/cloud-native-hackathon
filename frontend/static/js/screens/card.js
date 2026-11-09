@@ -39,7 +39,7 @@ export default {
           status.textContent = "We couldn't delete your card. Please try again.";
         }
       });
-      return h("section", { "aria-labelledby": "screen-h" },
+      return h("section", { class: "card-page", "aria-labelledby": "screen-h" },
         h("h1", { id: "screen-h", class: "screen-title" }, "Your card"),
         h("div", { class: "star-id" },
           galaxySvg({ id: me?.displayId || card.name, interests: `${card.workingOn || ""} ${card.askMeAbout || ""} ${card.lookingFor || ""}` }),
