@@ -1,0 +1,43 @@
+# Every minute, recompute active rooms so states decay without new reports (K10).
+# Uses the app image; kustomize sets the image tag through the "app" image name.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: room-state-sweep
+  labels:
+    app: room-state-sweep
+spec:
+  schedule: "* * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 50
+      ttlSecondsAfterFinished: 300
+      template:
+        metadata:
+          labels:
+            app: room-state-sweep
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: sweep
+              image: app
+              command: [python, -m, app.reports.sweep]
+              envFrom:
+                - secretRef:
+                    name: app-credentials
+                    optional: true
+              env:
+                - name: ES_URL
+                  value: http://elasticsearch:9200
+              resources:
+                requests: {cpu: 50m, memory: 128Mi}
+                limits: {cpu: 200m, memory: 256Mi}
+              securityContext:
+                runAsNonRoot: true
+                allowPrivilegeEscalation: false
+                seccompProfile: {type: RuntimeDefault}
+                capabilities: {drop: ["ALL"]}

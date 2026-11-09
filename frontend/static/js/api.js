@@ -160,6 +160,8 @@ export const api = {
     const data = await request("GET", "/api/board");
     return data?.board ?? data;
   }),
+  // The token goes in the body only, never the URL, so it stays out of access logs and traces.
+  staffLogin: (token) => request("POST", "/api/staff/login", { token }),
   staffIncidents: withFallback("staffIncidents", () => request("GET", "/api/staff/incidents")),
   updateIncident: withFallback("updateIncident", (id, patch) =>
     request("PATCH", `/api/staff/incidents/${enc(id)}`, patch)),
