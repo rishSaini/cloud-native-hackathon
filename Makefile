@@ -8,10 +8,10 @@ PY    := $(CURDIR)/$(VENV)/bin/python
 BIN   := $(CURDIR)/$(VENV)/bin
 IMAGE := talkscout:dev
 
-.PHONY: help setup es-up kibana es-down ingest run test image run-image es-setup schedule
+.PHONY: help setup es-up kibana es-down ingest run test image run-image es-setup schedule gitar-results
 
 help: ## List commands
-	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
+	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-14s %s\n", $$1, $$2}'
 
 setup: ## Create the venv, install packages, turn on git hooks, create .env
 	python3 -m venv $(VENV)
@@ -52,3 +52,6 @@ es-setup: ## Create the Elasticsearch indices and inference endpoint (safe to re
 
 schedule: ## Regenerate data/sample-schedule.json from scripts/gen_schedule.py
 	"$(PY)" scripts/gen_schedule.py
+
+gitar-results: ## Export Gitar reviews into gitar/results (needs gh auth)
+	"$(PY)" scripts/gitar_export.py
