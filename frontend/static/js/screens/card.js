@@ -109,7 +109,7 @@ function privateNeeds(card) {
   const labels = NEEDS.filter((n) => (card.needs || []).includes(n.id)).map((n) => n.label);
   return h("section", { class: "private-lock", "aria-labelledby": "lock-h" },
     h("p", { class: "lock-badge" }, h("span", { "aria-hidden": "true" }, "🔒"), " Private"),
-    h("h2", { id: "lock-h", class: "lock-title" }, "What helps you in a room"),
+    h("h2", { id: "lock-h", class: "lock-title" }, "What helps you feel comfortable"),
     labels.length
       ? h("ul", { class: "lock-list" }, labels.map((l) => h("li", {}, l)))
       : h("p", { class: "muted" }, "Nothing set. You can add things with Edit."),
