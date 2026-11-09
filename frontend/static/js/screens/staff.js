@@ -14,10 +14,32 @@ export default {
   async render(main) {
     const list = h("ul", { class: "incidents" });
     const status = h("p", { class: "muted", role: "status" });
+
+    // Shown when the API says 401. The token is POSTed in the body; the server answers with a cookie.
+    const tokenInput = h("input", { type: "password", id: "staff-token", autocomplete: "current-password", required: true });
+    const login = h("form", { class: "staff-login", hidden: true },
+      h("label", { for: "staff-token" }, "Staff token"),
+      tokenInput,
+      h("button", { type: "submit", class: "btn btn-primary" }, "Sign in"),
+    );
+    login.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      try {
+        await api.staffLogin(tokenInput.value);
+        tokenInput.value = "";
+        login.hidden = true;
+        list.hidden = false;
+        await refresh();
+      } catch {
+        status.textContent = "That token didn't work. Please check it and try again.";
+      }
+    });
+
     main.append(h("section", { class: "staff" },
       h("h1", {}, "Staff incidents"),
       h("p", { class: "muted" }, "Open reports from attendees. Tap \"On it\" when someone is going, and \"Fixed\" when it's sorted."),
       status,
+      login,
       list,
     ));
 
@@ -64,7 +86,13 @@ export default {
         const data = await api.staffIncidents();
         paint(Array.isArray(data) ? data : data?.incidents || []);
         status.textContent = "";
-      } catch {
+      } catch (err) {
+        if (err?.status === 401) {
+          login.hidden = false;
+          list.hidden = true;
+          status.textContent = "Sign in with the staff token to see incidents.";
+          return;
+        }
         status.textContent = "Reconnecting. Showing the last list we had.";
       }
     }
