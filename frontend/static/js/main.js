@@ -74,7 +74,13 @@ async function render() {
   setChrome(isShared ? null : path, screen);
   document.title = screen.title ? `${screen.title} · Affinity` : "Affinity";
   main.replaceChildren();
-  cleanup = await screen.render(main, { path, query, navigate });
+  const nextCleanup = await screen.render(main, { path, query, navigate });
+  if (seq !== renderSeq) {
+    // A newer navigation replaced this screen while it was loading: stop it right away.
+    if (typeof nextCleanup === "function") { try { nextCleanup(); } catch { /* ignore */ } }
+    return;
+  }
+  cleanup = nextCleanup;
 
   if (!firstRender) focusScreen(main);
   firstRender = false;
