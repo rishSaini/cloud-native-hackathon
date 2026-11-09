@@ -13,6 +13,7 @@ import { climateView } from "../climate.js";
 import { COMFORT, comfortDial, comfortOf } from "../comfort.js";
 import { avatarColor } from "../color.js";
 import { nextBreak } from "../slots.js";
+import { photo } from "../photos.js";
 
 const STEPS = [
   { key: "Pending", word: "Finding you a seat" },
@@ -247,6 +248,7 @@ export default {
 
       const { talk, room } = placement;
       return h("section", { class: "card stack now-card", "aria-labelledby": "now-h" },
+        photo("stage"),
         statusPill(status),
         h("h2", { id: "now-h", class: "now-title" }, talk.title),
         h("p", { class: "now-when" }, `${formatDayTime(talk.startsAt)} · `, h("strong", {}, room.name)),

@@ -1,4 +1,4 @@
-/* Affinity, editorial edition: a fashion-magazine feel. Cream paper, black ink, hairline
+/* Affinity, editorial edition: a fashion-magazine feel. White paper, black ink, hairline
    rules, square corners, big high-contrast serif headlines, small spaced labels, and one red
    accent. Each person's own color is the only other color. No glass, glows or gradients.
    Loaded last; it re-skins the phone screens only (the projector board keeps its night sky).
@@ -7,25 +7,29 @@
 
 :root {
   color-scheme: light;
-  --cream: #F3EFE7;
-  --sheet: #FBF9F4;
-  --ink: #141414;
-  --ink-soft: #57524A;
-  --muted: #6B655B;
-  --rule: rgba(20, 20, 20, 0.16);
-  --rule-strong: #141414;
-  --red: #A3241B;
+  /* Fashion palette: crisp white, black type, hot pink. Text pink #D6006F is 5.1:1 on white
+     and 4.7:1 on blush; --pink-bright is for decoration only. */
+  --cream: #FFFFFF;
+  --sheet: #FFFFFF;
+  --blush: #FFF0F5;
+  --ink: #111111;
+  --ink-soft: #5C5C5C;
+  --muted: #6B6B6B;
+  --rule: rgba(17, 17, 17, 0.14);
+  --rule-strong: #111111;
+  --red: #D6006F;
+  --pink-bright: #FF2D87;
 
   --paper: var(--cream);
   --paper-raised: var(--sheet);
-  --paper-deep: #ECE6DA;
+  --paper-deep: #F4F4F4;
   --line: var(--rule);
   --glass: var(--sheet);
   --glass-solid: var(--sheet);
   --glass-border: var(--rule);
   --glass-border-strong: rgba(20, 20, 20, 0.3);
 
-  --coral-text: var(--red); --coral-deep: var(--red); --coral-soft: #F1DFD9;
+  --coral-text: var(--red); --coral-deep: var(--red); --coral-soft: var(--blush);
   --teal-text: #1F4E46; --teal-deep: #1F4E46; --teal-soft: #E1E8E2;
   --ok-text: #2F6B3F; --warn-text: #7A5000; --alert-text: var(--red);
   --sun-soft: #F0E6CF; --plum: #4A3550; --plum-soft: #E8E0EA;
@@ -34,9 +38,9 @@
   --shadow-sm: none; --shadow-md: none; --shadow-lg: none;
   --radius-card: 0; --radius-control: 0;
 
-  --font-display: "Bodoni Moda", "Bodoni 72", Didot, "Didot LT STD", "Playfair Display", Georgia, serif;
-  --font-italic: "Instrument Serif", "Bodoni Moda", Georgia, serif;
-  --font-ui: "Inter Tight", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --font-display: "Playfair Display", "Didot", Georgia, "Times New Roman", serif;
+  --font-italic: "Playfair Display", Georgia, serif;
+  --font-ui: "DM Sans", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
 
   --aura-1: var(--ink); --aura-2: var(--ink);
 }
@@ -90,7 +94,7 @@ body:not(.on-sky) :is(.card, .member, .tile, .signal, .option, .incident, .comfo
 body:not(.on-sky) .card { padding: 1.5rem; border-top: 2px solid var(--ink); }
 body:not(.on-sky) .card + .card { margin-top: 1.25rem; }
 body:not(.on-sky) .dialog { background: var(--sheet); color: var(--ink); border: 1px solid var(--ink); border-radius: 0; box-shadow: 12px 12px 0 rgba(20, 20, 20, 0.08); }
-body:not(.on-sky) .dialog::backdrop { background: rgba(243, 239, 231, 0.75); -webkit-backdrop-filter: none; backdrop-filter: none; }
+body:not(.on-sky) .dialog::backdrop { background: rgba(255, 255, 255, 0.8); -webkit-backdrop-filter: none; backdrop-filter: none; }
 
 /* ---------- Masthead ---------- */
 body:not(.on-sky) .app-header {
@@ -342,7 +346,7 @@ body:not(.on-sky) .scale-option .setting-radio:checked + label .scale-word { col
 body:not(.on-sky) .signal { border-radius: 0; background: var(--sheet); font-family: var(--font-display); font-size: 1.25rem; font-weight: 400; }
 body:not(.on-sky) .signal:hover { transform: none; border-color: var(--ink); }
 body:not(.on-sky) .signal-icon { background: none; color: var(--ink); border: 1px solid var(--ink); border-radius: 50%; }
-body:not(.on-sky) .signal-staff { background: #F7E7E3; border-color: var(--red); }
+body:not(.on-sky) .signal-staff { background: var(--blush); border-color: var(--red); }
 body:not(.on-sky) .signal-staff .signal-icon { color: var(--red); border-color: var(--red); background: none; }
 body:not(.on-sky) .signal-note { font-family: var(--font-ui); }
 body:not(.on-sky) .report-result:is(.ok, .info, .staff, .error) { border-radius: 0; box-shadow: none; }
@@ -357,3 +361,41 @@ body:not(.on-sky) .kubectl-panel { border-radius: 0; background: var(--ink); col
 body:not(.on-sky) .comfort-pill { border-radius: 0; background: none; border-left: 2px solid var(--plum); padding: 0.125rem 0.75rem; color: var(--plum); font-family: var(--font-italic); font-style: italic; font-weight: 400; font-size: 1.0625rem; }
 body:not(.on-sky) .section-title { margin: 2rem 0 0.75rem; font-size: clamp(1.75rem, 3.5vw, 2.75rem); }
 body:not(.on-sky) .tuned { color: var(--ink-soft); }
+
+/* ---------- Fashion touches ---------- */
+body:not(.on-sky) h1 { font-weight: 600; letter-spacing: -0.02em; }
+body:not(.on-sky) h2 { font-weight: 600; }
+body:not(.on-sky) .brand { font-weight: 700; letter-spacing: 0.24em; }
+body:not(.on-sky) .private-lock, body:not(.on-sky) .next-card, body:not(.on-sky) .icebreaker,
+body:not(.on-sky) .opener { background: var(--blush); }
+body:not(.on-sky) .welcome h1::after { background: var(--pink-bright); height: 4px; }
+body:not(.on-sky) .tabbar a[aria-current="page"]::after { color: var(--red); }
+body:not(.on-sky) .alone-dot { background: var(--pink-bright); }
+
+/* ---------- Photographs ---------- */
+.photo { margin: 0; position: relative; overflow: hidden; background: var(--paper-deep); }
+.photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.photo figcaption {
+  position: absolute; left: 0; bottom: 0;
+  padding: 0.5rem 0.875rem;
+  background: var(--ink); color: #FFFFFF;
+  font: italic 500 1rem var(--font-italic);
+}
+.photo .credit {
+  position: absolute; right: 0.5rem; bottom: 0.375rem;
+  font: 500 0.625rem var(--font-ui); letter-spacing: 0.06em; color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+.hero-photo { aspect-ratio: 4 / 5; margin: 0.5rem 0 1.5rem; max-height: 22rem; }
+.band-photo { aspect-ratio: 16 / 7; margin: 0 0 1rem; }
+.card .band-photo { margin: -1.5rem -1.5rem 1.25rem; }
+@media (min-width: 64rem) {
+  .welcome > .hero-photo { grid-column: 2; grid-row: 1 / span 6; max-height: none; height: min(78vh, 46rem); margin: 0; }
+}
+.grow-page > .photo { grid-column: 1 / -1; aspect-ratio: 21 / 7; }
+.now-card > .band-photo { margin: -1.5rem -1.5rem 0.5rem; }
+@media (min-width: 64rem) {
+  .welcome { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
+  .now { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+}
+@media (min-width: 64rem) { .welcome > .hero-photo { aspect-ratio: auto; width: 100%; } }
