@@ -56,6 +56,22 @@ spec:
                   name: db-app
                   key: uri
                   optional: true
+            # K17: service identity for Dash0 (dash0hq/agent-skills, resources and k8s rules).
+            # service.version is added at start from the image's APP_VERSION.
+            - name: K8S_POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: K8S_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.namespace=affinity,deployment.environment.name=cnh-2026,service.instance.id=$(K8S_POD_UID),k8s.namespace.name=team-coffeecon,k8s.pod.uid=$(K8S_POD_UID),k8s.pod.name=$(K8S_POD_NAME),k8s.node.name=$(K8S_NODE_NAME),k8s.container.name=app"
           resources:
             requests:
               cpu: 100m

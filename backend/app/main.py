@@ -96,6 +96,10 @@ from app.cards.routes import router as cards_router  # noqa: E402
 
 app.include_router(cards_router)
 
+from app.insights.routes import router as insights_router  # noqa: E402
+
+app.include_router(insights_router)
+
 from app.cards.share import router as share_router  # noqa: E402
 from app.social.routes import router as social_router  # noqa: E402
 

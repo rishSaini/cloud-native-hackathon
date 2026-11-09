@@ -13,6 +13,8 @@ from app.k8s.client import core_api, namespace
 
 
 def main() -> None:
+    from app.controller import insights  # noqa: F401  (K17: registers last, after placement)
+
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     logging.getLogger("kubernetes").setLevel(logging.WARNING)
     controller = Controller(core_api(), namespace())
