@@ -6,12 +6,11 @@
 #   Radar MCP: apply_resource with mode=create, then wait_for kind=job condition=complete
 #   or:        kubectl create -f deploy/jobs/es-setup-001.yaml
 # To run it again, copy it with a new name (es-setup-002). Never reuse a Job name.
-# If ./scripts/setup.sh already ran, replace __TEAM__ and OWNER/REPO by hand.
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: es-setup-001
-  namespace: team-__TEAM__
+  namespace: team-coffeecon
 spec:
   backoffLimit: 0
   activeDeadlineSeconds: 300
@@ -21,7 +20,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: es-setup
-          image: ghcr.io/OWNER/REPO:latest
+          image: ghcr.io/rishsaini/cloud-native-hackathon:latest
           imagePullPolicy: Always
           workingDir: /app
           command: [python, scripts/es_setup.py]

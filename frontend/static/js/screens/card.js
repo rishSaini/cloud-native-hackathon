@@ -7,7 +7,7 @@ import { flipCard } from "../card-view.js";
 import { comfortDial } from "../comfort.js";
 import { galaxySvg } from "../galaxy.js";
 import { NEEDS } from "../card-form.js";
-import { h } from "../format.js";
+import { h, twoTone } from "../format.js";
 import { loadErrorView } from "../load-error.js";
 import { deleteMyCard, loadMe, saveMyCard } from "../store.js";
 
@@ -40,7 +40,7 @@ export default {
         }
       });
       return h("section", { class: "card-page", "aria-labelledby": "screen-h" },
-        h("h1", { id: "screen-h", class: "screen-title" }, "Your card"),
+        h("h1", { id: "screen-h", class: "screen-title" }, twoTone("Your ", "card.")),
         h("div", { class: "star-id" },
           galaxySvg({ id: me?.displayId || card.name, interests: `${card.workingOn || ""} ${card.askMeAbout || ""} ${card.lookingFor || ""}` }),
           h("div", {},
@@ -109,7 +109,7 @@ function privateNeeds(card) {
   const labels = NEEDS.filter((n) => (card.needs || []).includes(n.id)).map((n) => n.label);
   return h("section", { class: "private-lock", "aria-labelledby": "lock-h" },
     h("p", { class: "lock-badge" }, h("span", { "aria-hidden": "true" }, "🔒"), " Private"),
-    h("h2", { id: "lock-h", class: "lock-title" }, "What helps you feel comfortable"),
+    h("h2", { id: "lock-h", class: "lock-title" }, "Your break-time vibe"),
     labels.length
       ? h("ul", { class: "lock-list" }, labels.map((l) => h("li", {}, l)))
       : h("p", { class: "muted" }, "Nothing set. You can add things with Edit."),

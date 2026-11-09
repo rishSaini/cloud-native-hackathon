@@ -69,6 +69,13 @@ spec:
                   fieldPath: spec.nodeName
             - name: OTEL_RESOURCE_ATTRIBUTES
               value: "service.namespace=affinity,deployment.environment.name=cnh-2026,service.instance.id=$(K8S_POD_UID),k8s.namespace.name=team-coffeecon,k8s.pod.uid=$(K8S_POD_UID),k8s.pod.name=$(K8S_POD_NAME),k8s.node.name=$(K8S_NODE_NAME),k8s.container.name=controller"
+            # Placement reads attendees and seats from Postgres (R6). Same Secret as the app.
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-app
+                  key: uri
+                  optional: true
           resources:
             requests:
               cpu: 100m
