@@ -5,7 +5,6 @@ from elastic_transport import ApiResponseMeta, HttpHeaders
 from elasticsearch import BadRequestError, TransportError
 from fastapi.testclient import TestClient
 
-from app.ask import routes
 from app.es import get_es
 from app.main import app
 

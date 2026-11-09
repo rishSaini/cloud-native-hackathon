@@ -5,7 +5,7 @@ strict, so Elasticsearch rejects any other field.
 The document ID is the attendee ID, so an upsert replaces the old interests.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from elasticsearch import NotFoundError
 
@@ -25,7 +25,7 @@ def upsert_person(attendee_id: str, interests: str) -> None:
         document={
             "attendee_id": attendee_id,
             "interests": interests,
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(UTC).isoformat(),
         },
     )
 

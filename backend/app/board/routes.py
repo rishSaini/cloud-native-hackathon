@@ -1,6 +1,6 @@
 """GET /api/board (K12), plus the break summary that R10 writes for "nobody alone"."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, Query
@@ -92,7 +92,7 @@ def build_board(responses: list[dict], slot: str, now: datetime) -> dict:
 
 @router.get("/api/board")
 def get_board(slot: str | None = Query(None, pattern=r"^[a-z]{3}-\d{4}$"), es=Depends(get_es)):
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     slot = slot or current_slot(now)
     responses = es.msearch(searches=board_searches())["responses"]
     return {"board": build_board(responses, slot, now)}
@@ -102,4 +102,4 @@ def record_break_summary(es, break_id: str, opted_in: int, alone: int) -> None:
     """For R10: after a break is solved, store the counts the board shows. Counts only."""
     es.index(index=SUMMARY_INDEX, id="last-break",
              document={"break": break_id, "opted_in": opted_in, "alone": alone,
-                       "at": datetime.now(timezone.utc).isoformat()})
+                       "at": datetime.now(UTC).isoformat()})

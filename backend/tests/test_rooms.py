@@ -1,6 +1,6 @@
 """R7: room state becomes Node taints and labels."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.controller.rooms import active_slots
 from app.k8s.nodes import CLOSED_TAINT, FULL_TAINT, KWOK_TAINT, desired_taints, label_patch, venue_caps
@@ -34,6 +34,6 @@ def test_very_loud_removes_quiet_only_where_the_room_has_it():
 
 def test_active_slots_can_be_pinned(monkeypatch):
     monkeypatch.setenv("AFFINITY_CURRENT_SLOT", "tue-1430")
-    assert active_slots(datetime(2026, 11, 9, 23, 0, tzinfo=timezone.utc)) == ["tue-1430", "tue-1600"]
+    assert active_slots(datetime(2026, 11, 9, 23, 0, tzinfo=UTC)) == ["tue-1430", "tue-1600"]
     monkeypatch.delenv("AFFINITY_CURRENT_SLOT")
-    assert active_slots(datetime(2026, 11, 10, 17, 0, tzinfo=timezone.utc)) == ["tue-0900", "tue-1030"]  # 10:00 MT: 9:00 is the latest started
+    assert active_slots(datetime(2026, 11, 10, 17, 0, tzinfo=UTC)) == ["tue-0900", "tue-1030"]  # 10:00 MT: 9:00 is the latest started

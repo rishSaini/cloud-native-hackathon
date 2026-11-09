@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from types import SimpleNamespace
 
 from kubernetes.client.exceptions import ApiException
@@ -54,7 +54,7 @@ def test_group_formation_replaces_a_conflicting_pod_from_an_old_group(monkeypatc
     monkeypatch.setattr("app.solver.solve", lambda *_args: result)
     monkeypatch.setattr(groups, "post_summary", lambda *_args: None)
 
-    groups.form_groups(ctl, _Connection(), "brk-tue-1530", datetime(2026, 11, 10, tzinfo=timezone.utc))
+    groups.form_groups(ctl, _Connection(), "brk-tue-1530", datetime(2026, 11, 10, tzinfo=UTC))
 
     assert core.delete_calls == [("attendee-att-1-brk-tue-1530", "team-test", 0)]
     assert len(core.create_calls) == 2

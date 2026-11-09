@@ -1,7 +1,7 @@
 """K12: the public board — words for status, one msearch, no identifiers."""
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi.testclient import TestClient
 
@@ -9,7 +9,7 @@ from app.board import routes
 from app.es import get_es
 from app.main import app
 
-NOW = datetime(2026, 11, 10, 21, 40, tzinfo=timezone.utc)  # 14:40 in Denver
+NOW = datetime(2026, 11, 10, 21, 40, tzinfo=UTC)  # 14:40 in Denver
 
 
 def responses(states=(), incidents=(), latest=None, summary=None):
@@ -25,7 +25,7 @@ def responses(states=(), incidents=(), latest=None, summary=None):
 
 def test_current_slot_uses_denver_time():
     assert routes.current_slot(NOW) == "tue-1430"
-    assert routes.current_slot(datetime(2026, 11, 10, 14, 0, tzinfo=timezone.utc)) == "tue-0900"  # 07:00 MT
+    assert routes.current_slot(datetime(2026, 11, 10, 14, 0, tzinfo=UTC)) == "tue-0900"  # 07:00 MT
 
 
 def test_rooms_show_status_as_words_and_signals():

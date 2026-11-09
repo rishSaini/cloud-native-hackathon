@@ -17,7 +17,7 @@ this trace.
 
 import math
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from elasticsearch import NotFoundError
 from opentelemetry import propagate, trace
@@ -136,7 +136,7 @@ def current_traceparent() -> str | None:
 def recompute(room: str, now: datetime | None = None, es=None) -> dict:
     """Recompute one room's state. Writes to room-state only when something changed."""
     es = es or get_es()
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     prev = current_state(es, room)
     cleared = (prev.get("confidence") or {}).get("cleared") or {}
     conf = confidences(report_aggregation(es, room), now, cleared)

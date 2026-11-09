@@ -1,6 +1,6 @@
 """Incidents in the Elasticsearch `incidents` index (K11)."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from elasticsearch import ConflictError, NotFoundError
 from opentelemetry import metrics
@@ -20,7 +20,7 @@ metrics.get_meter("affinity").create_observable_gauge(
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def refresh_gauge(es) -> int:

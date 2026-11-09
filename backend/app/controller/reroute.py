@@ -13,7 +13,7 @@ places the person again.
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from kubernetes.client.exceptions import ApiException
 
@@ -60,7 +60,7 @@ def reconcile_reroutes(ctl) -> None:
                 if row[0] >= MAX_MOVES_PER_SLOT:
                     continue  # moved once already this slot: stay, and the board shows the problem
                 conn.execute("UPDATE moves SET count = count + 1 WHERE attendee_id = %s AND slot = %s", (attendee, slot))
-            placement.reroute_started.setdefault(pod.metadata.name, datetime.now(timezone.utc))
+            placement.reroute_started.setdefault(pod.metadata.name, datetime.now(UTC))
             try:
                 ctl.core.delete_namespaced_pod(pod.metadata.name, ctl.namespace, grace_period_seconds=0)
             except ApiException as err:
