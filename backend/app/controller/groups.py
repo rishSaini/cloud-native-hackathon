@@ -11,7 +11,7 @@ the break's summary.
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from kubernetes.client.exceptions import ApiException
 
@@ -90,7 +90,7 @@ def post_summary(break_id: str, opted_in: int, alone: int) -> None:
         from app.es import get_es
 
         get_es().index(index="board-summary", id="last-break", document={
-            "break": break_id, "opted_in": opted_in, "alone": alone, "at": datetime.now(timezone.utc).isoformat()})
+            "break": break_id, "opted_in": opted_in, "alone": alone, "at": datetime.now(UTC).isoformat()})
     except Exception as err:
         log.warning("board summary not written (%s)", type(err).__name__)
 

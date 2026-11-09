@@ -77,7 +77,7 @@ def ask(body: AskIn, es=Depends(get_es)):
         except (ApiError, TransportError, KeyError, IndexError) as err:
             log.warning("ask: completion failed (%s)", type(err).__name__)
             raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE,
-                                "Ask Affinity is unavailable right now. Search still works.")
+                                "Ask Affinity is unavailable right now. Search still works.") from err
     ids = cited_ids(answer, talks)
     by_id = {t["id"]: t for t in talks}
     return {"answer": answer, "talkIds": ids, "talks": [talk_card(by_id[i]) for i in ids]}

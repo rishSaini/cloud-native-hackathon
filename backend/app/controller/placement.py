@@ -9,7 +9,7 @@ and turns FailedScheduling events into plain language for that attendee only.
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from kubernetes.client.exceptions import ApiException
 from opentelemetry import metrics, trace
@@ -64,7 +64,7 @@ def scheduler_message(core, namespace: str, pod) -> str:
     events = core.list_namespaced_event(
         namespace, field_selector=f"involvedObject.uid={pod.metadata.uid},reason=FailedScheduling"
     ).items
-    latest = max(events, key=lambda e: e.last_timestamp or e.event_time or datetime.min.replace(tzinfo=timezone.utc), default=None)
+    latest = max(events, key=lambda e: e.last_timestamp or e.event_time or datetime.min.replace(tzinfo=UTC), default=None)
     return latest.message if latest else ""
 
 
@@ -96,7 +96,7 @@ def reconcile_placements(ctl) -> None:
             pod = pods.get(name)
             if pod is None:
                 if known.get(key, (None,))[0] == "Scheduled":
-                    reroute_started.setdefault(name, datetime.now(timezone.utc))  # evicted: R8 reroute
+                    reroute_started.setdefault(name, datetime.now(UTC))  # evicted: R8 reroute
                 with tracer.start_as_current_span("k8s.pod.create") as span:
                     set_attrs(span, slot_id=slot, attendee_hash=attendee_hash(attendee))
                     body = build_pod(attendee, slot, needs, ranked_nodes(attendee, slot), ctl.namespace)
@@ -134,9 +134,9 @@ def reconcile_placements(ctl) -> None:
                         )
                         started = reroute_started.pop(name, None)
                         if started:
-                            reroute_duration.record((datetime.now(timezone.utc) - started).total_seconds())
+                            reroute_duration.record((datetime.now(UTC) - started).total_seconds())
                         else:
-                            placement_duration.record((datetime.now(timezone.utc) - created_at).total_seconds())
+                            placement_duration.record((datetime.now(UTC) - created_at).total_seconds())
                 continue
 
             unplaced += 1

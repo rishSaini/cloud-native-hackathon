@@ -27,9 +27,12 @@ jobs:
       - name: Install packages
         run: pip install -r backend/requirements-dev.txt
 
-      - name: Run tests
+      - name: Lint (ruff)
+        run: ruff check backend scripts
+
+      - name: Run tests with coverage
         working-directory: backend
-        run: python -m pytest -q
+        run: python -m pytest -q --cov=app --cov-report=term-missing:skip-covered
 
       - name: Check that the Kubernetes manifests render
         run: kubectl kustomize deploy > /dev/null

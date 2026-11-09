@@ -19,7 +19,6 @@ class FakeRankES:
         self.talks = talks  # in ranked order
         self.closed = closed
         self.talk_search = None
-        outer = self
 
         class Indices:
             def get_mapping(self, index):

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 from fastapi import FastAPI
@@ -128,7 +128,7 @@ def test_current_group_shows_late_for_members_and_viewer(monkeypatch):
             "g-1",
             "brk-tue-1530",
             "brk-tue-1530-tbl-quiet-window",
-            datetime(2026, 11, 10, 22, 30, tzinfo=timezone.utc),
+            datetime(2026, 11, 10, 22, 30, tzinfo=UTC),
             "late",
         ),
         members=[("member", "late")],

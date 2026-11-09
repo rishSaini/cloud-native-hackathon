@@ -13,4 +13,5 @@ __pycache__/
 node_modules/
 npm-debug.log*
 .DS_Store
+.coverage
 seed-demo-state.json

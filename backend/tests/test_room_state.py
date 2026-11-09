@@ -1,12 +1,12 @@
 """K10: decay, hysteresis and the room-state write."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
 from app.reports import state
 
-NOW = datetime(2026, 11, 10, 14, 30, tzinfo=timezone.utc)
+NOW = datetime(2026, 11, 10, 14, 30, tzinfo=UTC)
 
 
 def agg(signal_minutes: dict[str, list[tuple[int, int]]]) -> dict:

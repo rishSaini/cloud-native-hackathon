@@ -8,8 +8,11 @@ from fastapi.staticfiles import StaticFiles
 
 from app import config
 from app.es import get_es
+from app.telemetry.logs import install_log_filters
 
-app = FastAPI(title="talkscout")
+install_log_filters()
+
+app = FastAPI(title="Affinity")
 
 FRONTEND = Path(__file__).resolve().parents[2] / "frontend" / "index.html"
 STATIC_DIR = FRONTEND.parent / "static"
@@ -46,7 +49,7 @@ def rum_config():
         return Response("// Dash0 RUM is off\n", media_type="text/javascript")
     settings = json.dumps(
         {
-            "serviceName": "talkscout-web",
+            "serviceName": "affinity-web",
             "endpoint": {"url": config.DASH0_RUM_ENDPOINT, "authToken": config.DASH0_RUM_TOKEN},
             "additionalSignalAttributes": {"service.version": config.APP_VERSION},
         }

@@ -14,7 +14,7 @@ It also writes seats_total, seats_free and controller_seen_at back to room-state
 
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from zoneinfo import ZoneInfo
 
 from elasticsearch import NotFoundError
@@ -64,7 +64,7 @@ def reconcile_rooms(ctl) -> None:
     es = get_es()
     states = room_states(es)
     caps = venue_caps()
-    slots = active_slots(datetime.now(timezone.utc))
+    slots = active_slots(datetime.now(UTC))
     nodes = [n for n in ctl.core.list_node(label_selector="affinity.dev/kind=talk").items
              if n.metadata.labels.get("affinity.dev/slot") in slots]
     pods = None
@@ -93,5 +93,5 @@ def reconcile_rooms(ctl) -> None:
             total = int((node.status.allocatable or {}).get("affinity.dev/seats", "0"))
             es.update(index="room-state", id=room, doc={
                 "seats_total": total, "seats_free": free,
-                "controller_seen_at": datetime.now(timezone.utc).isoformat(),
+                "controller_seen_at": datetime.now(UTC).isoformat(),
             })

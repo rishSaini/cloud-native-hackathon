@@ -58,7 +58,7 @@ def similarity_matrix(attendee_ids: list[str], k: int = 20) -> dict[tuple[str, s
         responses = es.msearch(searches=searches)["responses"] if searches else []
 
         matrix: dict[tuple[str, str], float] = {}
-        for person, resp in zip(people, responses):
+        for person, resp in zip(people, responses, strict=True):
             for other, score in _scaled(resp.get("hits", {}).get("hits", []), semantic).items():
                 for pair in ((person, other), (other, person)):
                     matrix[pair] = max(matrix.get(pair, 0.0), score)

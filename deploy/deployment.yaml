@@ -35,7 +35,7 @@ spec:
             - name: ES_URL
               value: http://elasticsearch:9200
             - name: OTEL_SERVICE_NAME
-              value: talkscout-backend
+              value: affinity-api
             - name: OTEL_EXPORTER_OTLP_PROTOCOL
               value: http/protobuf
             - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
