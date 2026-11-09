@@ -5,3 +5,4 @@ opentelemetry-distro==0.66b2
 opentelemetry-exporter-otlp==1.45.2
 opentelemetry-instrumentation-fastapi==0.66b2
 opentelemetry-instrumentation-logging==0.66b2
+kubernetes==37.0.2
