@@ -22,17 +22,19 @@ from app.k8s.seats import count_free
 from app.telemetry.attrs import set_attrs
 
 log = logging.getLogger("affinity.controller.placement")
-tracer = trace.get_tracer("affinity")
-meter = metrics.get_meter("affinity")
+tracer = trace.get_tracer("talkscout")
+meter = metrics.get_meter("talkscout")
 placement_duration = meter.create_histogram(
-    "affinity_placement_duration_seconds", unit="s", description="Placement request to bound Pod"
+    "talkscout.search.placement.duration", unit="s", description="Placement request to bound Pod"
 )
 reroute_duration = meter.create_histogram(
-    "affinity_reroute_duration_seconds", unit="s", description="Room change to the attendee's new placement"
+    "talkscout.search.reroute.duration", unit="s", description="Room change to the attendee's new placement"
 )
 # pod name -> when its reroute started (room change or eviction). Lost on restart: only the metric is.
 reroute_started: dict = {}
-unplaced_gauge = meter.create_gauge("affinity_unplaced_attendees", description="Attendees with no placement right now")
+unplaced_gauge = meter.create_gauge(
+    "talkscout.search.unplaced_attendees", description="Attendees with no placement right now"
+)
 
 FULL = "The matching talks at this time are full. Here are the closest ones with space."
 NO_MATCH = "No room at this time has everything you asked for. Here are the closest ones with space."
@@ -72,7 +74,7 @@ def room_of(node: str, slot: str) -> str:
 
 @register("placement")
 def reconcile_placements(ctl) -> None:
-    with tracer.start_as_current_span("placement.reconcile"), pool().connection() as conn:
+    with tracer.start_as_current_span("talkscout.search.placement.reconcile"), pool().connection() as conn:
         requests = conn.execute(
             "SELECT r.attendee_id, r.slot, r.created_at,"
             " COALESCE(array_agg(c.capability) FILTER (WHERE c.capability IS NOT NULL), '{}')"
