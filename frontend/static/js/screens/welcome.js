@@ -6,6 +6,7 @@ import { announce, focusScreen, motionOK } from "../a11y.js";
 import { cardFields, emptyCard, livePreview, needsFields, TEMPLATES } from "../card-form.js";
 import { starColor } from "../color.js";
 import { h } from "../format.js";
+import { loadErrorView } from "../load-error.js";
 import { loadMe, saveMyCard } from "../store.js";
 
 const STEPS = ["template", "card", "needs"];
@@ -14,7 +15,8 @@ let draft = null; // survives navigating away and back during this visit
 export default {
   title: "Welcome",
   async render(main) {
-    const { card } = await loadMe();
+    const { card, error } = await loadMe();
+    if (error) { main.append(loadErrorView()); return; }
     let step = "welcome";
     if (!draft) draft = emptyCard();
 

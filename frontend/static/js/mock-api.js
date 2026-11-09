@@ -378,7 +378,9 @@ export const api = {
       .filter((x) => x.s > 0)
       .sort((a, b) => b.s - a.s)
       .map((x) => decorate(x.t));
-    return { hits: scored.length ? scored : talks.slice(0, 4).map(decorate), total: scored.length };
+    return scored.length
+      ? { hits: scored, total: scored.length }
+      : { hits: talks.slice(0, 4).map(decorate), total: 0, note: "No talks matched. Here are a few to start with." };
   },
   async ask() {
     ensureState();
