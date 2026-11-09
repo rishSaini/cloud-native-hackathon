@@ -12,4 +12,4 @@ resources:
 images:
   - name: app
     newName: ghcr.io/rishsaini/cloud-native-hackathon
-    newTag: 104f1b7
+    newTag: 575c885
