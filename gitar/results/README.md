@@ -7,7 +7,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 
 | Pull requests | Reviewed by Gitar | Dashboard comments | Reviews | Inline comments | Fix commits by Gitar |
 |---|---|---|---|---|---|
-| 47 | 47 | 68 | 0 | 73 | 0 |
+| 47 | 47 | 68 | 0 | 75 | 0 |
 
 ## Pull requests
 
@@ -59,7 +59,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 | [#44](https://github.com/rishSaini/cloud-native-hackathon/pull/44) | R8: Reroute on room closure and lost capabilities | open | 2 | 0 | [pr-0044.md](pr-0044.md) |
 | [#45](https://github.com/rishSaini/cloud-native-hackathon/pull/45) | Editorial redesign: fashion-magazine feel, full-browser layout | open | 2 | 0 | [pr-0045.md](pr-0045.md) |
 | [#46](https://github.com/rishSaini/cloud-native-hackathon/pull/46) | R10: Break groups (solver + table Pods) | open | 4 | 0 | [pr-0046.md](pr-0046.md) |
-| [#47](https://github.com/rishSaini/cloud-native-hackathon/pull/47) | R13: Bounded demo seed (public API only) | open | 0 | 0 | [pr-0047.md](pr-0047.md) |
+| [#47](https://github.com/rishSaini/cloud-native-hackathon/pull/47) | R13: Bounded demo seed (public API only) | open | 2 | 0 | [pr-0047.md](pr-0047.md) |
 
 ## What Gitar flagged
 
@@ -136,3 +136,5 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 - [#46 `backend/app/controller/groups.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/46#discussion_r4518841872): ⚠️ Bug: A failed group formation leaves Pods that no longer match the DB
 - [#46 `backend/app/breaks/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/46#discussion_r4518841997): 💡 Bug: Check-in drops 'running-late': it is stored and shown as 'on-the-way'
 - [#46 `backend/app/solver/__init__.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/46#discussion_r4518842127): 💡 Quality: New spans/metrics don't use the required talkscout./search. prefix
+- [#47 `deploy/jobs/seed-demo-001.yaml`](https://github.com/rishSaini/cloud-native-hackathon/pull/47#discussion_r4518855297): 🚨 Bug: Job runs scripts/seed_demo.py, but the image doesn't contain it
+- [#47 `scripts/seed_demo.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/47#discussion_r4518855427): ⚠️ Edge Case: State file is written only at the end, so a failed run can't be reset
