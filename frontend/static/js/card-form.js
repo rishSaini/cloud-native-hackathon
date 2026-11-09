@@ -9,21 +9,32 @@ import { FIELDS, cardPreview } from "./card-view.js";
 import { h } from "./format.js";
 
 // Each template has a small line icon (static SVG path data, decorative).
+// Templates for everyone: people here alone, first-timers, people who find small talk hard,
+// people speaking a second language, and people with access needs.
 export const TEMPLATES = [
-  { id: "face", label: "Please face me when you talk", howToTalk: "Please face me when you talk.", icon: '<circle cx="12" cy="12" r="8.5"/><path d="M9 10h.01M15 10h.01M8.5 14.5c1.8 2 5.2 2 7 0"/>' },
-  { id: "time", label: "Give me time to finish my words", howToTalk: "Give me time to finish my words.", icon: '<path d="M7 3.5h10M7 20.5h10M8 3.5c0 4 8 5 8 8.5s-8 4.5-8 8.5M16 3.5c0 4-8 5-8 8.5s8 4.5 8 8.5"/>' },
-  { id: "name", label: "Say your name when you walk up", howToTalk: "Say your name when you walk up.", icon: '<path d="M4.5 5.5h15a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 3.5v-3.5h-1A1.5 1.5 0 0 1 3 15V7a1.5 1.5 0 0 1 1.5-1.5z"/><path d="M8 11h8"/>' },
+  { id: "hi", label: "Come say hi, I love meeting people", howToTalk: "Come say hi! I love meeting new people. Ask me what I'm working on.", icon: '<path d="M7 11.5V6.5a1.5 1.5 0 0 1 3 0v4M10 10V5a1.5 1.5 0 0 1 3 0v5M13 10V6a1.5 1.5 0 0 1 3 0v6c0 4-2.5 7-6 7-2.5 0-4-1.5-5.5-4L3 12a1.5 1.5 0 0 1 2.5-1.5L7 12"/>' },
+  { id: "alone", label: "I'm here on my own", howToTalk: "I'm here on my own, so please say hi! Ask me what I'm working on.", icon: '<circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c.9-3.6 3.5-5.5 6.5-5.5s5.6 1.9 6.5 5.5"/>' },
+  { id: "smalltalk", label: "Skip the small talk, ask about my work", howToTalk: "Small talk isn't my thing. Ask me about my work and I'll talk for ages.", icon: '<path d="M4 6.5h16v9H9l-4 3.5v-3.5H4z"/><path d="M8 10h8M8 12.8h5"/>' },
+  { id: "warmup", label: "I'm shy at first, I warm up", howToTalk: "I'm quiet at first but I warm up. Give me a minute and a good question.", icon: '<path d="M12 21c4-2.5 7-6 7-10a7 7 0 0 0-14 0c0 4 3 7.5 7 10z"/><path d="M9.5 11.5c.7.8 1.5 1.2 2.5 1.2s1.8-.4 2.5-1.2"/>' },
   { id: "one", label: "I do better one-on-one", howToTalk: "I do better one-on-one. Come say hi when it's quieter.", icon: '<circle cx="8" cy="9" r="2.6"/><circle cx="16" cy="9" r="2.6"/><path d="M3.5 18.5c.8-2.6 2.6-3.8 4.5-3.8s3.7 1.2 4.5 3.8M11.5 18.5c.8-2.6 2.6-3.8 4.5-3.8s3.7 1.2 4.5 3.8"/>' },
-  { id: "first", label: "This is my first conference", howToTalk: "This is my first conference. Say hi and tell me what you're working on.", icon: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM18.5 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>' },
-  { id: "blank", label: "Start from scratch", howToTalk: "", icon: '<path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5zM13.5 7l3 3"/>' },
+  { id: "language", label: "English isn't my first language", howToTalk: "English isn't my first language, so please speak a little slower. I'm happy to repeat myself too.", icon: '<path d="M4 5h9M8.5 5v2c0 4-2.5 7-5 8M6 10c1.2 2 3.2 3.6 5.5 4.3"/><path d="M13 20l4-9 4 9M14.5 17h5"/>' },
+  { id: "first", label: "This is my first conference", howToTalk: "This is my first conference. Say hi and tell me what you're working on.", icon: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/>' },
+  { id: "blank", label: "Something else, I'll write my own", howToTalk: "", icon: '<path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5zM13.5 7l3 3"/>' },
 ];
 
 // Room and table needs. The backend maps these to opaque capability codes (cap-c1 …).
+// Things that help people feel comfortable in a room or at a table. Some are access needs,
+// some are preferences; all are private and only used for placement.
+// Break-time preferences everyone has, then optional access needs (shown collapsed).
+// All private; used only for placement.
 export const NEEDS = [
-  { id: "captions", label: "Working captions" },
-  { id: "quiet", label: "A quieter room or table" },
-  { id: "step_free", label: "Step-free access" },
-  { id: "lighting", label: "Good lighting" },
+  { id: "small_group", label: "Smaller groups (2 or 3 people)" },
+  { id: "quiet", label: "A quieter spot" },
+  { id: "less_crowded", label: "Not too crowded" },
+  { id: "seating", label: "Somewhere to sit" },
+  { id: "captions", label: "Working captions", access: true },
+  { id: "step_free", label: "Step-free access", access: true },
+  { id: "lighting", label: "Good lighting", access: true },
 ];
 
 const SPECS = [
@@ -115,19 +126,27 @@ function clearError(input, errId) {
 /** Private needs checkboxes in a fieldset. */
 export function needsFields(draft, { idPrefix = "card" } = {}) {
   const set = new Set(draft.needs || []);
+  const box = (need) => {
+    const id = `${idPrefix}-need-${need.id}`;
+    const input = h("input", { type: "checkbox", id, name: "needs", value: need.id, "aria-describedby": `${idPrefix}-needs-hint` });
+    input.checked = set.has(need.id);
+    input.addEventListener("change", () => {
+      if (input.checked) set.add(need.id); else set.delete(need.id);
+      draft.needs = NEEDS.map((n) => n.id).filter((nid) => set.has(nid));
+    });
+    return h("div", { class: "check check-tile" }, input, h("label", { for: id }, need.label));
+  };
+  const access = NEEDS.filter((n) => n.access);
+  const more = h("details", { class: "more-needs" },
+    h("summary", {}, "Anything else that helps? (optional)"),
+    h("div", { class: "needs" }, access.map(box)),
+  );
+  if (access.some((n) => set.has(n.id))) more.open = true;
   return h("fieldset", { class: "needs" },
-    h("legend", {}, "What helps you in a room or at a table"),
-    h("p", { class: "hint", id: `${idPrefix}-needs-hint` }, "Private. Only used to pick rooms and tables that suit you. Nobody else sees this."),
-    ...NEEDS.map((need) => {
-      const id = `${idPrefix}-need-${need.id}`;
-      const box = h("input", { type: "checkbox", id, name: "needs", value: need.id, "aria-describedby": `${idPrefix}-needs-hint` });
-      box.checked = set.has(need.id);
-      box.addEventListener("change", () => {
-        if (box.checked) set.add(need.id); else set.delete(need.id);
-        draft.needs = NEEDS.map((n) => n.id).filter((nid) => set.has(nid));
-      });
-      return h("div", { class: "check check-tile" }, box, h("label", { for: id }, need.label));
-    }),
+    h("legend", {}, "Your break-time vibe"),
+    h("p", { class: "hint", id: `${idPrefix}-needs-hint` }, "Private. We only use this to pick rooms and tables that suit you."),
+    ...NEEDS.filter((n) => !n.access).map(box),
+    more,
   );
 }
 

@@ -8,7 +8,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: seed-demo-001
-  namespace: team-__TEAM__
+  namespace: team-coffeecon
 spec:
   backoffLimit: 0
   activeDeadlineSeconds: 600
@@ -18,7 +18,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: seed
-          image: ghcr.io/OWNER/REPO:latest
+          image: ghcr.io/rishsaini/cloud-native-hackathon:latest
           imagePullPolicy: Always
           workingDir: /app
           command: [python, scripts/seed_demo.py, --url, "http://app", --count, "120", --rate, "10",

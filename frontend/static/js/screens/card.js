@@ -5,7 +5,9 @@ import { announce, focusScreen } from "../a11y.js";
 import { cardFields, livePreview, needsFields } from "../card-form.js";
 import { flipCard } from "../card-view.js";
 import { comfortDial } from "../comfort.js";
-import { h } from "../format.js";
+import { galaxySvg } from "../galaxy.js";
+import { NEEDS } from "../card-form.js";
+import { h, twoTone } from "../format.js";
 import { loadErrorView } from "../load-error.js";
 import { deleteMyCard, loadMe, saveMyCard } from "../store.js";
 
@@ -37,11 +39,19 @@ export default {
           status.textContent = "We couldn't delete your card. Please try again.";
         }
       });
-      return h("section", { "aria-labelledby": "screen-h" },
-        h("h1", { id: "screen-h", class: "screen-title" }, "Your card"),
-        me?.displayId ? h("p", { class: "muted" }, "On the big screen you're ", h("code", { class: "display-id" }, me.displayId), ".") : null,
+      return h("section", { class: "card-page", "aria-labelledby": "screen-h" },
+        h("h1", { id: "screen-h", class: "screen-title" }, twoTone("Your ", "card.")),
+        h("div", { class: "star-id" },
+          galaxySvg({ id: me?.displayId || card.name, interests: `${card.workingOn || ""} ${card.askMeAbout || ""} ${card.lookingFor || ""}` }),
+          h("div", {},
+            h("p", { class: "star-id-label" }, "Your star ID"),
+            me?.displayId ? h("p", { class: "star-id-code" }, h("code", { class: "display-id" }, me.displayId)) : null,
+            h("p", { class: "muted star-id-note" }, "This is how you appear on the big screen. Your name never does."),
+          ),
+        ),
         comfortDial({ idPrefix: "card-comfort" }),
         flip.el,
+        privateNeeds(card),
         h("div", { class: "card-actions" },
           h("a", { class: "btn btn-primary btn-block", href: "#/card/show" }, "Show across the table"),
           h("button", { type: "button", class: "btn btn-secondary btn-block", onclick: () => paint(edit) }, "Edit"),
@@ -94,7 +104,20 @@ export default {
   },
 };
 
-function confirmDelete(onConfirm) {
+// What helps you in a room: shown only here, on your own phone, inside a "private" box.
+function privateNeeds(card) {
+  const labels = NEEDS.filter((n) => (card.needs || []).includes(n.id)).map((n) => n.label);
+  return h("section", { class: "private-lock", "aria-labelledby": "lock-h" },
+    h("p", { class: "lock-badge" }, h("span", { "aria-hidden": "true" }, "🔒"), " Private"),
+    h("h2", { id: "lock-h", class: "lock-title" }, "Your break-time vibe"),
+    labels.length
+      ? h("ul", { class: "lock-list" }, labels.map((l) => h("li", {}, l)))
+      : h("p", { class: "muted" }, "Nothing set. You can add things with Edit."),
+    h("p", { class: "lock-note" }, "Only the scheduler uses this, to pick rooms and tables. Nobody else sees it."),
+  );
+}
+
+export function confirmDelete(onConfirm) {
   const dialog = h("dialog", { class: "dialog", "aria-labelledby": "del-h", "aria-describedby": "del-body" },
     h("h2", { id: "del-h" }, "Delete your card?"),
     h("p", { id: "del-body" }, "This deletes your card and your private needs. It also removes you from any group and turns off links you've shared. You can make a new card any time."),

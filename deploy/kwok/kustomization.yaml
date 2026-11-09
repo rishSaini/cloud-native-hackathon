@@ -1,0 +1,14 @@
+# KWOK: simulates Nodes and Pods, so attendees can be Pods and rooms can be Nodes (R1).
+# Upstream manifests are vendored unchanged in upstream/; controller.yaml patches them.
+# Not part of deploy/kustomization.yaml until the R1 decision (docs/radar/kwok-decision.md).
+#   kubectl apply -k deploy/kwok
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - upstream/kwok-v0.8.0.yaml
+  - upstream/stage-fast-v0.8.0.yaml
+patches:
+  - path: controller.yaml
+    target:
+      kind: Deployment
+      name: kwok-controller

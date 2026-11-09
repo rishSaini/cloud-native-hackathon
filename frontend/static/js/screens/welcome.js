@@ -3,9 +3,10 @@
 // The draft is kept in memory only.
 
 import { announce, focusScreen, motionOK } from "../a11y.js";
-import { cardFields, emptyCard, livePreview, needsFields, TEMPLATES } from "../card-form.js";
+import { emptyCard, livePreview, needsFields, TEMPLATES } from "../card-form.js";
+import { cardChat } from "../card-chat.js";
 import { accentColor } from "../color.js";
-import { h } from "../format.js";
+import { h, twoTone } from "../format.js";
 import { loadErrorView } from "../load-error.js";
 import { loadMe, saveMyCard } from "../store.js";
 
@@ -76,16 +77,19 @@ export default {
     const screens = {
       welcome() {
         return h("section", { class: "welcome", "aria-labelledby": "step-h" },
-          heroArt(),
+          h("figure", { class: "welcome-visual" },
+            heroArt(),
+            h("figcaption", { class: "welcome-caption" }, "Your break table, as a constellation"),
+          ),
           h("p", { class: "eyebrow" }, "KubeCon · Salt Lake City"),
-          h("h1", { id: "step-h" }, "Find your talk. Find your people."),
-          h("p", { class: "lede" }, "Make a small card about what you're working on and how people should talk to you. We'll find you a good talk and a friendly table at every break."),
+          h("h1", { id: "step-h" }, twoTone("Find your talk. ", "Find your people.")),
+          h("p", { class: "lede" }, "Here on your own? First conference? Not big on small talk? Same for lots of people here. Make a small card, and we'll find you a good talk and a friendly table at every break."),
           card
-            ? h("a", { class: "btn btn-primary btn-block", href: "#/now" }, "Go to now")
+            ? h("a", { class: "btn btn-primary btn-block", href: "#/card" }, "See my card")
             : h("button", { type: "button", class: "btn btn-primary btn-block", onclick: () => go("template") }, "Make my card"),
           card
-            ? h("p", { class: "welcome-note" }, h("a", { href: "#/card" }, "See my card"))
-            : h("p", { class: "muted welcome-note" }, "It takes about 30 seconds. Your card is private: only people in your group see it."),
+            ? h("p", { class: "welcome-note" }, h("a", { href: "#/talks" }, "Browse talks"))
+            : h("p", { class: "muted welcome-note" }, "About 30 seconds. Only people at your table see your card."),
         );
       },
 
@@ -103,30 +107,26 @@ export default {
         return h("section", { "aria-labelledby": "step-h" },
           backButton("welcome"),
           progress("template"),
-          h("h1", { id: "step-h" }, "How should people talk to you?"),
-          h("p", { class: "muted" }, "Pick one to start. You can change the words next."),
+          h("h1", { id: "step-h" }, twoTone("How do you like to ", "meet people?")),
+          h("p", { class: "muted" }, "Pick whatever sounds most like you. Everyone here is meeting new people too."),
           h("ul", { class: "tiles" }, tiles),
         );
       },
 
       card() {
+        // A friendly chat: fixed questions, answers as replies, the card growing on the side.
         const preview = livePreview(draft);
-        const fields = cardFields(draft, { onChange: preview.update, idPrefix: "ob" });
-        const form = h("form", { class: "stack", novalidate: true, "aria-labelledby": "step-h" },
-          fields.el,
-          h("button", { type: "submit", class: "btn btn-primary btn-block" }, "Next"),
-        );
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          if (fields.validate()) go("needs");
-        });
-        return h("section", { class: "onboard-card" },
+        const chat = cardChat(draft, { onChange: preview.update, onDone: () => go("needs") });
+        const view = h("section", { class: "onboard-card" },
           backButton("template"),
           progress("card"),
-          h("h1", { id: "step-h" }, "Your card"),
-          h("p", { class: "muted" }, "Only your name is required. The preview shows what your group will see."),
-          h("div", { class: "form-with-preview" }, form, preview.el),
+          h("h1", { id: "step-h" }, twoTone("Let's make your ", "card.")),
+          h("p", { class: "muted" }, "A few quick questions. Only your name is needed; skip anything else."),
+          h("div", { class: "form-with-preview chat-layout" }, chat.el, preview.el),
         );
+        // Start after the view is on screen, so focus and the announcement land on the first question.
+        queueMicrotask(() => chat.start());
+        return view;
       },
 
       needs() {
@@ -154,8 +154,8 @@ export default {
         return h("section", {},
           backButton("card"),
           progress("needs"),
-          h("h1", { id: "step-h" }, "What helps you?"),
-          h("p", { class: "muted" }, "Tick anything that helps, or none. You can change this later."),
+          h("h1", { id: "step-h" }, twoTone("What\u2019s your break-time ", "vibe?")),
+          h("p", { class: "muted" }, "Pick any, or none. You can change this later."),
           form,
         );
       },
@@ -167,10 +167,10 @@ export default {
         if (me?.displayId) star.style.setProperty("--star", accentColor(me.displayId));
         return h("section", { class: "done", "aria-labelledby": "step-h" },
           star,
-          h("h1", { id: "step-h" }, "Your card is ready"),
+          h("h1", { id: "step-h" }, twoTone("Your card is ", "ready.")),
           h("p", { class: "lede" }, "You're ", h("code", { class: "display-id" }, id), ". Look for yourself on the big screen."),
-          h("a", { class: "btn btn-primary btn-block", href: "#/now" }, "Find me a talk"),
-          h("p", { class: "welcome-note" }, h("a", { href: "#/card" }, "See my card")),
+          h("a", { class: "btn btn-primary btn-block", href: "#/card" }, "See my card"),
+          h("p", { class: "welcome-note" }, h("a", { href: "#/group" }, "Find me a break group")),
         );
       },
     };

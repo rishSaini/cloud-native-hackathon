@@ -28,8 +28,8 @@ def alone_counter():
     if _alone is None:
         from opentelemetry import metrics
 
-        _alone = metrics.get_meter("affinity").create_counter(
-            "affinity_alone_at_break_total", description="Opted-in people who ended up with no group")
+        _alone = metrics.get_meter("talkscout").create_counter(
+            "talkscout.search.alone_at_break", description="Opted-in people who ended up with no group")
     return _alone
 
 
@@ -112,12 +112,23 @@ def form_groups(ctl, conn, break_id: str, ends_at) -> None:
                 if other != member:
                     conn.execute("INSERT INTO card_grants (owner_id, viewer_id, reason, expires_at)"
                                  " VALUES (%s, %s, 'group', %s)", (member, other, ends_at))
+            pod = group_pod(member, break_id, group.id, group.table_id, needs[member], ctl.namespace)
             try:
-                ctl.core.create_namespaced_pod(
-                    ctl.namespace, group_pod(member, break_id, group.id, group.table_id, needs[member], ctl.namespace))
+                ctl.core.create_namespaced_pod(ctl.namespace, pod)
             except ApiException as err:
                 if err.status != 409:
                     raise
+                try:
+                    existing = ctl.core.read_namespaced_pod(pod["metadata"]["name"], ctl.namespace)
+                except ApiException as read_err:
+                    if read_err.status != 404:
+                        raise
+                    ctl.core.create_namespaced_pod(ctl.namespace, pod)
+                else:
+                    if (existing.metadata.labels or {}).get("affinity.dev/group") != group.id:
+                        ctl.core.delete_namespaced_pod(
+                            existing.metadata.name, ctl.namespace, grace_period_seconds=0)
+                        ctl.core.create_namespaced_pod(ctl.namespace, pod)
             conn.execute("INSERT INTO notifications (attendee_id, kind, payload) VALUES (%s, 'group', %s)",
                          (member, json.dumps({"break": break_id, "group": group.id})))
     if result.unplaced:

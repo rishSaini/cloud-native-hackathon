@@ -7,7 +7,7 @@ talk Nodes for the current and next slot match it:
 - closed -> taint affinity.dev/closed:NoExecute (everyone is moved; R8)
 - captions down / very loud / access blocked -> remove that capability label
 
-Each change runs in span k8s.node.taint, linked to the room-state document's
+Each change runs in span talkscout.k8s.node.taint, linked to the room-state document's
 traceparent, so Dash0 shows report -> room state -> taint across both services.
 It also writes seats_total, seats_free and controller_seen_at back to room-state.
 """
@@ -27,7 +27,7 @@ from app.k8s.seats import count_free
 from app.telemetry.attrs import set_attrs
 
 log = logging.getLogger("affinity.controller.rooms")
-tracer = trace.get_tracer("affinity")
+tracer = trace.get_tracer("talkscout")
 DENVER = ZoneInfo("America/Denver")
 SLOTS = ["tue-0900", "tue-1030", "tue-1330", "tue-1430", "tue-1600"]
 
@@ -73,11 +73,11 @@ def reconcile_rooms(ctl) -> None:
         labels = node.metadata.labels
         room, slot = labels.get("affinity.dev/room"), labels.get("affinity.dev/slot")
         state = states.get(room, {})
-        taints = desired_taints(state.get("status", "open"))
         current = [{"key": t.key, "value": t.value, "effect": t.effect} for t in (node.spec.taints or [])]
+        taints = desired_taints(state.get("status", "open"), current)
         patch = label_patch(labels, caps.get(room, set()), state.get("signals") or {})
         if taint_key(current) != taint_key(taints) or patch:
-            with tracer.start_as_current_span("k8s.node.taint", links=_link_to(state.get("traceparent"))) as span:
+            with tracer.start_as_current_span("talkscout.k8s.node.taint", links=_link_to(state.get("traceparent"))) as span:
                 set_attrs(span, room_id=room, slot_id=slot)
                 body = {"spec": {"taints": taints}}
                 if patch:
