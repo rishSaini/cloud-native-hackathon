@@ -91,3 +91,7 @@ app.include_router(placements_router)
 from app.cards.routes import router as cards_router  # noqa: E402
 
 app.include_router(cards_router)
+
+from app.insights.routes import router as insights_router  # noqa: E402
+
+app.include_router(insights_router)
