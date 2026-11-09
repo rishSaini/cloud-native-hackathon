@@ -1,8 +1,9 @@
 """Staff incident routes (K11).
 
 Staff authenticate with the shared STAFF_TOKEN: either the X-Staff-Token header,
-or the cookie that GET /api/staff/login?token=... sets (the frontend sends
-cookies, not headers). Without STAFF_TOKEN set, every staff route answers 401.
+or the cookie that POST /api/staff/login sets (the frontend sends cookies, not
+headers). The token goes in the request body, never the URL, so it stays out of
+access logs and trace spans. Without STAFF_TOKEN set, every staff route answers 401.
 """
 
 import hmac
@@ -29,12 +30,16 @@ def require_staff(request: Request) -> None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Staff only")
 
 
-@router.get("/api/staff/login")
-def staff_login(token: str, request: Request, response: Response):
-    if not _valid(token):
+class StaffLogin(BaseModel):
+    token: str
+
+
+@router.post("/api/staff/login")
+def staff_login(body: StaffLogin, request: Request, response: Response):
+    if not _valid(body.token):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Wrong staff token")
     proto = request.headers.get("x-forwarded-proto", request.url.scheme)
-    response.set_cookie(COOKIE, token, httponly=True, samesite="strict", secure=proto == "https", max_age=60 * 60 * 12)
+    response.set_cookie(COOKIE, body.token, httponly=True, samesite="strict", secure=proto == "https", max_age=60 * 60 * 12)
     return {"ok": True}
 
 

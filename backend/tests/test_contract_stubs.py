@@ -45,5 +45,5 @@ def test_attendee_hash_uses_signing_key(monkeypatch):
 def test_unimplemented_stubs_raise():
     with pytest.raises(NotImplementedError):
         load_break_people("brk-tue-1000")
-    with pytest.raises(NotImplementedError):
-        free_seats("tue-0900")
+    # free_seats is real since R6 (see test_placement.py); it only needs a client.
+    assert callable(free_seats)

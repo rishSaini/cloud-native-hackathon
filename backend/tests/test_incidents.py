@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 from elastic_transport import ApiResponseMeta, HttpHeaders
-from elasticsearch import NotFoundError
+from elasticsearch import ConflictError, NotFoundError
 from fastapi.testclient import TestClient
 
 from app.es import get_es
@@ -16,6 +16,11 @@ from app.reports import state
 def not_found():
     meta = ApiResponseMeta(status=404, http_version="1.1", headers=HttpHeaders(), duration=0.0, node=None)
     return NotFoundError("missing", meta=meta, body={})
+
+
+def conflict():
+    meta = ApiResponseMeta(status=409, http_version="1.1", headers=HttpHeaders(), duration=0.0, node=None)
+    return ConflictError("version_conflict_engine_exception", meta=meta, body={})
 
 
 class FakeIncidentsES:
@@ -48,6 +53,11 @@ class FakeIncidentsES:
     def index(self, index, id, document, refresh=None):
         self.docs[index][id] = dict(document)
 
+    def create(self, index, id, document, refresh=None):
+        if id in self.docs[index]:
+            raise conflict()
+        self.docs[index][id] = dict(document)
+
     def get(self, index, id):
         if id not in self.docs[index]:
             raise not_found()
@@ -73,6 +83,15 @@ def test_one_active_incident_per_room_and_kind(es):
     other = store.open_incident(es, "room-251", "access")
     assert again["id"] == first["id"] and other["id"] != first["id"]
     assert store.refresh_gauge(es) == 2
+
+
+def test_racing_reports_open_one_incident(es, monkeypatch):
+    # Both writers pass the active check before either has written: the race Gitar flagged.
+    monkeypatch.setattr(store, "active_incident", lambda es_, room, kind: None)
+    first = store.open_incident(es, "room-251", "captions")
+    second = store.open_incident(es, "room-251", "captions")
+    assert second["id"] == first["id"]
+    assert len(es.docs["incidents"]) == 1
 
 
 def test_transitions_move_forward_only(es):
@@ -135,13 +154,20 @@ def test_staff_routes_need_the_token(staff_client):
     client, _ = staff_client
     assert client.get("/api/staff/incidents").status_code == 401
     assert client.get("/api/staff/incidents", headers={"X-Staff-Token": "wrong"}).status_code == 401
-    assert client.get("/api/staff/login", params={"token": "wrong"}).status_code == 401
+    assert client.post("/api/staff/login", json={"token": "wrong"}).status_code == 401
+
+
+def test_staff_token_is_never_accepted_in_the_url(staff_client):
+    client, _ = staff_client
+    assert client.get("/api/staff/login", params={"token": "s3cret-staff"}).status_code == 405
+    assert client.post("/api/staff/login", params={"token": "s3cret-staff"}).status_code == 422
+    assert "affinity_staff" not in client.cookies
 
 
 def test_staff_cookie_login_then_list_and_patch(staff_client):
     client, es = staff_client
     inc = store.open_incident(es, "room-251", "captions")
-    assert client.get("/api/staff/login", params={"token": "s3cret-staff"}).status_code == 200
+    assert client.post("/api/staff/login", json={"token": "s3cret-staff"}).status_code == 200
     listed = client.get("/api/staff/incidents").json()
     assert listed[0] == {**listed[0], "id": inc["id"], "room": "room-251", "kind": "captions", "state": "open"}
     assert client.patch(f"/api/staff/incidents/{inc['id']}", json={"state": "acknowledged"}).status_code == 200

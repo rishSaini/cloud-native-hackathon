@@ -1,0 +1,39 @@
+# Patch for the upstream KWOK v0.8.0 controller (R1), so it fits the team vcluster:
+# pinned image, small requests and limits, non-root, and a config path outside
+# /root (a non-root user cannot read /root). Applied by deploy/kwok/kustomization.yaml.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kwok-controller
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: kwok-controller
+          image: registry.k8s.io/kwok/kwok:v0.8.0
+          args:
+            - --config=/etc/kwok/kwok.yaml
+            - --node-ip=$(POD_IP)
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: kwok-config
+              mountPath: /etc/kwok/kwok.yaml
+              subPath: kwok.yaml
+              readOnly: true

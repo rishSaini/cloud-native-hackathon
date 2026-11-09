@@ -1,9 +1,8 @@
 """Incidents in the Elasticsearch `incidents` index (K11)."""
 
-import uuid
 from datetime import datetime, timezone
 
-from elasticsearch import NotFoundError
+from elasticsearch import ConflictError, NotFoundError
 from opentelemetry import metrics
 
 from app.search import mappings as m
@@ -44,13 +43,36 @@ def active_incident(es, room: str, kind: str) -> dict | None:
     return hits[0]["_source"] if hits else None
 
 
+def _resolved_count(es, room: str, kind: str) -> int:
+    try:
+        return es.count(
+            index=m.INCIDENTS,
+            query={"bool": {"filter": [{"term": {"room": room}}, {"term": {"kind": kind}}, {"term": {"state": "resolved"}}]}},
+        )["count"]
+    except NotFoundError:
+        return 0
+
+
 def open_incident(es, room: str, kind: str) -> dict:
-    """Open an incident, unless this room already has an active one of this kind."""
+    """Open an incident, unless this room already has an active one of this kind.
+
+    The id is deterministic: one more than the resolved incidents for this room
+    and kind. Writers racing past the active check all see the same resolved
+    count, so they pick the same id, and op_type=create lets only one of them
+    write it; the others get a conflict and return the winner's doc. (Counting
+    all incidents would not work: a loser that counts after the winner's write
+    would pick the next id and open a duplicate.)
+    """
     existing = active_incident(es, room, kind)
     if existing:
         return existing
-    doc = {"id": f"inc-{uuid.uuid4().hex[:10]}", "room": room, "kind": kind, "state": "open", "opened_at": _now()}
-    es.index(index=m.INCIDENTS, id=doc["id"], document=doc, refresh="wait_for")
+    seq = _resolved_count(es, room, kind) + 1
+    doc = {"id": f"inc-{room}-{kind}-{seq}", "room": room, "kind": kind, "state": "open", "opened_at": _now()}
+    try:
+        es.create(index=m.INCIDENTS, id=doc["id"], document=doc, refresh="wait_for")
+    except ConflictError:
+        # Another writer opened it first. GET is real-time, so it sees that doc.
+        return es.get(index=m.INCIDENTS, id=doc["id"])["_source"]
     refresh_gauge(es)
     return doc
 
