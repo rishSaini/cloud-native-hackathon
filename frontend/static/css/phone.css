@@ -230,6 +230,7 @@ body.no-chrome .app-footer { display: none; }
 .welcome h1 { font-size: 2rem; margin-bottom: 0.75rem; }
 .welcome .lede { margin-bottom: 1.75rem; }
 .welcome-note { margin-top: 1rem; text-align: center; font-size: 0.9375rem; }
+.welcome .btn-block + .btn-block { margin-top: 0.75rem; }
 .welcome-sky { position: relative; height: 7rem; margin-bottom: 1rem; }
 .welcome-star {
   position: absolute;

@@ -49,10 +49,11 @@ function tileIcon(paths) {
 
 export default {
   title: "Welcome",
-  async render(main) {
+  async render(main, ctx = {}) {
     const { card, error } = await loadMe();
     if (error) { main.append(loadErrorView()); return; }
-    let step = "welcome";
+    // "Make my card" buttons elsewhere link to #/?start=card and skip the welcome screen.
+    let step = !card && ctx.query?.get("start") === "card" ? "template" : "welcome";
     if (!draft) draft = emptyCard();
 
     const go = async (next) => {
@@ -87,6 +88,7 @@ export default {
           card
             ? h("a", { class: "btn btn-primary btn-block", href: "#/home" }, "Go home")
             : h("button", { type: "button", class: "btn btn-primary btn-block", onclick: () => go("template") }, "Make my card"),
+          h("a", { class: "btn btn-secondary btn-block", href: "#/talks" }, "Browse talks"),
           card
             ? h("p", { class: "welcome-note" }, h("a", { href: "#/card" }, "See my card"))
             : h("p", { class: "muted welcome-note" }, "About 30 seconds. Only people at your table see your card."),

@@ -61,7 +61,7 @@ export default {
       region.append(h("section", { class: "card stack", "aria-labelledby": "g-h" },
         h("h2", { id: "g-h" }, "Make your card first"),
         h("p", { class: "muted" }, "Your group reads your card before you meet, so nobody has to explain themselves."),
-        h("a", { class: "btn btn-primary btn-block", href: "#/" }, "Make my card"),
+        h("a", { class: "btn btn-primary btn-block", href: "#/?start=card" }, "Make my card"),
       ));
       return;
     }
