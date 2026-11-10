@@ -22,6 +22,7 @@ const ROUTES = {
   "/settings": () => import("./screens/settings.js"),
   "/board": () => import("./board/board.js"),
   "/staff": () => import("./screens/staff.js"),
+  "/insights": () => import("./screens/insights.js"),
 };
 
 const TAB_FOR = { "/home": "home", "/now": "home", "/talks": "home", "/card": "card", "/card/show": "card", "/group": "group", "/report": "report", "/met": "met", "/grow": "met" };

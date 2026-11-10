@@ -1,0 +1,52 @@
+/* Insights screen (K17). Uses the personal edition's tokens: ink, rose accent, soft cards.
+   Status is always a word (HELD, STEADY, DROPPED, OPEN, FULL), never color alone. */
+
+.ins { --ins-held: var(--ok-text, #2F6B3F); --ins-steady: var(--ink, #1A1714); --ins-dropped: var(--red, #9A5F59); }
+.ins-held { --ins-c: var(--ins-held); }
+.ins-steady { --ins-c: var(--ins-steady); }
+.ins-dropped { --ins-c: var(--ins-dropped); }
+
+.ins-hero-line { margin: 0.25rem 0 1.25rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; }
+.ins-hero-line .own-num { font-size: clamp(3rem, 2rem + 4vw, 4.5rem); line-height: 1; }
+
+.ins-rooms, .ins-talks { list-style: none; margin: 0; padding: 0; }
+.ins-rooms { display: grid; gap: 0.875rem; }
+.ins-room-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; }
+.ins-room-name { font-weight: 600; color: var(--ink); }
+.ins-room-status, .ins-word {
+  font: 600 0.6875rem var(--font-ui, "Inter", sans-serif);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ins-c, var(--ink));
+  border: 1px solid currentColor; border-radius: 999px; padding: 0.125rem 0.5rem;
+}
+.ins-room-count { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+
+.ins-bar { margin-top: 0.4rem; height: 0.5rem; border-radius: 999px; background: var(--divider, #EAE4DF); overflow: hidden; }
+.ins-bar > span { display: block; height: 100%; border-radius: 999px; background: var(--ink); transition: width 0.6s ease; }
+.ins-bar-needs > span { background: var(--red, #9A5F59); }
+.ins-bar-noneeds > span { background: var(--rose, #D9B8B5); }
+.ins-fair-row { margin-top: 1rem; }
+.ins-gap { margin: 1.25rem 0 0; padding-top: 1rem; border-top: 1px solid var(--divider, #EAE4DF); }
+.ins-gap-num { font: 800 1.75rem var(--font-display, "Inter", sans-serif); letter-spacing: -0.03em; color: var(--ink); }
+
+.ins-talks { display: grid; gap: 1rem; margin-top: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
+.ins-talk { margin: 0 !important; }
+.ins-talk-title { margin: 0.25rem 0 0.5rem; font-size: 1.25rem; line-height: 1.25; }
+.ins-stats { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1rem; margin: 0 0 0.5rem; }
+.ins-stats b { font-variant-numeric: tabular-nums; }
+
+.ins-chart { position: relative; }
+.ins-curve { display: block; width: 100%; height: 150px; overflow: visible; }
+.ins-axis { stroke: var(--divider, #EAE4DF); }
+.ins-area { fill: var(--ins-c); opacity: 0.08; }
+.ins-line { fill: none; stroke: var(--ins-c); stroke-width: 2.25; }
+.ins-peak { position: absolute; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: var(--ins-c); }
+.ins-dropband { fill: var(--rose, #D9B8B5); opacity: 0.35; }
+.ins-ticks { position: relative; height: 1.1rem; margin-top: -1.2rem; }
+.ins-tick { position: absolute; top: 0; transform: translateX(-50%); color: var(--ink-soft); font: 500 0.6875rem var(--font-ui, "Inter", sans-serif); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ins-tick-start { transform: none; }
+
+.ins-privacy { margin-top: 0.5rem; }
+.home-insights-link { display: inline-block; margin: -0.5rem 0 1.25rem; font-weight: 500; }
+
+@media (prefers-reduced-motion: reduce) { .ins-bar > span { transition: none; } }

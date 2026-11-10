@@ -161,6 +161,7 @@ export const api = {
 
   reportRoom: withFallback("reportRoom", (roomId, signal) =>
     request("POST", `/api/rooms/${enc(roomId)}/reports`, { signal })),
+  insights: withFallback("insights", () => request("GET", "/api/insights")),
   board: withFallback("board", async () => {
     const data = await request("GET", "/api/board");
     return data?.board ?? data;
