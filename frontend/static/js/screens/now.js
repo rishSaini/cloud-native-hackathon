@@ -37,19 +37,16 @@ export default {
     let error = null;
     const slot = nextSlot();
 
+    // No card yet: Home is the welcome page (constellation, Make my card, Browse talks).
+    // replace() keeps Back from bouncing between #/home and #/.
+    if (!card) {
+      location.replace("#/");
+      return;
+    }
+
     const region = h("div", { class: "now" });
     main.append(h("h1", { class: "screen-title" }, "Now"),
       h("a", { class: "home-insights-link", href: "#/insights" }, "How the rooms are doing →"), region);
-
-    if (!card) {
-      region.append(h("section", { class: "card stack", "aria-labelledby": "now-h" },
-        h("h2", { id: "now-h" }, "Make your card first"),
-        h("p", { class: "muted" }, "Your card tells us what you're working on and what helps, so we can find you a good talk."),
-        h("a", { class: "btn btn-primary btn-block", href: "#/?start=card" }, "Make my card"),
-        h("a", { class: "btn btn-secondary btn-block", href: "#/talks" }, "Browse talks"),
-      ));
-      return;
-    }
 
     // A personal greeting, then the dial, so the day feels tuned to you.
     const hour = Number(new Intl.DateTimeFormat("en-US", { timeZone: "America/Denver", hour: "numeric", hour12: false }).format(new Date()));
