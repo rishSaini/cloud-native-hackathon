@@ -7,7 +7,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 
 | Pull requests | Reviewed by Gitar | Dashboard comments | Reviews | Inline comments | Fix commits by Gitar |
 |---|---|---|---|---|---|
-| 63 | 63 | 94 | 0 | 94 | 11 |
+| 65 | 65 | 98 | 0 | 94 | 11 |
 
 ## Pull requests
 
@@ -76,6 +76,8 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 | [#61](https://github.com/rishSaini/cloud-native-hackathon/pull/61) | Fix the laptop navigation pill on the deployed site | merged | 0 | 0 | [pr-0061.md](pr-0061.md) |
 | [#62](https://github.com/rishSaini/cloud-native-hackathon/pull/62) | Make my card skips the welcome screen; add Browse talks to welcome | merged | 0 | 0 | [pr-0062.md](pr-0062.md) |
 | [#63](https://github.com/rishSaini/cloud-native-hackathon/pull/63) | Insights screen: room fill, engagement curves, and fair seating | merged | 1 | 0 | [pr-0063.md](pr-0063.md) |
+| [#64](https://github.com/rishSaini/cloud-native-hackathon/pull/64) | Home shows the welcome page until you have a card | merged | 0 | 0 | [pr-0064.md](pr-0064.md) |
+| [#65](https://github.com/rishSaini/cloud-native-hackathon/pull/65) | Run Postgres migrations on every rollout; show a truthful save error | open | 0 | 0 | [pr-0065.md](pr-0065.md) |
 
 ## What Gitar flagged
 
