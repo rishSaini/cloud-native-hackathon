@@ -7,7 +7,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 
 | Pull requests | Reviewed by Gitar | Dashboard comments | Reviews | Inline comments | Fix commits by Gitar |
 |---|---|---|---|---|---|
-| 61 | 61 | 92 | 0 | 93 | 11 |
+| 63 | 63 | 94 | 0 | 94 | 11 |
 
 ## Pull requests
 
@@ -74,6 +74,8 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 | [#59](https://github.com/rishSaini/cloud-native-hackathon/pull/59) | Card creation as a friendly chat; remove the Now tab | merged | 2 | 0 | [pr-0059.md](pr-0059.md) |
 | [#60](https://github.com/rishSaini/cloud-native-hackathon/pull/60) | Home tab instead of Now | merged | 1 | 0 | [pr-0060.md](pr-0060.md) |
 | [#61](https://github.com/rishSaini/cloud-native-hackathon/pull/61) | Fix the laptop navigation pill on the deployed site | merged | 0 | 0 | [pr-0061.md](pr-0061.md) |
+| [#62](https://github.com/rishSaini/cloud-native-hackathon/pull/62) | Make my card skips the welcome screen; add Browse talks to welcome | merged | 0 | 0 | [pr-0062.md](pr-0062.md) |
+| [#63](https://github.com/rishSaini/cloud-native-hackathon/pull/63) | Insights screen: room fill, engagement curves, and fair seating | merged | 1 | 0 | [pr-0063.md](pr-0063.md) |
 
 ## What Gitar flagged
 
@@ -170,6 +172,7 @@ Put the team's own notes for the demo in [HIGHLIGHTS.md](HIGHLIGHTS.md).
 - [#59 `frontend/static/js/card-chat.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/59#discussion_r4519266368): 💡 Edge Case: Name requirement can be bypassed by switching edits mid-answer
 - [#59 `frontend/index.html`](https://github.com/rishSaini/cloud-native-hackathon/pull/59#discussion_r4519266485): 💡 Quality: /talks still maps to removed "now" tab, so no tab is highlighted
 - [#60 `frontend/static/js/screens/now.js`](https://github.com/rishSaini/cloud-native-hackathon/pull/60#discussion_r4519314707): 💡 Bug: Home screen still shows a "Now" heading when the user has no card
+- [#63 `backend/app/insights/routes.py`](https://github.com/rishSaini/cloud-native-hackathon/pull/63#discussion_r4519466132): 💡 Edge Case: Newest-slot default is still cut by the 120-min now() window
 
 ## Fixes Gitar pushed
 
