@@ -16,6 +16,36 @@ spec:
       labels:
         app: app
     spec:
+      # Brings the Postgres schema up to date on every rollout, so a recreated
+      # database doesn't stay empty until someone runs a db-migrate Job by hand.
+      # --best-effort: if the database isn't there yet or is down, it logs and
+      # exits 0 so the app still starts. The advisory lock in app.db.migrate lets
+      # both replicas run it at once. Same image as the app (kustomize sets it).
+      initContainers:
+        - name: migrate
+          image: app
+          command: [python, -m, app.db.migrate, --best-effort]
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-app
+                  key: uri
+                  optional: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop: ["ALL"]
       containers:
         - name: app
           image: app

@@ -8,7 +8,7 @@ import { comfortDial } from "../comfort.js";
 import { galaxySvg } from "../galaxy.js";
 import { NEEDS } from "../card-form.js";
 import { h, twoTone } from "../format.js";
-import { loadErrorView } from "../load-error.js";
+import { loadErrorView, saveErrorMessage } from "../load-error.js";
 import { deleteMyCard, loadMe, saveMyCard } from "../store.js";
 
 export default {
@@ -84,8 +84,8 @@ export default {
           ({ me, card } = await saveMyCard(draft));
           announce("Your card is saved.");
           paint(view);
-        } catch {
-          status.textContent = "We couldn't save your card. Check your connection and try again.";
+        } catch (err) {
+          status.textContent = saveErrorMessage(err);
           save.disabled = false;
         }
       });
