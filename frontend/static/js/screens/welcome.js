@@ -7,7 +7,7 @@ import { emptyCard, livePreview, needsFields, TEMPLATES } from "../card-form.js"
 import { cardChat } from "../card-chat.js";
 import { accentColor } from "../color.js";
 import { h, twoTone } from "../format.js";
-import { loadErrorView } from "../load-error.js";
+import { loadErrorView, saveErrorMessage } from "../load-error.js";
 import { loadMe, saveMyCard } from "../store.js";
 
 const STEPS = ["template", "card", "needs"];
@@ -148,8 +148,8 @@ export default {
             draft = null;
             go("done");
             if (me?.displayId) announce(`Your card is ready. You're ${me.displayId}.`);
-          } catch {
-            status.textContent = "We couldn't save your card. Check your connection and try again.";
+          } catch (err) {
+            status.textContent = saveErrorMessage(err);
             submit.disabled = false;
           }
         });
