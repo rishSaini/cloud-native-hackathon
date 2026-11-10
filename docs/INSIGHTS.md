@@ -17,7 +17,15 @@ The controller measures two things. The API and Dash0 show the same numbers.
 
 ## API for the UI
 
-`GET /api/insights?slot=tue-0900`. `slot` is optional; the default is the current slot. Poll every 5 seconds.
+`GET /api/insights?slot=tue-0900`. `slot` is optional; the default is the slot with the newest numbers. Poll every 5 seconds.
+
+The app shows this at `#/insights` (link on Home). Each room also has:
+
+- `talk`: `{ "title", "track" }` from the talks index, or `null` when search is down.
+- `engagement`: how the talk held its room, or `null` before the first sample.
+  `{ "peak": 111, "peakAtSeconds": 60, "now": 48, "kept": 0.432, "word": "DROPPED", "drop": { "people": 52, "fromSeconds": 91, "toSeconds": 118 } }`.
+  `word` is HELD (90% or more of the peak stayed), STEADY (75% or more) or DROPPED. `drop` is the most people lost within a window of 30 s or 10% of the talk so far, whichever is longer, and only when 5 or more left.
+- The top level has `startedAt`, the first sample of the slot. Seconds in `engagement` count from it.
 
 ```json
 {

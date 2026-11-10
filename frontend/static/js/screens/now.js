@@ -38,7 +38,8 @@ export default {
     const slot = nextSlot();
 
     const region = h("div", { class: "now" });
-    main.append(h("h1", { class: "screen-title" }, "Now"), region);
+    main.append(h("h1", { class: "screen-title" }, "Now"),
+      h("a", { class: "home-insights-link", href: "#/insights" }, "How the rooms are doing →"), region);
 
     if (!card) {
       region.append(h("section", { class: "card stack", "aria-labelledby": "now-h" },

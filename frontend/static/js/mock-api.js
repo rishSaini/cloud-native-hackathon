@@ -418,6 +418,73 @@ function growthCopy() {
 }
 
 // ---- API methods (same names and shapes as api.js) ----
+// ---- insights (K17) ----
+const INSIGHTS_START = Date.now() - 38 * 60 * 1000; // the 9:00 talks started 38 minutes before page load
+// Share of seats taken, minute m into the talk: fill, then each talk's own shape.
+const SHAPES = {
+  "room-101": (m) => 0.92 * Math.min(1, m / 7) - (m > 30 ? 0.01 * (m - 30) / 10 : 0),        // holds the room
+  "room-155": (m) => 0.78 * Math.min(1, m / 9) - (m > 12 ? 0.004 * (m - 12) : 0),            // steady
+  "room-251": (m) => 0.8 * Math.min(1, m / 8) - (m > 24 ? Math.min(0.36, 0.09 * (m - 24)) : 0), // sharp drop at 24 min
+  "room-hall-b": (m) => 0.6 * Math.min(1, m / 10) - (m > 10 ? 0.0075 * (m - 10) : 0),         // slow decline
+};
+
+function insightsEngagement(history, startMs) {
+  const pts = history.map((p) => [(Date.parse(p.at) - startMs) / 1000, p.taken]);
+  if (!pts.length) return null;
+  let [peakT, peak] = pts[0];
+  for (const [t, v] of pts) if (v >= peak) { peakT = t; peak = v; }
+  const now = pts[pts.length - 1][1];
+  const windowS = Math.max(30, 0.1 * (pts[pts.length - 1][0] - pts[0][0]));
+  let drop = null;
+  for (let i = 0; i < pts.length; i++) {
+    for (let j = i + 1; j < pts.length && pts[j][0] - pts[i][0] <= windowS; j++) {
+      const n = pts[i][1] - pts[j][1];
+      if (n >= 5 && (!drop || n > drop.people)) drop = { people: n, fromSeconds: Math.round(pts[i][0]), toSeconds: Math.round(pts[j][0]) };
+    }
+  }
+  const kept = peak ? now / peak : 1;
+  const word = kept >= 0.9 ? "HELD" : kept >= 0.75 ? "STEADY" : "DROPPED";
+  return { peak, peakAtSeconds: Math.round(peakT), now, kept: Math.round(kept * 1000) / 1000, word, drop };
+}
+
+function mockInsights() {
+  const nowMs = Date.now();
+  const minutes = Math.min(50, (nowMs - INSIGHTS_START) / 60000);
+  const rooms = ROOMS.map((r, j) => {
+    const history = [];
+    let last = -1;
+    for (let s = 0; s <= minutes * 60; s += 30) {
+      const wobble = Math.sin(s / 97 + j) * 0.01;
+      const taken = Math.max(0, Math.min(r.seats, Math.round(r.seats * (SHAPES[r.id](s / 60) + wobble))));
+      if (taken !== last) history.push({ at: new Date(INSIGHTS_START + s * 1000).toISOString(), taken });
+      last = taken;
+    }
+    const taken = history.length ? history[history.length - 1].taken : 0;
+    const talk = talks.find((t) => t.slot === "tue-0900" && t.room === r.id);
+    return {
+      room: r.id, node: `tue-0900-${r.id}`, seats: r.seats, taken,
+      occupancy: Math.round((taken / r.seats) * 1000) / 1000,
+      history, talk: talk ? { title: talk.title, track: null } : null,
+      engagement: insightsEngagement(history, INSIGHTS_START),
+    };
+  }).sort((a, b) => b.occupancy - a.occupancy);
+  const seats = rooms.reduce((n, r) => n + r.seats, 0);
+  const taken = rooms.reduce((n, r) => n + r.taken, 0);
+  return {
+    slot: "tue-0900",
+    generatedAt: new Date(nowMs).toISOString(),
+    startedAt: new Date(INSIGHTS_START).toISOString(),
+    totals: { seats, taken, occupancy: Math.round((taken / seats) * 1000) / 1000 },
+    rooms,
+    timeToSeat: {
+      withNeeds: { count: 41, hidden: false, p50Seconds: 9.8, p95Seconds: 14.2 },
+      withoutNeeds: { count: 312, hidden: false, p50Seconds: 4.1, p95Seconds: 7.9 },
+      p95GapSeconds: 6.3,
+    },
+    privacy: "Counts only. No attendee IDs are stored for these charts. A group with fewer than 5 people is hidden.",
+  };
+}
+
 export const api = {
   async createAttendee() {
     await sleep(200);
@@ -602,6 +669,12 @@ export const api = {
       logEvent("Reported", `${room.id} ${signal}`);
     }
     return { agreeing: Math.floor(Math.random() * 5), staffAlerted };
+  },
+  // K17 insights: four talks with different engagement shapes, sampled every 30 s.
+  async insights() {
+    ensureState();
+    await sleep(120);
+    return mockInsights();
   },
   async board() {
     ensureState();
